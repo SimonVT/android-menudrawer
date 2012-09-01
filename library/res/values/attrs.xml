@@ -1,0 +1,23 @@
+<resources>
+
+    <!-- Reference to a style for the menu drawer. -->
+    <attr name="menuDrawerStyle" format="reference" />
+
+    <!-- Styleables used for styling the menu drawer. -->
+    <declare-styleable name="MenuDrawer">
+
+        <!-- Drawable to use for the background of the content. -->
+        <attr name="mdContentBackground" format="reference" />
+
+        <!-- Drawable to use for the background of the menu. -->
+        <attr name="mdMenuBackground" format="reference" />
+
+        <!-- The width of the menu. -->
+        <attr name="mdMenuWidth" format="dimension" />
+
+        <!-- Drawable to use for the arrow indicator. -->
+        <attr name="mdArrowDrawable" format="reference" />
+
+    </declare-styleable>
+
+</resources>

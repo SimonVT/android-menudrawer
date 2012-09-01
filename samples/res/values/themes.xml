@@ -1,0 +1,14 @@
+<resources>
+
+    <style name="SampleBase" parent="@android:style/Theme.Light" />
+
+    <style name="SampleTheme" parent="SampleBase">
+
+        <item name="menuDrawerStyle">@style/MenuDrawerStyle</item>
+    </style>
+
+    <style name="MenuDrawerStyle" parent="MenuDrawer.Widget.Container">
+        <item name="mdArrowDrawable">@drawable/menu_arrow</item>
+        <item name="mdMenuWidth">250dp</item>
+    </style>
+</resources>

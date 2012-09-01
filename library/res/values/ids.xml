@@ -1,0 +1,14 @@
+<resources>
+
+    <!-- The ID of the MenuDrawer. -->
+    <item name="md__layout" type="id" />
+
+    <!-- The ID of the content container. -->
+    <item name="md__content" type="id" />
+
+    <!-- The ID of the menu container. -->
+    <item name="md__menu" type="id" />
+
+    <!-- Used with View#setTag(int) to specify a position for the active view. -->
+    <item name="mdActiveViewPosition" type="id" />
+</resources>
