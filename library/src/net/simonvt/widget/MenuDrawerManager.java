@@ -242,6 +242,7 @@ public class MenuDrawerManager {
     public void setContentView(int layoutResId) {
         switch (mDragMode) {
             case MenuDrawer.MENU_DRAG_CONTENT:
+                mContentContainer.removeAllViews();
                 LayoutInflater inflater = mActivity.getLayoutInflater();
                 inflater.inflate(layoutResId, mContentContainer, true);
                 break;
