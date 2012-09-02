@@ -4,11 +4,6 @@
 
     <style name="MenuDrawer.Widget" />
 
-    <style name="MenuDrawer.Widget.Container">
-        <item name="mdMenuBackground">@color/md__defaultBackground</item>
-        <item name="mdContentBackground">?android:attr/windowBackground</item>
-    </style>
-
     <style name="MenuDrawer.Widget.Category">
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">?android:attr/textColorSecondaryInverse</item>
