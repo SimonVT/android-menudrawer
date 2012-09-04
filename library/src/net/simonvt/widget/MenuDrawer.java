@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -274,6 +275,16 @@ public class MenuDrawer extends ViewGroup {
 
     private int mCloseEnough;
 
+    /**
+     * Indicates whether to use {@link View#setTranslationX(float)} when positioning views.
+     */
+    static final boolean USE_TRANSLATIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+
+    /**
+     * Indicates whether the current layer type is {@link View#LAYER_TYPE_HARDWARE}.
+     */
+    private boolean mLayerTypeHardware;
+
     public MenuDrawer(Context context) {
         this(context, null);
     }
@@ -302,7 +313,7 @@ public class MenuDrawer extends ViewGroup {
 
         a.recycle();
 
-        mMenuContainer = new FrameLayout(context);
+        mMenuContainer = new BuildLayerFrameLayout(context);
         mMenuContainer.setId(R.id.md__menu);
         mMenuContainer.setBackgroundDrawable(menuBackground);
         addView(mMenuContainer);
@@ -475,7 +486,7 @@ public class MenuDrawer extends ViewGroup {
         final int height = getHeight();
         final int contentLeft = mContentLeft;
         final int dropShadowWidth = mDropShadowWidth;
-        final float openRatio = ((float) mContentLeft) / mMenuWidth;
+        final float openRatio = ((float) contentLeft) / mMenuWidth;
 
         mMenuOverlay.setBounds(0, 0, contentLeft, height);
         mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * (1.f - openRatio)));
@@ -484,7 +495,7 @@ public class MenuDrawer extends ViewGroup {
         mContentDropShadow.setBounds(contentLeft - dropShadowWidth, 0, contentLeft, height);
         mContentDropShadow.draw(canvas);
 
-        if (mArrowBitmap != null) drawArrow(canvas, openRatio);
+        if (mArrowBitmap != null) drawArrow(canvas, contentLeft, openRatio);
     }
 
     /**
@@ -493,7 +504,7 @@ public class MenuDrawer extends ViewGroup {
      * @param canvas    The canvas on which to draw.
      * @param openRatio [0..1] value indicating how open the drawer is.
      */
-    private void drawArrow(Canvas canvas, float openRatio) {
+    private void drawArrow(Canvas canvas, int contentLeft, float openRatio) {
         if (mActiveView != null && mActiveView.getParent() != null) {
             Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
             final int pos = position == null ? 0 : position;
@@ -506,7 +517,7 @@ public class MenuDrawer extends ViewGroup {
                 final int interpolatedArrowWidth = (int) (mArrowBitmap.getWidth() * interpolatedRatio);
 
                 final int top = mActiveRect.top + ((mActiveRect.height() - mArrowBitmap.getHeight()) / 2);
-                final int right = mContentLeft;
+                final int right = contentLeft;
                 final int left = right - interpolatedArrowWidth;
 
                 canvas.save();
@@ -522,15 +533,15 @@ public class MenuDrawer extends ViewGroup {
         final int width = r - l;
         final int height = b - t;
         final int contentLeft = mContentLeft;
-        final boolean menuOpen = mMenuVisible;
 
-        mMenuContainer.setVisibility(menuOpen ? VISIBLE : GONE);
-        if (menuOpen) {
-            mMenuContainer.layout(0, 0, mMenuWidth, height);
-            offsetMenu(mContentLeft);
+        mMenuContainer.layout(0, 0, mMenuWidth, height);
+        offsetMenu(contentLeft);
+
+        if (USE_TRANSLATIONS) {
+            mContentView.layout(0, 0, width, height);
+        } else {
+            mContentView.layout(contentLeft, 0, width + contentLeft, height);
         }
-
-        mContentView.layout(contentLeft, 0, width + contentLeft, height);
     }
 
     /**
@@ -541,10 +552,17 @@ public class MenuDrawer extends ViewGroup {
     private void offsetMenu(float contentLeft) {
         if (mOffsetMenu && mMenuWidth != 0) {
             final int menuWidth = mMenuWidth;
-            final int menuLeft = mMenuContainer.getLeft();
             final float openRatio = (menuWidth - contentLeft) / menuWidth;
-            final int offset = (int) (0.25f * (-openRatio * menuWidth)) - menuLeft;
-            mMenuContainer.offsetLeftAndRight(offset);
+
+            if (USE_TRANSLATIONS) {
+                final int menuLeft = (int) (0.25f * (-openRatio * menuWidth));
+                mMenuContainer.setTranslationX(menuLeft);
+
+            } else {
+                final int oldMenuLeft = mMenuContainer.getLeft();
+                final int offset = (int) (0.25f * (-openRatio * menuWidth)) - oldMenuLeft;
+                mMenuContainer.offsetLeftAndRight(offset);
+            }
         }
     }
 
@@ -554,11 +572,41 @@ public class MenuDrawer extends ViewGroup {
      * @param contentLeft The left position of the content view.
      */
     private void setContentLeft(int contentLeft) {
-        if (mContentLeft != contentLeft) {
+        if (contentLeft != mContentLeft) {
+            if (USE_TRANSLATIONS) {
+                mContentView.setTranslationX(contentLeft);
+                offsetMenu(contentLeft);
+                invalidate();
+            } else {
+                mContentView.offsetLeftAndRight(contentLeft - mContentView.getLeft());
+                offsetMenu(contentLeft);
+                invalidate();
+            }
+
             mContentLeft = contentLeft;
-            mMenuVisible = mContentLeft != 0;
-            requestLayout();
-            invalidate();
+            mMenuVisible = contentLeft != 0;
+        }
+    }
+
+    /**
+     * If possible, set the layer type to {@link View#LAYER_TYPE_HARDWARE}.
+     */
+    private void startLayerTranslation() {
+        if (USE_TRANSLATIONS && !mLayerTypeHardware) {
+            mLayerTypeHardware = true;
+            mContentView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            mMenuContainer.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
+    }
+
+    /**
+     * If the current layer type is {@link View#LAYER_TYPE_HARDWARE}, this will set it to @link View#LAYER_TYPE_NONE}.
+     */
+    private void stopLayerTranslation() {
+        if (mLayerTypeHardware) {
+            mLayerTypeHardware = false;
+            mContentView.setLayerType(View.LAYER_TYPE_NONE, null);
+            mMenuContainer.setLayerType(View.LAYER_TYPE_NONE, null);
         }
     }
 
@@ -617,6 +665,11 @@ public class MenuDrawer extends ViewGroup {
     private void stopAnimation() {
         removeCallbacks(mDragRunnable);
         mScroller.abortAnimation();
+        final int contentLeft = mContentLeft;
+
+        stopLayerTranslation();
+
+        setContentLeft(contentLeft);
     }
 
     /**
@@ -624,6 +677,8 @@ public class MenuDrawer extends ViewGroup {
      */
     private void completeAnimation() {
         mScroller.abortAnimation();
+        stopLayerTranslation();
+
         final int finalX = mScroller.getFinalX();
         setContentLeft(finalX);
         setDrawerState(finalX == 0 ? STATE_CLOSED : STATE_OPEN);
@@ -642,6 +697,7 @@ public class MenuDrawer extends ViewGroup {
         int dx = open ? mMenuWidth - startX : startX;
         if (dx == 0) {
             setDrawerState(startX == 0 ? STATE_CLOSED : STATE_OPEN);
+            stopLayerTranslation();
             return;
         }
 
@@ -663,6 +719,8 @@ public class MenuDrawer extends ViewGroup {
             setDrawerState(STATE_CLOSING);
             mScroller.startScroll(startX, 0, -startX, 0, duration);
         }
+
+        startLayerTranslation();
 
         postAnimationInvalidate();
     }
@@ -703,26 +761,32 @@ public class MenuDrawer extends ViewGroup {
         }
 
         switch (action) {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
                 mLastMotionY = ev.getY();
-                if ((!mMenuVisible && mInitialMotionX < mDragBezelSize) ||
-                        (mMenuVisible && mInitialMotionX > mContentLeft)) {
+                final int contentLeft = mContentLeft;
+                final boolean allowDrag = (!mMenuVisible && mInitialMotionX < mDragBezelSize) ||
+                        (mMenuVisible && mInitialMotionX > contentLeft);
+
+                if (allowDrag) {
+                    setDrawerState(mMenuVisible ? STATE_OPEN : STATE_CLOSED);
                     stopAnimation();
                     mIsDragging = false;
                 }
                 break;
+            }
 
-            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_MOVE: {
                 final float x = ev.getX();
                 final float dx = x - mLastMotionX;
                 final float xDiff = Math.abs(dx);
                 final float y = ev.getY();
                 final float yDiff = Math.abs(y - mLastMotionY);
+                final int contentLeft = mContentLeft;
 
                 if (xDiff > mTouchSlop && xDiff > yDiff) {
                     final boolean allowDrag = (!mMenuVisible && mInitialMotionX < mDragBezelSize)
-                            || (mMenuVisible && mInitialMotionX >= mContentLeft);
+                            || (mMenuVisible && mInitialMotionX >= contentLeft);
                     if (allowDrag) {
                         setDrawerState(STATE_DRAGGING);
                         mIsDragging = true;
@@ -731,15 +795,18 @@ public class MenuDrawer extends ViewGroup {
                     }
                 }
                 break;
+            }
 
             /**
              * If you click really fast, an up or cancel event is delivered here.
              * Just snap content to whatever is closest.
              * */
             case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                animateContent(mContentLeft > mMenuWidth / 2, 0);
+            case MotionEvent.ACTION_UP: {
+                final int contentLeft = mContentLeft;
+                animateContent(contentLeft > mMenuWidth / 2, 0);
                 break;
+            }
         }
 
         if (mVelocityTracker == null) mVelocityTracker = VelocityTracker.obtain();
@@ -758,19 +825,23 @@ public class MenuDrawer extends ViewGroup {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
+                final int contentLeft = mContentLeft;
                 final boolean allowDrag = (!mMenuVisible && mInitialMotionX <= mDragBezelSize)
-                        || (mMenuVisible && mInitialMotionX >= mContentLeft);
+                        || (mMenuVisible && mInitialMotionX >= contentLeft);
 
                 if (allowDrag) {
+                    stopAnimation();
                     setDrawerState(STATE_DRAGGING);
                     stopAnimation();
                     mIsDragging = true;
-
+                    startLayerTranslation();
                 }
                 break;
             }
 
-            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_MOVE: {
+                final int contentLeft = mContentLeft;
+
                 if (!mIsDragging) {
                     final float x = ev.getX();
                     final float xDiff = Math.abs(x - mLastMotionX);
@@ -779,7 +850,7 @@ public class MenuDrawer extends ViewGroup {
 
                     if (xDiff > mTouchSlop && xDiff > yDiff) {
                         final boolean allowDrag = (!mMenuVisible && mInitialMotionX <= mDragBezelSize)
-                                || (mMenuVisible && mInitialMotionX >= mContentLeft);
+                                || (mMenuVisible && mInitialMotionX >= contentLeft);
 
                         if (allowDrag) {
                             setDrawerState(STATE_DRAGGING);
@@ -792,18 +863,21 @@ public class MenuDrawer extends ViewGroup {
                 }
 
                 if (mIsDragging) {
+                    startLayerTranslation();
+
                     final float x = ev.getX();
                     final float dx = x - mLastMotionX;
 
                     mLastMotionX = x;
-                    setContentLeft(Math.min(Math.max(mContentLeft + (int) dx, 0), mMenuWidth));
-                    requestLayout();
-                    invalidate();
+                    setContentLeft(Math.min(Math.max(contentLeft + (int) dx, 0), mMenuWidth));
                 }
                 break;
+            }
 
             case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_UP: {
+                final int contentLeft = mContentLeft;
+
                 if (mIsDragging) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
                     final int initialVelocity = (int) mVelocityTracker.getXVelocity();
@@ -811,10 +885,11 @@ public class MenuDrawer extends ViewGroup {
                     animateContent(mVelocityTracker.getXVelocity() > 0, initialVelocity);
 
                     // Close the menu when content is clicked while the menu is visible.
-                } else if (mMenuVisible && ev.getX() > mContentLeft) {
+                } else if (mMenuVisible && ev.getX() > contentLeft) {
                     closeMenu();
                 }
                 break;
+            }
         }
 
         return true;
