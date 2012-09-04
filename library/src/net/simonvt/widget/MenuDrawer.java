@@ -769,7 +769,8 @@ public class MenuDrawer extends ViewGroup {
      */
     public Parcelable saveState() {
         Bundle state = new Bundle();
-        state.putBoolean(STATE_MENU_VISIBLE, mMenuVisible);
+        final boolean menuVisible = mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING;
+        state.putBoolean(STATE_MENU_VISIBLE, menuVisible);
         return state;
     }
 
