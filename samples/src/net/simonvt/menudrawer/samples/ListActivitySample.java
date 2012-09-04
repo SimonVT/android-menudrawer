@@ -33,6 +33,7 @@ public class ListActivitySample extends ListActivity {
         menuView.setTextColor(0xFFFFFFFF);
         menuView.setText("MENU");
         mMenuDrawer.setMenuView(menuView);
+        mMenuDrawer.getMenuDrawer().setOffsetMenuEnabled(false);
 
         List<String> items = new ArrayList<String>();
         for (int i = 1; i <= 20; i++) {

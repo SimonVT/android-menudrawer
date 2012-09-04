@@ -251,6 +251,11 @@ public class MenuDrawer extends ViewGroup {
      */
     private OnDrawerStateChangeListener mOnDrawerStateChangeListener;
 
+    /**
+     * Indicates whether the menu should be offset when dragging the drawer.
+     */
+    private boolean mOffsetMenu = true;
+
     public MenuDrawer(Context context) {
         this(context, null);
     }
@@ -352,6 +357,26 @@ public class MenuDrawer extends ViewGroup {
         mActiveView = v;
         mActivePosition = position;
         invalidate();
+    }
+
+    /**
+     * Enables or disables offsetting the menu when dragging the drawer.
+     * @param offsetMenu True to offset the menu, false otherwise.
+     */
+    public void setOffsetMenuEnabled(boolean offsetMenu) {
+        if (offsetMenu != mOffsetMenu) {
+            mOffsetMenu = offsetMenu;
+            requestLayout();
+            invalidate();
+        }
+    }
+
+    /**
+     * Indicates whether the menu is being offset when dragging the drawer.
+     * @return True if the menu is being offset, false otherwise.
+     */
+    public boolean getOffsetMenuEnabled() {
+        return mOffsetMenu;
     }
 
     /**
@@ -465,7 +490,7 @@ public class MenuDrawer extends ViewGroup {
      * @param contentLeft The left position of the content.
      */
     private void offsetMenu(float contentLeft) {
-        if (mMenuWidth != 0) {
+        if (mOffsetMenu && mMenuWidth != 0) {
             final int menuWidth = mMenuWidth;
             final int menuLeft = mMenuContainer.getLeft();
             final float openRatio = (menuWidth - contentLeft) / menuWidth;
