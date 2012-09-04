@@ -85,7 +85,8 @@ public class WindowSample extends Activity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        if (mMenuDrawer.isMenuVisible()) {
+        final int drawerState = mMenuDrawer.getDrawerState();
+        if (drawerState == MenuDrawer.STATE_OPEN || drawerState == MenuDrawer.STATE_OPENING) {
             mMenuDrawer.closeMenu();
             return;
         }
