@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_action_select_all_dark"
-            android:text="Item 1"
+            android:text="Item 2"
             style="@style/MenuDrawer.Widget.Title" />
 
         <TextView
