@@ -1,7 +1,7 @@
 MenuDrawer
 =========
 
-A menu drawer implementation based on [this article][1], written by [Cyril Mottier][2].
+A menu drawer implementation based on [this article][1] by [Cyril Mottier][2].
 
 It allows dragging of both the content, and the entire window.
 
@@ -29,4 +29,4 @@ License
 
 
  [1]: http://android.cyrilmottier.com/?p=658
- [2]: https://plus.google.com/u/0/118417777153109946393
+ [2]: https://github.com/cyrilmottier
