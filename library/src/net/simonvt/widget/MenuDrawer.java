@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -39,6 +40,19 @@ public class MenuDrawer extends ViewGroup {
         void onDrawerStateChange(int oldState, int newState);
     }
 
+    /**
+     * Tag used when logging.
+     */
+    private static final String TAG = "MenuDrawer";
+
+    /**
+     * Indicates whether debug code should be enabled.
+     */
+    private static final boolean DEBUG = false;
+
+    /**
+     * Key used when saving menu visibility state.
+     */
     private static final String STATE_MENU_VISIBLE = "net.simonvt.menudrawer.view.menu.menuVisible";
 
     /**
@@ -361,6 +375,7 @@ public class MenuDrawer extends ViewGroup {
 
     /**
      * Enables or disables offsetting the menu when dragging the drawer.
+     *
      * @param offsetMenu True to offset the menu, false otherwise.
      */
     public void setOffsetMenuEnabled(boolean offsetMenu) {
@@ -373,6 +388,7 @@ public class MenuDrawer extends ViewGroup {
 
     /**
      * Indicates whether the menu is being offset when dragging the drawer.
+     *
      * @return True if the menu is being offset, false otherwise.
      */
     public boolean getOffsetMenuEnabled() {
@@ -401,13 +417,41 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Sets the drawer state.
      *
-     * @param state The drawer state.
+     * @param state The drawer state. Must be one of {@link #STATE_CLOSED}, {@link #STATE_CLOSING},
+     *              {@link #STATE_DRAGGING}, {@link #STATE_OPENING} or {@link #STATE_OPEN}.
      */
     private void setDrawerState(int state) {
         if (state != mDrawerState) {
             final int oldState = mDrawerState;
             mDrawerState = state;
             if (mOnDrawerStateChangeListener != null) mOnDrawerStateChangeListener.onDrawerStateChange(oldState, state);
+            if (DEBUG) logDrawerState(state);
+        }
+    }
+
+    private void logDrawerState(int state) {
+        switch (state) {
+            case STATE_CLOSED:
+                Log.d(TAG, "[DrawerState] STATE_CLOSED");
+                break;
+
+            case STATE_CLOSING:
+                Log.d(TAG, "[DrawerState] STATE_CLOSING");
+                break;
+
+            case STATE_DRAGGING:
+                Log.d(TAG, "[DrawerState] STATE_DRAGGING");
+                break;
+
+            case STATE_OPENING:
+                Log.d(TAG, "[DrawerState] STATE_OPENING");
+                break;
+
+            case STATE_OPEN:
+                Log.d(TAG, "[DrawerState] STATE_OPEN");
+                break;
+
+            default:
         }
     }
 
@@ -591,7 +635,10 @@ public class MenuDrawer extends ViewGroup {
 
         final int startX = mContentLeft;
         int dx = open ? mMenuWidth - startX : startX;
-        if (dx == 0) return;
+        if (dx == 0) {
+            setDrawerState(startX == 0 ? STATE_CLOSED : STATE_OPEN);
+            return;
+        }
 
         int duration;
 
@@ -650,7 +697,6 @@ public class MenuDrawer extends ViewGroup {
                 mLastMotionY = ev.getY();
                 if ((!mMenuVisible && mInitialMotionX < mDragBezelSize) ||
                         (mMenuVisible && mInitialMotionX > mContentLeft)) {
-                    setDrawerState(mMenuVisible ? STATE_OPEN : STATE_CLOSED);
                     stopAnimation();
                     mIsDragging = false;
                 }
@@ -667,6 +713,7 @@ public class MenuDrawer extends ViewGroup {
                     final boolean allowDrag = (!mMenuVisible && mInitialMotionX < mDragBezelSize)
                             || (mMenuVisible && mInitialMotionX >= mContentLeft);
                     if (allowDrag) {
+                        setDrawerState(STATE_DRAGGING);
                         mIsDragging = true;
                         mLastMotionX = x;
                         mLastMotionY = y;
@@ -698,19 +745,19 @@ public class MenuDrawer extends ViewGroup {
         mVelocityTracker.addMovement(ev);
 
         switch (action) {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
-                if (!mMenuVisible && mInitialMotionX <= mDragBezelSize) {
-                    stopAnimation();
+                final boolean allowDrag = (!mMenuVisible && mInitialMotionX <= mDragBezelSize)
+                        || (mMenuVisible && mInitialMotionX >= mContentLeft);
+
+                if (allowDrag) {
                     setDrawerState(STATE_DRAGGING);
+                    stopAnimation();
                     mIsDragging = true;
 
-                } else if (mMenuVisible && mInitialMotionX >= mContentLeft) {
-                    stopAnimation();
-                    setDrawerState(STATE_DRAGGING);
-                    mIsDragging = true;
                 }
                 break;
+            }
 
             case MotionEvent.ACTION_MOVE:
                 if (!mIsDragging) {
