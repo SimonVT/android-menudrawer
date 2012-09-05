@@ -3,6 +3,7 @@
 !.gitignore
 !README.md
 !LICENSE
+!pom.xml
 
 !art/
 
@@ -12,6 +13,7 @@ library/*
 !library/res/
 !library/AndroidManifest.xml
 !library/build.xml
+!library/pom.xml
 !library/project.properties
 
 !samples/
@@ -20,4 +22,5 @@ samples/*
 !samples/res/
 !samples/AndroidManifest.xml
 !samples/build.xml
+!samples/pom.xml
 !samples/project.properties
