@@ -115,6 +115,8 @@ public class MenuDrawer extends ViewGroup {
      */
     public static final int STATE_OPEN = 8;
 
+    private static final int CLOSE_ENOUGH = 3;
+
     /**
      * Drawable used as menu overlay.
      */
@@ -270,6 +272,8 @@ public class MenuDrawer extends ViewGroup {
      */
     private boolean mOffsetMenu = true;
 
+    private int mCloseEnough;
+
     public MenuDrawer(Context context) {
         this(context, null);
     }
@@ -324,6 +328,7 @@ public class MenuDrawer extends ViewGroup {
 
         final float density = getResources().getDisplayMetrics().density;
         mMaxDragBezelSize = (int) (MAX_DRAG_BEZEL_DP * density + 0.5f);
+        mCloseEnough = (int) (CLOSE_ENOUGH * density);
     }
 
     /**
@@ -683,6 +688,12 @@ public class MenuDrawer extends ViewGroup {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
+
+        if (action == MotionEvent.ACTION_DOWN && mMenuVisible && mContentLeft <= mCloseEnough) {
+            setContentLeft(0);
+            stopAnimation();
+            setDrawerState(STATE_CLOSED);
+        }
 
         // Always intercept events over the content while menu is visible.
         if (mMenuVisible && ev.getX() > mContentLeft) return true;
