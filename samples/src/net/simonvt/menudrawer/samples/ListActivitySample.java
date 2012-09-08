@@ -4,7 +4,9 @@ import net.simonvt.widget.MenuDrawer;
 import net.simonvt.widget.MenuDrawerManager;
 
 import android.app.ListActivity;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,10 @@ public class ListActivitySample extends ListActivity {
     private static final String STATE_MENUDRAWER = "net.simonvt.menudrawer.samples.ListActivitySample.menuDrawer";
 
     private MenuDrawerManager mMenuDrawer;
+
+    private Handler mHandler;
+    private Runnable mToggleUpRunnable;
+    private boolean mDisplayUp = true;
 
     @Override
     public void onCreate(Bundle inState) {
@@ -41,6 +47,32 @@ public class ListActivitySample extends ListActivity {
         }
 
         setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            mHandler = new Handler();
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            mToggleUpRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    mDisplayUp = !mDisplayUp;
+                    getActionBar().setDisplayHomeAsUpEnabled(mDisplayUp);
+                    mHandler.postDelayed(mToggleUpRunnable, 500);
+                }
+            };
+
+            mHandler.postDelayed(mToggleUpRunnable, 500);
+
+            mMenuDrawer.getMenuDrawer().setOnDrawerStateChangeListener(new MenuDrawer.OnDrawerStateChangeListener() {
+                @Override
+                public void onDrawerStateChange(int oldState, int newState) {
+                    if (newState == MenuDrawer.STATE_OPEN) {
+                        mHandler.removeCallbacks(mToggleUpRunnable);
+                        if (!mDisplayUp) getActionBar().setDisplayHomeAsUpEnabled(true);
+                        mMenuDrawer.getMenuDrawer().setOnDrawerStateChangeListener(null);
+                    }
+                }
+            });
+        }
     }
 
     @Override
