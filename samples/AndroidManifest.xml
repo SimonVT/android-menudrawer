@@ -24,5 +24,6 @@
         <activity android:name="net.simonvt.menudrawer.samples.WindowSample" />
         <activity android:name="net.simonvt.menudrawer.samples.ContentSample" />
         <activity android:name="net.simonvt.menudrawer.samples.ListActivitySample" />
+        <activity android:name="net.simonvt.menudrawer.samples.ActionBarOverlaySample" />
     </application>
 </manifest>

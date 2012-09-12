@@ -20,6 +20,14 @@ public class SamplesActivity extends Activity {
             }
         });
 
+        findViewById(R.id.overlayWindowSample).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(SamplesActivity.this, ActionBarOverlaySample.class);
+                startActivity(i);
+            }
+        });
+
         findViewById(R.id.contentSample).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

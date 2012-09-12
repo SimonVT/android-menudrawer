@@ -633,18 +633,18 @@ public class MenuDrawer extends ViewGroup {
         final int contentHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, height);
         mContentView.measure(contentWidthMeasureSpec, contentHeightMeasureSpec);
 
-        if (mDragMode == MENU_DRAG_WINDOW) {
-            View v = mContentView.getChildAt(0);
-            final int topPadding = v.getPaddingTop();
-            mMenuContainer.setPadding(0, topPadding, 0, 0);
-        } else {
-            mMenuContainer.setPadding(0, 0, 0, 0);
-        }
-
         setMeasuredDimension(width, height);
 
         final int measuredWidth = getMeasuredWidth();
         mDragBezelSize = Math.min(measuredWidth / 10, mMaxDragBezelSize);
+    }
+
+    @Override
+    protected boolean fitSystemWindows(Rect insets) {
+        if (mDragMode == MENU_DRAG_WINDOW) {
+            mMenuContainer.setPadding(0, insets.top, 0, 0);
+        }
+        return super.fitSystemWindows(insets);
     }
 
     /**
