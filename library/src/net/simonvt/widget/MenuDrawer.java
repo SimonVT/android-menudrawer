@@ -963,5 +963,6 @@ public class MenuDrawer extends ViewGroup {
         Bundle state = (Bundle) in;
         final boolean menuOpen = state.getBoolean(STATE_MENU_VISIBLE);
         setContentLeft(menuOpen ? mMenuWidth : 0);
+        mDrawerState = menuOpen ? STATE_OPEN : STATE_CLOSED;
     }
 }
