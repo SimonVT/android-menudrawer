@@ -18,6 +18,15 @@
         <!-- Drawable to use for the arrow indicator. -->
         <attr name="mdArrowDrawable" format="reference" />
 
+        <!-- Defines whether the content will have a dropshadow onto the menu. Default is true. -->
+        <attr name="mdDropShadowEnabled" format="boolean" />
+
+        <!-- The width of the drop shadow. Default is 6dp. -->
+        <attr name="mdDropShadowWidth" format="dimension" />
+
+        <!-- The color of the drop shadow. Default is #FF000000. -->
+        <attr name="mdDropShadowColor" format="color" />
+
     </declare-styleable>
 
 </resources>

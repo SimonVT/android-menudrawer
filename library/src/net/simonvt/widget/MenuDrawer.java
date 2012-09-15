@@ -124,9 +124,14 @@ public class MenuDrawer extends ViewGroup {
     private Drawable mMenuOverlay;
 
     /**
+     * Defines whether the drop shadow is enabled.
+     */
+    private boolean mDropShadowEnabled;
+
+    /**
      * Drawable used as content drop shadow onto the menu.
      */
-    private Drawable mContentDropShadow;
+    private Drawable mDropShadowDrawable;
 
     /**
      * The width of the content drop shadow.
@@ -304,12 +309,20 @@ public class MenuDrawer extends ViewGroup {
 
         final Drawable contentBackground = a.getDrawable(R.styleable.MenuDrawer_mdContentBackground);
         final Drawable menuBackground = a.getDrawable(R.styleable.MenuDrawer_mdMenuBackground);
+
         mMenuWidth = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuWidth, -1);
         mMenuWidthFromTheme = mMenuWidth != -1;
+
         final int arrowResId = a.getResourceId(R.styleable.MenuDrawer_mdArrowDrawable, 0);
         if (arrowResId != 0) {
             mArrowBitmap = BitmapFactory.decodeResource(getResources(), arrowResId);
         }
+
+        mDropShadowEnabled = a.getBoolean(R.styleable.MenuDrawer_mdDropShadowEnabled, true);
+        final int dropShadowColor = a.getColor(R.styleable.MenuDrawer_mdDropShadowColor, 0xFF000000);
+        setDropShadowColor(dropShadowColor);
+
+        mDropShadowWidth = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowWidth, dpToPx(6));
 
         a.recycle();
 
@@ -323,12 +336,6 @@ public class MenuDrawer extends ViewGroup {
         mContentView.setBackgroundDrawable(contentBackground);
         addView(mContentView);
 
-        mContentDropShadow = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT, new int[] {
-                0xFF000000,
-                0x00000000,
-        });
-        mDropShadowWidth = (int) (6 * getResources().getDisplayMetrics().density + 0.5f);
-
         mMenuOverlay = new ColorDrawable(0xFF000000);
 
         final ViewConfiguration configuration = ViewConfiguration.get(context);
@@ -340,6 +347,10 @@ public class MenuDrawer extends ViewGroup {
         final float density = getResources().getDisplayMetrics().density;
         mMaxDragBezelSize = (int) (MAX_DRAG_BEZEL_DP * density + 0.5f);
         mCloseEnough = (int) (CLOSE_ENOUGH * density);
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (getResources().getDisplayMetrics().density * dp + 0.5f);
     }
 
     /**
@@ -431,6 +442,40 @@ public class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Defines whether the drop shadow is enabled.
+     *
+     * @param enabled Whether the drop shadow is enabled.
+     */
+    public void setDropShadowEnabled(boolean enabled) {
+        mDropShadowEnabled = enabled;
+        invalidate();
+    }
+
+    /**
+     * Sets the color of the drop shadow.
+     *
+     * @param color The color of the drop shadow.
+     */
+    public void setDropShadowColor(int color) {
+        final int endColor = color & 0x00FFFFFF;
+        mDropShadowDrawable = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT, new int[] {
+                color,
+                endColor,
+        });
+        invalidate();
+    }
+
+    /**
+     * Sets the width of the drop shadow.
+     *
+     * @param width The width of the drop shadow in px.
+     */
+    public void setDropShadowWidth(int width) {
+        mDropShadowWidth = width;
+        invalidate();
+    }
+
+    /**
      * Sets the drawer state.
      *
      * @param state The drawer state. Must be one of {@link #STATE_CLOSED}, {@link #STATE_CLOSING},
@@ -492,8 +537,10 @@ public class MenuDrawer extends ViewGroup {
         mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * (1.f - openRatio)));
         mMenuOverlay.draw(canvas);
 
-        mContentDropShadow.setBounds(contentLeft - dropShadowWidth, 0, contentLeft, height);
-        mContentDropShadow.draw(canvas);
+        if (mDropShadowEnabled) {
+            mDropShadowDrawable.setBounds(contentLeft - dropShadowWidth, 0, contentLeft, height);
+            mDropShadowDrawable.draw(canvas);
+        }
 
         if (mArrowBitmap != null) drawArrow(canvas, contentLeft, openRatio);
     }
