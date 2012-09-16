@@ -57,6 +57,7 @@ public class WindowSample extends Activity implements View.OnClickListener {
             mMenuDrawer.setActiveView(activeView);
             mContentTextView.setText("Active item: " + activeView.getText());
         }
+        mMenuDrawer.getMenuDrawer().peekDrawer();
     }
 
     @Override

@@ -67,6 +67,26 @@ public class MenuDrawer extends ViewGroup {
     private static final Interpolator ARROW_INTERPOLATOR = new AccelerateInterpolator();
 
     /**
+     * Interpolator used for peeking at the drawer.
+     */
+    private static final Interpolator PEEK_INTERPOLATOR = new PeekInterpolator();
+
+    /**
+     * Default delay from {@link #peekDrawer()} is called until first animation is run.
+     */
+    private static final long DEFAULT_PEEK_START_DELAY = 5000;
+
+    /**
+     * Default delay between each subsequent animation, after {@link #peekDrawer()} has been called.
+     */
+    private static final long DEFAULT_PEEK_DELAY = 10000;
+
+    /**
+     * The duration of the peek animation.
+     */
+    private static final int PEEK_DURATION = 5000;
+
+    /**
      * The maximum touch area width of the drawer in dp.
      */
     private static final int MAX_DRAG_BEZEL_DP = 16;
@@ -249,6 +269,31 @@ public class MenuDrawer extends ViewGroup {
     };
 
     /**
+     * Runnable used when the peek animation is running.
+     */
+    private final Runnable mPeekRunnable = new Runnable() {
+        @Override
+        public void run() {
+            peekDrawerInvalidate();
+        }
+    };
+
+    /**
+     * Runnable used for first call to {@link #startPeek()} after {@link #peekDrawer()}  has been called.
+     */
+    private Runnable mPeekStartRunnable;
+
+    /**
+     * Delay from {@link #peekDrawer()} has been called, until the first animation is run.
+     */
+    private long mPeekStartDelay;
+
+    /**
+     * Default delay between each subsequent animation, after {@link #peekDrawer()} has been called.
+     */
+    private long mPeekDelay;
+
+    /**
      * Scroller used when animating the drawer open/closed.
      */
     private Scroller mScroller;
@@ -257,6 +302,11 @@ public class MenuDrawer extends ViewGroup {
      * Interpolator used when animating the drawer open/closed.
      */
     private static final Interpolator SMOOTH_INTERPOLATOR = new SmoothInterpolator();
+
+    /**
+     * Scroller used for the peek drawer animation.
+     */
+    private Scroller mPeekScroller;
 
     /**
      * Velocity tracker used when animating the drawer open/closed after a drag.
@@ -343,6 +393,7 @@ public class MenuDrawer extends ViewGroup {
         mMaxVelocity = configuration.getScaledMaximumFlingVelocity();
 
         mScroller = new Scroller(context, SMOOTH_INTERPOLATOR);
+        mPeekScroller = new Scroller(context, PEEK_INTERPOLATOR);
 
         final float density = getResources().getDisplayMetrics().density;
         mMaxDragBezelSize = (int) (MAX_DRAG_BEZEL_DP * density + 0.5f);
@@ -473,6 +524,49 @@ public class MenuDrawer extends ViewGroup {
     public void setDropShadowWidth(int width) {
         mDropShadowWidth = width;
         invalidate();
+    }
+
+    /**
+     * Animates the drawer slightly open until the user opens the drawer.
+     */
+    public void peekDrawer() {
+        peekDrawer(DEFAULT_PEEK_START_DELAY, DEFAULT_PEEK_DELAY);
+    }
+
+    /**
+     * Animates the drawer slightly open. If delay is larger than 0, this happens until the user opens the drawer.
+     *
+     * @param delay The delay (in milliseconds) between each run of the animation. If 0, this animation is only run
+     *              once.
+     */
+    public void peekDrawer(long delay) {
+        peekDrawer(DEFAULT_PEEK_START_DELAY, delay);
+    }
+
+    /**
+     * Animates the drawer slightly open. If delay is larger than 0, this happens until the user opens the drawer.
+     *
+     * @param startDelay The delay (in milliseconds) until the animation is first run.
+     * @param delay      The delay (in milliseconds) between each run of the animation. If 0, this animation is only run
+     *                   once.
+     */
+    public void peekDrawer(final long startDelay, final long delay) {
+        if (startDelay < 0) {
+            throw new IllegalArgumentException("startDelay must be zero or lager.");
+        }
+        if (delay < 0) {
+            throw new IllegalArgumentException("delay must be zero or lager");
+        }
+
+        mPeekStartDelay = startDelay;
+        mPeekDelay = delay;
+        mPeekStartRunnable = new Runnable() {
+            @Override
+            public void run() {
+                startPeek();
+            }
+        };
+        postDelayed(mPeekStartRunnable, startDelay);
     }
 
     /**
@@ -712,11 +806,7 @@ public class MenuDrawer extends ViewGroup {
     private void stopAnimation() {
         removeCallbacks(mDragRunnable);
         mScroller.abortAnimation();
-        final int contentLeft = mContentLeft;
-
         stopLayerTranslation();
-
-        setContentLeft(contentLeft);
     }
 
     /**
@@ -724,11 +814,10 @@ public class MenuDrawer extends ViewGroup {
      */
     private void completeAnimation() {
         mScroller.abortAnimation();
-        stopLayerTranslation();
-
         final int finalX = mScroller.getFinalX();
         setContentLeft(finalX);
         setDrawerState(finalX == 0 ? STATE_CLOSED : STATE_OPEN);
+        stopLayerTranslation();
     }
 
     /**
@@ -790,6 +879,63 @@ public class MenuDrawer extends ViewGroup {
         completeAnimation();
     }
 
+    /**
+     * Starts peek drawer animation.
+     */
+    private void startPeek() {
+        final int menuWidth = mMenuWidth;
+        final int dx = menuWidth / 3;
+        mPeekScroller.startScroll(0, 0, dx, 0, PEEK_DURATION);
+
+        startLayerTranslation();
+        peekDrawerInvalidate();
+    }
+
+    /**
+     * Callback when each frame in the peek drawer animation should be drawn.
+     */
+    private void peekDrawerInvalidate() {
+        if (mPeekScroller.computeScrollOffset()) {
+            final int oldX = mContentLeft;
+            final int x = mPeekScroller.getCurrX();
+
+            if (x != oldX) setContentLeft(x);
+            if (!mPeekScroller.isFinished()) {
+                postDelayed(mPeekRunnable, ANIMATION_DELAY);
+                return;
+            } else {
+                mPeekStartRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        startPeek();
+                    }
+                };
+                postDelayed(mPeekStartRunnable, mPeekDelay);
+            }
+        }
+
+        completePeek();
+    }
+
+    /**
+     * Called when the peek drawer animation has successfully completed.
+     */
+    private void completePeek() {
+        mPeekScroller.abortAnimation();
+        setContentLeft(0);
+        setDrawerState(STATE_CLOSED);
+        stopLayerTranslation();
+    }
+
+    /**
+     * Stops ongoing peek drawer animation.
+     */
+    private void stopPeek() {
+        removeCallbacks(mPeekStartRunnable);
+        removeCallbacks(mPeekRunnable);
+        stopLayerTranslation();
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
@@ -797,6 +943,7 @@ public class MenuDrawer extends ViewGroup {
         if (action == MotionEvent.ACTION_DOWN && mMenuVisible && mContentLeft <= mCloseEnough) {
             setContentLeft(0);
             stopAnimation();
+            stopPeek();
             setDrawerState(STATE_CLOSED);
         }
 
@@ -818,6 +965,7 @@ public class MenuDrawer extends ViewGroup {
                 if (allowDrag) {
                     setDrawerState(mMenuVisible ? STATE_OPEN : STATE_CLOSED);
                     stopAnimation();
+                    stopPeek();
                     mIsDragging = false;
                 }
                 break;
@@ -878,8 +1026,8 @@ public class MenuDrawer extends ViewGroup {
 
                 if (allowDrag) {
                     stopAnimation();
+                    stopPeek();
                     setDrawerState(STATE_DRAGGING);
-                    stopAnimation();
                     mIsDragging = true;
                     startLayerTranslation();
                 }
