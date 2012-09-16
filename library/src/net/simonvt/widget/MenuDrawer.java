@@ -72,6 +72,11 @@ public class MenuDrawer extends ViewGroup {
     private static final Interpolator PEEK_INTERPOLATOR = new PeekInterpolator();
 
     /**
+     * Interpolator used when animating the drawer open/closed.
+     */
+    private static final Interpolator SMOOTH_INTERPOLATOR = new SmoothInterpolator();
+
+    /**
      * Default delay from {@link #peekDrawer()} is called until first animation is run.
      */
     private static final long DEFAULT_PEEK_START_DELAY = 5000;
@@ -136,7 +141,15 @@ public class MenuDrawer extends ViewGroup {
      */
     public static final int STATE_OPEN = 8;
 
+    /**
+     * Distance in dp from closed position from where the drawer is considered closed with regards to touch events.
+     */
     private static final int CLOSE_ENOUGH = 3;
+
+    /**
+     * Indicates whether to use {@link View#setTranslationX(float)} when positioning views.
+     */
+    static final boolean USE_TRANSLATIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 
     /**
      * Drawable used as menu overlay.
@@ -284,11 +297,6 @@ public class MenuDrawer extends ViewGroup {
     private Runnable mPeekStartRunnable;
 
     /**
-     * Delay from {@link #peekDrawer()} has been called, until the first animation is run.
-     */
-    private long mPeekStartDelay;
-
-    /**
      * Default delay between each subsequent animation, after {@link #peekDrawer()} has been called.
      */
     private long mPeekDelay;
@@ -297,11 +305,6 @@ public class MenuDrawer extends ViewGroup {
      * Scroller used when animating the drawer open/closed.
      */
     private Scroller mScroller;
-
-    /**
-     * Interpolator used when animating the drawer open/closed.
-     */
-    private static final Interpolator SMOOTH_INTERPOLATOR = new SmoothInterpolator();
 
     /**
      * Scroller used for the peek drawer animation.
@@ -328,12 +331,10 @@ public class MenuDrawer extends ViewGroup {
      */
     private boolean mOffsetMenu = true;
 
-    private int mCloseEnough;
-
     /**
-     * Indicates whether to use {@link View#setTranslationX(float)} when positioning views.
+     * Distance in px from closed position from where the drawer is considered closed with regards to touch events.
      */
-    static final boolean USE_TRANSLATIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+    private int mCloseEnough;
 
     /**
      * Indicates whether the current layer type is {@link View#LAYER_TYPE_HARDWARE}.
@@ -558,7 +559,9 @@ public class MenuDrawer extends ViewGroup {
             throw new IllegalArgumentException("delay must be zero or lager");
         }
 
-        mPeekStartDelay = startDelay;
+        removeCallbacks(mPeekRunnable);
+        removeCallbacks(mPeekStartRunnable);
+
         mPeekDelay = delay;
         mPeekStartRunnable = new Runnable() {
             @Override
@@ -613,7 +616,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Sets the drawer drag mode. Can be either {@link #MENU_DRAG_CONTENT} or {@link #MENU_DRAG_WINDOW}.
      *
-     * @param dragMode
+     * @param dragMode The drag mode.
      */
     public void setDragMode(int dragMode) {
         mDragMode = dragMode;
