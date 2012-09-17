@@ -37,7 +37,9 @@ public class ListActivitySample extends ListActivity {
         TextView menuView = new TextView(this);
         menuView.setGravity(Gravity.CENTER);
         menuView.setTextColor(0xFFFFFFFF);
-        menuView.setText("MENU");
+        final int padding = dpToPx(16);
+        menuView.setPadding(padding, padding, padding, padding);
+        menuView.setText(R.string.sample_listactivity);
         mMenuDrawer.setMenuView(menuView);
         mMenuDrawer.getMenuDrawer().setOffsetMenuEnabled(false);
 
@@ -48,6 +50,7 @@ public class ListActivitySample extends ListActivity {
 
         setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
 
+        // When running on ICS or higher, the "up" button blinks until it is clicked.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             mHandler = new Handler();
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -73,6 +76,10 @@ public class ListActivitySample extends ListActivity {
                 }
             });
         }
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (getResources().getDisplayMetrics().density * dp + 0.5f);
     }
 
     @Override

@@ -53,6 +53,8 @@ public class ContentSample extends Activity {
         items.add(new Item("Item 5", R.drawable.ic_action_refresh_dark));
         items.add(new Item("Item 6", R.drawable.ic_action_select_all_dark));
 
+        // A custom ListView is needed so the drawer can be notified when it's scrolled. This is to update the position
+        // of the arrow indicator.
         mList = new MenuListView(this);
         mAdapter = new MenuAdapter(items);
         mList.setAdapter(mAdapter);
@@ -190,14 +192,14 @@ public class ContentSample extends Activity {
 
             if (item instanceof Category) {
                 if (v == null) {
-                    v = getLayoutInflater().inflate(R.layout.md__category, parent, false);
+                    v = getLayoutInflater().inflate(R.layout.menu_row_category, parent, false);
                 }
 
                 ((TextView) v).setText(((Category) item).mTitle);
 
             } else {
                 if (v == null) {
-                    v = getLayoutInflater().inflate(R.layout.md__item, parent, false);
+                    v = getLayoutInflater().inflate(R.layout.menu_row_item, parent, false);
                 }
 
                 TextView tv = (TextView) v;

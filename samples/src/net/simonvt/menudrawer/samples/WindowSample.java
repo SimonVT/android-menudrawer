@@ -57,6 +57,9 @@ public class WindowSample extends Activity implements View.OnClickListener {
             mMenuDrawer.setActiveView(activeView);
             mContentTextView.setText("Active item: " + activeView.getText());
         }
+
+        // This will animate the drawer open and closed until the user manually drags it. Usually this would only be
+        // called on first launch.
         mMenuDrawer.getMenuDrawer().peekDrawer();
     }
 
