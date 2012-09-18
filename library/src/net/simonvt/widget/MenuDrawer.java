@@ -94,7 +94,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * The maximum touch area width of the drawer in dp.
      */
-    private static final int MAX_DRAG_BEZEL_DP = 16;
+    private static final int MAX_DRAG_BEZEL_DP = 24;
 
     /**
      * The maximum animation duration.
