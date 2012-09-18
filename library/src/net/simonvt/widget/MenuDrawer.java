@@ -406,28 +406,55 @@ public class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * Toggles the menu open and close.
+     * Toggles the menu open and close with animation.
      */
     public void toggleMenu() {
+        toggleMenu(true);
+    }
+
+    /**
+     * Toggles the menu open and close.
+     *
+     * @param animate Whether open/close should be animated.
+     */
+    public void toggleMenu(boolean animate) {
         if (mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING) {
-            closeMenu();
+            closeMenu(animate);
         } else if (mDrawerState == STATE_CLOSED || mDrawerState == STATE_CLOSING) {
-            openMenu();
+            openMenu(animate);
         }
     }
 
     /**
-     * Opens the menu.
+     * Animates the menu open.
      */
     public void openMenu() {
-        animateContent(true, 0);
+        openMenu(true);
+    }
+
+    /**
+     * Opens the menu.
+     *
+     * @param animate Whether open/close should be animated.
+     */
+    public void openMenu(boolean animate) {
+        moveToPosition(mMenuWidth, 0, animate);
+    }
+
+    /**
+     * Animates the menu closed.
+     */
+    public void closeMenu() {
+        closeMenu(true);
     }
 
     /**
      * Closes the menu.
+     *
+     * @param animate Whether open/close should be animated.
      */
-    public void closeMenu() {
-        animateContent(false, 0);
+    public void closeMenu(boolean animate) {
+        moveToPosition(0, 0, animate);
     }
 
     /**
@@ -824,18 +851,20 @@ public class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * Animates the drawer open or closed.
+     * Moves the drawer to the position passed.
      *
-     * @param open     Indicates whether the drawer should be opened.
+     * @param position The position the content is moved to.
      * @param velocity Optional velocity if called by releasing a drag event.
+     * @param animate  Whether the move is animated.
      */
-    private void animateContent(boolean open, int velocity) {
+    private void moveToPosition(int position, int velocity, boolean animate) {
         endDrag();
 
         final int startX = mContentLeft;
-        int dx = open ? mMenuWidth - startX : startX;
-        if (dx == 0) {
-            setDrawerState(startX == 0 ? STATE_CLOSED : STATE_OPEN);
+        final int dx = position - startX;
+        if (dx == 0 || !animate) {
+            setContentLeft(position);
+            setDrawerState(position == 0 ? STATE_CLOSED : STATE_OPEN);
             stopLayerTranslation();
             return;
         }
@@ -846,17 +875,17 @@ public class MenuDrawer extends ViewGroup {
         if (velocity > 0) {
             duration = 4 * Math.round(1000.f * Math.abs((float) dx / velocity));
         } else {
-            duration = (int) (600.f * ((float) dx / mMenuWidth));
+            duration = (int) (600.f * Math.abs((float) dx / mMenuWidth));
         }
 
         duration = Math.min(duration, DURATION_MAX);
 
-        if (open) {
+        if (dx > 0) {
             setDrawerState(STATE_OPENING);
             mScroller.startScroll(startX, 0, dx, 0, duration);
         } else {
             setDrawerState(STATE_CLOSING);
-            mScroller.startScroll(startX, 0, -startX, 0, duration);
+            mScroller.startScroll(startX, 0, dx, 0, duration);
         }
 
         startLayerTranslation();
@@ -1002,7 +1031,7 @@ public class MenuDrawer extends ViewGroup {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 final int contentLeft = mContentLeft;
-                animateContent(contentLeft > mMenuWidth / 2, 0);
+                moveToPosition(contentLeft > mMenuWidth / 2 ? mMenuWidth : 0, 0, true);
                 break;
             }
         }
@@ -1080,7 +1109,7 @@ public class MenuDrawer extends ViewGroup {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
                     final int initialVelocity = (int) mVelocityTracker.getXVelocity();
                     mLastMotionX = ev.getX();
-                    animateContent(mVelocityTracker.getXVelocity() > 0, initialVelocity);
+                    moveToPosition(mVelocityTracker.getXVelocity() > 0 ? mMenuWidth : 0, initialVelocity, true);
 
                     // Close the menu when content is clicked while the menu is visible.
                 } else if (mMenuVisible && ev.getX() > contentLeft) {
