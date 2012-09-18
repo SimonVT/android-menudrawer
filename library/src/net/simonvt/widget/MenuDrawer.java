@@ -637,6 +637,7 @@ public class MenuDrawer extends ViewGroup {
                 break;
 
             default:
+                Log.d(TAG, "[DrawerState] Unknown: " + state);
         }
     }
 
