@@ -22,7 +22,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.FrameLayout;
 import android.widget.Scroller;
 
 public class MenuDrawer extends ViewGroup {
@@ -194,12 +193,12 @@ public class MenuDrawer extends ViewGroup {
     /**
      * The parent of the menu view.
      */
-    private FrameLayout mMenuContainer;
+    private BuildLayerFrameLayout mMenuContainer;
 
     /**
      * The parent of the content view.
      */
-    private FrameLayout mContentView;
+    private BuildLayerFrameLayout mContentView;
 
     /**
      * The width of the menu.
@@ -340,6 +339,11 @@ public class MenuDrawer extends ViewGroup {
      * Indicates whether the current layer type is {@link View#LAYER_TYPE_HARDWARE}.
      */
     private boolean mLayerTypeHardware;
+
+    /**
+     * Indicates whether to use {@link View#LAYER_TYPE_HARDWARE} when animating the drawer.
+     */
+    private boolean mHardwareLayersEnabled = true;
 
     public MenuDrawer(Context context) {
         this(context, null);
@@ -600,6 +604,20 @@ public class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Enables or disables the user of {@link View#LAYER_TYPE_HARDWARE} when animations views.
+     *
+     * @param enabled Whether hardware layers are enabled.
+     */
+    public void setHardwareLayerEnabled(boolean enabled) {
+        if (enabled != mHardwareLayersEnabled) {
+            mHardwareLayersEnabled = enabled;
+            mMenuContainer.setHardwareLayersEnabled(enabled);
+            mContentView.setHardwareLayersEnabled(enabled);
+            stopLayerTranslation();
+        }
+    }
+
+    /**
      * Sets the drawer state.
      *
      * @param state The drawer state. Must be one of {@link #STATE_CLOSED}, {@link #STATE_CLOSING},
@@ -764,7 +782,7 @@ public class MenuDrawer extends ViewGroup {
      * If possible, set the layer type to {@link View#LAYER_TYPE_HARDWARE}.
      */
     private void startLayerTranslation() {
-        if (USE_TRANSLATIONS && !mLayerTypeHardware) {
+        if (USE_TRANSLATIONS && mHardwareLayersEnabled && !mLayerTypeHardware) {
             mLayerTypeHardware = true;
             mContentView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             mMenuContainer.setLayerType(View.LAYER_TYPE_HARDWARE, null);

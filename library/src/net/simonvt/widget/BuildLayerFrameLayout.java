@@ -14,6 +14,8 @@ public class BuildLayerFrameLayout extends FrameLayout {
 
     private boolean mChanged;
 
+    private boolean mHardwareLayersEnabled = true;
+
     public BuildLayerFrameLayout(Context context) {
         super(context);
     }
@@ -26,11 +28,15 @@ public class BuildLayerFrameLayout extends FrameLayout {
         super(context, attrs, defStyle);
     }
 
+    void setHardwareLayersEnabled(boolean enabled) {
+        mHardwareLayersEnabled = enabled;
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        if (MenuDrawer.USE_TRANSLATIONS) {
+        if (MenuDrawer.USE_TRANSLATIONS && mHardwareLayersEnabled) {
             post(new Runnable() {
                 @Override
                 public void run() {
