@@ -1060,6 +1060,7 @@ public abstract class MenuDrawer extends ViewGroup {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
+                mLastMotionY = ev.getY();
                 final boolean allowDrag = onDownAllowDrag(ev);
 
                 if (allowDrag) {
