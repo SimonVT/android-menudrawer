@@ -31,4 +31,14 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
+    <style name="MenuDrawerStyle" parent="Widget.MenuDrawer">
+        <item name="mdArrowDrawable">@drawable/menu_arrow</item>
+        <item name="mdMenuWidth">250dp</item>
+    </style>
+
+    <style name="MenuDrawerStyle.Right" parent="Widget.MenuDrawer">
+        <item name="mdArrowDrawable">@drawable/menu_arrow_right</item>
+        <item name="mdMenuWidth">150dp</item>
+    </style>
+
 </resources>

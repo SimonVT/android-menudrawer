@@ -63,10 +63,23 @@ public class MenuDrawerManager {
      *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
      */
     public MenuDrawerManager(Activity activity, int dragMode) {
+        this(activity, dragMode, MenuDrawer.MENU_POSITION_LEFT);
+    }
+
+    /**
+     * Constructor to use when creating the menu drawer.
+     *
+     * @param activity The activity the menu drawer will be attached to.
+     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
+     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
+     * @param gravity  Where to position the menu. Can be either {@link MenuDrawer#MENU_POSITION_LEFT} or
+     *                 {@link MenuDrawer#MENU_POSITION_RIGHT}.
+     */
+    public MenuDrawerManager(Activity activity, int dragMode, int gravity) {
         mActivity = activity;
         mDragMode = dragMode;
 
-        mMenuDrawer = new MenuDrawer(activity);
+        mMenuDrawer = gravity == MenuDrawer.MENU_POSITION_RIGHT ? new RightDrawer(activity) : new LeftDrawer(activity);
         mMenuDrawer.setDragMode(dragMode);
         mMenuDrawer.setId(R.id.md__layout);
         mMenuContainer = (ViewGroup) mMenuDrawer.findViewById(R.id.md__menu);

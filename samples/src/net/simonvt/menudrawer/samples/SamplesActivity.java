@@ -27,6 +27,7 @@ public class SamplesActivity extends ListActivity {
         mAdapter.addSample("Window sample", "The entire window is dragged.", WindowSample.class);
         mAdapter.addSample("ActionBar overlay sample", "A window sample, where the ActionBar is an overlay",
                 ActionBarOverlaySample.class);
+        mAdapter.addSample("Right menu", "The menu is positioned to the right of the content", RightMenuSample.class);
 
         setListAdapter(mAdapter);
     }

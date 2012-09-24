@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,9 +21,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Scroller;
 
-public class MenuDrawer extends ViewGroup {
+public abstract class MenuDrawer extends ViewGroup {
 
     /**
      * Callback interface for changing state of the drawer.
@@ -58,12 +56,12 @@ public class MenuDrawer extends ViewGroup {
     /**
      * The time between each frame when animating the drawer.
      */
-    private static final int ANIMATION_DELAY = 1000 / 60;
+    protected static final int ANIMATION_DELAY = 1000 / 60;
 
     /**
      * Interpolator used for stretching/retracting the arrow indicator.
      */
-    private static final Interpolator ARROW_INTERPOLATOR = new AccelerateInterpolator();
+    protected static final Interpolator ARROW_INTERPOLATOR = new AccelerateInterpolator();
 
     /**
      * Interpolator used for peeking at the drawer.
@@ -103,7 +101,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * The maximum alpha of the dark menu overlay used for dimming the menu.
      */
-    private static final int MAX_MENU_OVERLAY_ALPHA = 185;
+    protected static final int MAX_MENU_OVERLAY_ALPHA = 185;
 
     /**
      * Drag mode for sliding only the content view.
@@ -114,6 +112,16 @@ public class MenuDrawer extends ViewGroup {
      * Drag mode for sliding the entire window.
      */
     public static final int MENU_DRAG_WINDOW = 1;
+
+    /**
+     * Position the menu to the left of the content.
+     */
+    public static final int MENU_POSITION_LEFT = 0;
+
+    /**
+     * Position the menu to the right of the content.
+     */
+    public static final int MENU_POSITION_RIGHT = 1;
 
     /**
      * Indicates that the drawer is currently closed.
@@ -153,7 +161,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Drawable used as menu overlay.
      */
-    private Drawable mMenuOverlay;
+    protected Drawable mMenuOverlay;
 
     /**
      * Defines whether the drop shadow is enabled.
@@ -163,47 +171,47 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Drawable used as content drop shadow onto the menu.
      */
-    private Drawable mDropShadowDrawable;
+    protected Drawable mDropShadowDrawable;
 
     /**
      * The width of the content drop shadow.
      */
-    private int mDropShadowWidth;
+    protected int mDropShadowWidth;
 
     /**
      * Arrow bitmap used to indicate the active view.
      */
-    private Bitmap mArrowBitmap;
+    protected Bitmap mArrowBitmap;
 
     /**
      * The currently active view.
      */
-    private View mActiveView;
+    protected View mActiveView;
 
     /**
      * Position of the active view. This is compared to View#getTag(R.id.mdActiveViewPosition) when drawing the arrow.
      */
-    private int mActivePosition;
+    protected int mActivePosition;
 
     /**
      * Used when reading the position of the active view.
      */
-    private Rect mActiveRect = new Rect();
+    protected Rect mActiveRect = new Rect();
 
     /**
      * The parent of the menu view.
      */
-    private BuildLayerFrameLayout mMenuContainer;
+    protected BuildLayerFrameLayout mMenuContainer;
 
     /**
      * The parent of the content view.
      */
-    private BuildLayerFrameLayout mContentView;
+    protected BuildLayerFrameLayout mContentView;
 
     /**
      * The width of the menu.
      */
-    private int mMenuWidth;
+    protected int mMenuWidth;
 
     /**
      * Indicates whether the menu width has been set in the theme.
@@ -213,12 +221,12 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Current left position of the content.
      */
-    private int mContentLeft;
+    protected int mOffsetPixels;
 
     /**
      * Indicates whether the menu is currently visible.
      */
-    private boolean mMenuVisible;
+    protected boolean mMenuVisible;
 
     /**
      * The drag mode of the drawer. Can be either {@link #MENU_DRAG_CONTENT} or {@link #MENU_DRAG_WINDOW}.
@@ -239,37 +247,37 @@ public class MenuDrawer extends ViewGroup {
     /**
      * The maximum touch area width of the drawer in px.
      */
-    private int mMaxDragBezelSize;
+    protected int mMaxDragBezelSize;
 
     /**
      * The touch area width of the drawer in px.
      */
-    private int mDragBezelSize;
+    protected int mDragBezelSize;
 
     /**
      * Indicates whether the drawer is currently being dragged.
      */
-    private boolean mIsDragging;
+    protected boolean mIsDragging;
 
     /**
      * Slop before starting a drag.
      */
-    private final int mTouchSlop;
+    protected final int mTouchSlop;
 
     /**
      * The initial X position of a drag.
      */
-    private float mInitialMotionX;
+    protected float mInitialMotionX;
 
     /**
      * The last X position of a drag.
      */
-    private float mLastMotionX = -1;
+    protected float mLastMotionX = -1;
 
     /**
      * The last Y position of a drag.
      */
-    private float mLastMotionY = -1;
+    protected float mLastMotionY = -1;
 
     /**
      * Runnable used when animating the drawer open/closed.
@@ -283,7 +291,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Runnable used when the peek animation is running.
      */
-    private final Runnable mPeekRunnable = new Runnable() {
+    protected final Runnable mPeekRunnable = new Runnable() {
         @Override
         public void run() {
             peekDrawerInvalidate();
@@ -298,7 +306,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Default delay between each subsequent animation, after {@link #peekDrawer()} has been called.
      */
-    private long mPeekDelay;
+    protected long mPeekDelay;
 
     /**
      * Scroller used when animating the drawer open/closed.
@@ -308,17 +316,17 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Scroller used for the peek drawer animation.
      */
-    private Scroller mPeekScroller;
+    protected Scroller mPeekScroller;
 
     /**
      * Velocity tracker used when animating the drawer open/closed after a drag.
      */
-    private VelocityTracker mVelocityTracker;
+    protected VelocityTracker mVelocityTracker;
 
     /**
      * Maximum velocity allowed when animating the drawer open/closed.
      */
-    private int mMaxVelocity;
+    protected int mMaxVelocity;
 
     /**
      * Listener used to dispatch state change events.
@@ -328,12 +336,12 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Indicates whether the menu should be offset when dragging the drawer.
      */
-    private boolean mOffsetMenu = true;
+    protected boolean mOffsetMenu = true;
 
     /**
      * Distance in px from closed position from where the drawer is considered closed with regards to touch events.
      */
-    private int mCloseEnough;
+    protected int mCloseEnough;
 
     /**
      * Indicates whether the current layer type is {@link View#LAYER_TYPE_HARDWARE}.
@@ -400,9 +408,8 @@ public class MenuDrawer extends ViewGroup {
         mScroller = new Scroller(context, SMOOTH_INTERPOLATOR);
         mPeekScroller = new Scroller(context, PEEK_INTERPOLATOR);
 
-        final float density = getResources().getDisplayMetrics().density;
-        mMaxDragBezelSize = (int) (MAX_DRAG_BEZEL_DP * density + 0.5f);
-        mCloseEnough = (int) (CLOSE_ENOUGH * density);
+        mMaxDragBezelSize = dpToPx(MAX_DRAG_BEZEL_DP);
+        mCloseEnough = dpToPx(CLOSE_ENOUGH);
     }
 
     private int dpToPx(int dp) {
@@ -442,7 +449,7 @@ public class MenuDrawer extends ViewGroup {
      * @param animate Whether open/close should be animated.
      */
     public void openMenu(boolean animate) {
-        moveToPosition(mMenuWidth, 0, animate);
+        animateOffsetTo(mMenuWidth, 0, animate);
     }
 
     /**
@@ -458,7 +465,7 @@ public class MenuDrawer extends ViewGroup {
      * @param animate Whether open/close should be animated.
      */
     public void closeMenu(boolean animate) {
-        moveToPosition(0, 0, animate);
+        animateOffsetTo(0, 0, animate);
     }
 
     /**
@@ -539,14 +546,7 @@ public class MenuDrawer extends ViewGroup {
      *
      * @param color The color of the drop shadow.
      */
-    public void setDropShadowColor(int color) {
-        final int endColor = color & 0x00FFFFFF;
-        mDropShadowDrawable = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT, new int[] {
-                color,
-                endColor,
-        });
-        invalidate();
-    }
+    public abstract void setDropShadowColor(int color);
 
     /**
      * Sets the width of the drop shadow.
@@ -623,7 +623,7 @@ public class MenuDrawer extends ViewGroup {
      * @param state The drawer state. Must be one of {@link #STATE_CLOSED}, {@link #STATE_CLOSING},
      *              {@link #STATE_DRAGGING}, {@link #STATE_OPENING} or {@link #STATE_OPEN}.
      */
-    private void setDrawerState(int state) {
+    protected void setDrawerState(int state) {
         if (state != mDrawerState) {
             final int oldState = mDrawerState;
             mDrawerState = state;
@@ -671,117 +671,62 @@ public class MenuDrawer extends ViewGroup {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        final int height = getHeight();
-        final int contentLeft = mContentLeft;
-        final int dropShadowWidth = mDropShadowWidth;
-        final float openRatio = ((float) contentLeft) / mMenuWidth;
+        final int offsetPixels = mOffsetPixels;
 
-        mMenuOverlay.setBounds(0, 0, contentLeft, height);
-        mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * (1.f - openRatio)));
-        mMenuOverlay.draw(canvas);
-
-        if (mDropShadowEnabled) {
-            mDropShadowDrawable.setBounds(contentLeft - dropShadowWidth, 0, contentLeft, height);
-            mDropShadowDrawable.draw(canvas);
-        }
-
-        if (mArrowBitmap != null) drawArrow(canvas, contentLeft, openRatio);
+        drawMenuOverlay(canvas, offsetPixels);
+        if (mDropShadowEnabled) drawDropShadow(canvas, offsetPixels);
+        if (mArrowBitmap != null) drawArrow(canvas, offsetPixels);
     }
 
     /**
-     * Draws the arrow indicating the currently active view.
+     * Called when the content drop shadow should be drawn.
      *
-     * @param canvas    The canvas on which to draw.
-     * @param openRatio [0..1] value indicating how open the drawer is.
+     * @param canvas       The canvas on which to draw.
+     * @param offsetPixels Value in pixels indicating the offset.
      */
-    private void drawArrow(Canvas canvas, int contentLeft, float openRatio) {
-        if (mActiveView != null && mActiveView.getParent() != null) {
-            Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
-            final int pos = position == null ? 0 : position;
+    protected abstract void drawDropShadow(Canvas canvas, int offsetPixels);
 
-            if (pos == mActivePosition) {
-                mActiveView.getDrawingRect(mActiveRect);
-                offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
+    /**
+     * Called when the menu overlay should be drawn.
+     *
+     * @param canvas       The canvas on which to draw.
+     * @param offsetPixels Value in pixels indicating the offset.
+     */
+    protected abstract void drawMenuOverlay(Canvas canvas, int offsetPixels);
 
-                final float interpolatedRatio = 1.f - ARROW_INTERPOLATOR.getInterpolation((1.f - openRatio));
-                final int interpolatedArrowWidth = (int) (mArrowBitmap.getWidth() * interpolatedRatio);
+    /**
+     * Called when the arrow indicator should be drawn.
+     *
+     * @param canvas       The canvas on which to draw.
+     * @param offsetPixels Value in pixels indicating the offset.
+     */
+    protected abstract void drawArrow(Canvas canvas, int offsetPixels);
 
-                final int top = mActiveRect.top + ((mActiveRect.height() - mArrowBitmap.getHeight()) / 2);
-                final int right = contentLeft;
-                final int left = right - interpolatedArrowWidth;
+    /**
+     * Sets the number of pixels the content should be offset.
+     *
+     * @param offsetPixels The number of pixels to offset the content by.
+     */
+    protected void setOffsetPixels(int offsetPixels) {
+        if (offsetPixels != mOffsetPixels) {
+            onOffsetPixelsChanged(offsetPixels);
 
-                canvas.save();
-                canvas.clipRect(left, 0, right, getHeight());
-                canvas.drawBitmap(mArrowBitmap, left, top, null);
-                canvas.restore();
-            }
-        }
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        final int width = r - l;
-        final int height = b - t;
-        final int contentLeft = mContentLeft;
-
-        mMenuContainer.layout(0, 0, mMenuWidth, height);
-        offsetMenu(contentLeft);
-
-        if (USE_TRANSLATIONS) {
-            mContentView.layout(0, 0, width, height);
-        } else {
-            mContentView.layout(contentLeft, 0, width + contentLeft, height);
+            mOffsetPixels = offsetPixels;
+            mMenuVisible = offsetPixels != 0;
         }
     }
 
     /**
-     * Offsets the menu relative to its original position based on the left position of the content.
+     * Called when the number of pixels the content should be offset by has changed.
      *
-     * @param contentLeft The left position of the content.
+     * @param offsetPixels The number of pixels to offset the content by.
      */
-    private void offsetMenu(float contentLeft) {
-        if (mOffsetMenu && mMenuWidth != 0) {
-            final int menuWidth = mMenuWidth;
-            final float openRatio = (menuWidth - contentLeft) / menuWidth;
-
-            if (USE_TRANSLATIONS) {
-                final int menuLeft = (int) (0.25f * (-openRatio * menuWidth));
-                mMenuContainer.setTranslationX(menuLeft);
-
-            } else {
-                final int oldMenuLeft = mMenuContainer.getLeft();
-                final int offset = (int) (0.25f * (-openRatio * menuWidth)) - oldMenuLeft;
-                mMenuContainer.offsetLeftAndRight(offset);
-            }
-        }
-    }
-
-    /**
-     * Set the left position of the content view.
-     *
-     * @param contentLeft The left position of the content view.
-     */
-    private void setContentLeft(int contentLeft) {
-        if (contentLeft != mContentLeft) {
-            if (USE_TRANSLATIONS) {
-                mContentView.setTranslationX(contentLeft);
-                offsetMenu(contentLeft);
-                invalidate();
-            } else {
-                mContentView.offsetLeftAndRight(contentLeft - mContentView.getLeft());
-                offsetMenu(contentLeft);
-                invalidate();
-            }
-
-            mContentLeft = contentLeft;
-            mMenuVisible = contentLeft != 0;
-        }
-    }
+    protected abstract void onOffsetPixelsChanged(int offsetPixels);
 
     /**
      * If possible, set the layer type to {@link View#LAYER_TYPE_HARDWARE}.
      */
-    private void startLayerTranslation() {
+    protected void startLayerTranslation() {
         if (USE_TRANSLATIONS && mHardwareLayersEnabled && !mLayerTypeHardware) {
             mLayerTypeHardware = true;
             mContentView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -813,7 +758,7 @@ public class MenuDrawer extends ViewGroup {
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
         if (!mMenuWidthFromTheme) mMenuWidth = (int) (width * 0.8f);
-        if (mContentLeft == -1) setContentLeft(mMenuWidth);
+        if (mOffsetPixels == -1) setOffsetPixels(mMenuWidth);
 
         final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuWidth);
         final int menuHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, height);
@@ -852,7 +797,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Stops ongoing animation of the drawer.
      */
-    private void stopAnimation() {
+    protected void stopAnimation() {
         removeCallbacks(mDragRunnable);
         mScroller.abortAnimation();
         stopLayerTranslation();
@@ -864,7 +809,7 @@ public class MenuDrawer extends ViewGroup {
     private void completeAnimation() {
         mScroller.abortAnimation();
         final int finalX = mScroller.getFinalX();
-        setContentLeft(finalX);
+        setOffsetPixels(finalX);
         setDrawerState(finalX == 0 ? STATE_CLOSED : STATE_OPEN);
         stopLayerTranslation();
     }
@@ -876,13 +821,14 @@ public class MenuDrawer extends ViewGroup {
      * @param velocity Optional velocity if called by releasing a drag event.
      * @param animate  Whether the move is animated.
      */
-    private void moveToPosition(int position, int velocity, boolean animate) {
+    protected void animateOffsetTo(int position, int velocity, boolean animate) {
         endDrag();
+        endPeek();
 
-        final int startX = mContentLeft;
+        final int startX = mOffsetPixels;
         final int dx = position - startX;
         if (dx == 0 || !animate) {
-            setContentLeft(position);
+            setOffsetPixels(position);
             setDrawerState(position == 0 ? STATE_CLOSED : STATE_OPEN);
             stopLayerTranslation();
             return;
@@ -917,10 +863,10 @@ public class MenuDrawer extends ViewGroup {
      */
     private void postAnimationInvalidate() {
         if (mScroller.computeScrollOffset()) {
-            final int oldX = mContentLeft;
+            final int oldX = mOffsetPixels;
             final int x = mScroller.getCurrX();
 
-            if (x != oldX) setContentLeft(x);
+            if (x != oldX) setOffsetPixels(x);
             if (x != mScroller.getFinalX()) {
                 postDelayed(mDragRunnable, ANIMATION_DELAY);
                 return;
@@ -933,7 +879,7 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Starts peek drawer animation.
      */
-    private void startPeek() {
+    protected void startPeek() {
         final int menuWidth = mMenuWidth;
         final int dx = menuWidth / 3;
         mPeekScroller.startScroll(0, 0, dx, 0, PEEK_DURATION);
@@ -947,14 +893,15 @@ public class MenuDrawer extends ViewGroup {
      */
     private void peekDrawerInvalidate() {
         if (mPeekScroller.computeScrollOffset()) {
-            final int oldX = mContentLeft;
+            final int oldX = mOffsetPixels;
             final int x = mPeekScroller.getCurrX();
+            if (x != oldX) setOffsetPixels(x);
 
-            if (x != oldX) setContentLeft(x);
             if (!mPeekScroller.isFinished()) {
                 postDelayed(mPeekRunnable, ANIMATION_DELAY);
                 return;
-            } else {
+
+            } else if (mPeekDelay > 0) {
                 mPeekStartRunnable = new Runnable() {
                     @Override
                     public void run() {
@@ -973,7 +920,9 @@ public class MenuDrawer extends ViewGroup {
      */
     private void completePeek() {
         mPeekScroller.abortAnimation();
-        setContentLeft(0);
+
+        setOffsetPixels(0);
+
         setDrawerState(STATE_CLOSED);
         stopLayerTranslation();
     }
@@ -981,25 +930,68 @@ public class MenuDrawer extends ViewGroup {
     /**
      * Stops ongoing peek drawer animation.
      */
-    private void stopPeek() {
+    protected void endPeek() {
         removeCallbacks(mPeekStartRunnable);
         removeCallbacks(mPeekRunnable);
         stopLayerTranslation();
     }
 
+    protected boolean isCloseEnough() {
+        return mOffsetPixels <= mCloseEnough;
+    }
+
+    /**
+     * Returns true if the touch event occurs over the content.
+     *
+     * @param ev The motion event.
+     * @return True if the touch event occured over the content, false otherwise.
+     */
+    protected abstract boolean isContentTouch(MotionEvent ev);
+
+    /**
+     * Returns true if dragging the content should be allowed.
+     *
+     * @param ev The motion event.
+     * @return True if dragging the content should be allowed, false otherwise.
+     */
+    protected abstract boolean onDownAllowDrag(MotionEvent ev);
+
+    /**
+     * Returns true if dragging the content should be allowed.
+     *
+     * @param ev The motion event.
+     * @return True if dragging the content should be allowed, false otherwise.
+     */
+    protected abstract boolean onMoveAllowDrag(MotionEvent ev);
+
+    /**
+     * Called when a move event has happened while dragging the content is in progress.
+     *
+     * @param dx The X difference between the last motion event and the current motion event.
+     */
+    protected abstract void onMoveEvent(float dx);
+
+    /**
+     * Called when {@link MotionEvent#ACTION_UP} of {@link MotionEvent#ACTION_CANCEL} is delivered to
+     * {@link MenuDrawer#onTouchEvent(android.view.MotionEvent)}.
+     *
+     * @param ev The motion event.
+     */
+    protected abstract void onUpEvent(MotionEvent ev);
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
-        if (action == MotionEvent.ACTION_DOWN && mMenuVisible && mContentLeft <= mCloseEnough) {
-            setContentLeft(0);
+        if (action == MotionEvent.ACTION_DOWN && mMenuVisible && isCloseEnough()) {
+            setOffsetPixels(0);
             stopAnimation();
-            stopPeek();
+            endPeek();
             setDrawerState(STATE_CLOSED);
         }
 
         // Always intercept events over the content while menu is visible.
-        if (mMenuVisible && ev.getX() > mContentLeft) return true;
+        if (mMenuVisible && isContentTouch(ev)) return true;
 
         if (action != MotionEvent.ACTION_DOWN) {
             if (mIsDragging) return true;
@@ -1009,14 +1001,12 @@ public class MenuDrawer extends ViewGroup {
             case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
                 mLastMotionY = ev.getY();
-                final int contentLeft = mContentLeft;
-                final boolean allowDrag = (!mMenuVisible && mInitialMotionX < mDragBezelSize) ||
-                        (mMenuVisible && mInitialMotionX > contentLeft);
+                final boolean allowDrag = onDownAllowDrag(ev);
 
                 if (allowDrag) {
                     setDrawerState(mMenuVisible ? STATE_OPEN : STATE_CLOSED);
                     stopAnimation();
-                    stopPeek();
+                    endPeek();
                     mIsDragging = false;
                 }
                 break;
@@ -1028,11 +1018,10 @@ public class MenuDrawer extends ViewGroup {
                 final float xDiff = Math.abs(dx);
                 final float y = ev.getY();
                 final float yDiff = Math.abs(y - mLastMotionY);
-                final int contentLeft = mContentLeft;
 
                 if (xDiff > mTouchSlop && xDiff > yDiff) {
-                    final boolean allowDrag = (!mMenuVisible && mInitialMotionX < mDragBezelSize)
-                            || (mMenuVisible && mInitialMotionX >= contentLeft);
+                    final boolean allowDrag = onMoveAllowDrag(ev);
+
                     if (allowDrag) {
                         setDrawerState(STATE_DRAGGING);
                         mIsDragging = true;
@@ -1049,8 +1038,8 @@ public class MenuDrawer extends ViewGroup {
              * */
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                final int contentLeft = mContentLeft;
-                moveToPosition(contentLeft > mMenuWidth / 2 ? mMenuWidth : 0, 0, true);
+                final int offsetPixels = mOffsetPixels;
+                animateOffsetTo(offsetPixels > mMenuWidth / 2 ? mMenuWidth : 0, 0, true);
                 break;
             }
         }
@@ -1071,23 +1060,17 @@ public class MenuDrawer extends ViewGroup {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
-                final int contentLeft = mContentLeft;
-                final boolean allowDrag = (!mMenuVisible && mInitialMotionX <= mDragBezelSize)
-                        || (mMenuVisible && mInitialMotionX >= contentLeft);
+                final boolean allowDrag = onDownAllowDrag(ev);
 
                 if (allowDrag) {
                     stopAnimation();
-                    stopPeek();
-                    setDrawerState(STATE_DRAGGING);
-                    mIsDragging = true;
+                    endPeek();
                     startLayerTranslation();
                 }
                 break;
             }
 
             case MotionEvent.ACTION_MOVE: {
-                final int contentLeft = mContentLeft;
-
                 if (!mIsDragging) {
                     final float x = ev.getX();
                     final float xDiff = Math.abs(x - mLastMotionX);
@@ -1095,8 +1078,7 @@ public class MenuDrawer extends ViewGroup {
                     final float yDiff = Math.abs(y - mLastMotionY);
 
                     if (xDiff > mTouchSlop && xDiff > yDiff) {
-                        final boolean allowDrag = (!mMenuVisible && mInitialMotionX <= mDragBezelSize)
-                                || (mMenuVisible && mInitialMotionX >= contentLeft);
+                        final boolean allowDrag = onMoveAllowDrag(ev);
 
                         if (allowDrag) {
                             setDrawerState(STATE_DRAGGING);
@@ -1115,25 +1097,14 @@ public class MenuDrawer extends ViewGroup {
                     final float dx = x - mLastMotionX;
 
                     mLastMotionX = x;
-                    setContentLeft(Math.min(Math.max(contentLeft + (int) dx, 0), mMenuWidth));
+                    onMoveEvent(dx);
                 }
                 break;
             }
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                final int contentLeft = mContentLeft;
-
-                if (mIsDragging) {
-                    mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-                    final int initialVelocity = (int) mVelocityTracker.getXVelocity();
-                    mLastMotionX = ev.getX();
-                    moveToPosition(mVelocityTracker.getXVelocity() > 0 ? mMenuWidth : 0, initialVelocity, true);
-
-                    // Close the menu when content is clicked while the menu is visible.
-                } else if (mMenuVisible && ev.getX() > contentLeft) {
-                    closeMenu();
-                }
+                onUpEvent(ev);
                 break;
             }
         }
@@ -1161,7 +1132,7 @@ public class MenuDrawer extends ViewGroup {
     public void restoreState(Parcelable in) {
         Bundle state = (Bundle) in;
         final boolean menuOpen = state.getBoolean(STATE_MENU_VISIBLE);
-        setContentLeft(menuOpen ? mMenuWidth : 0);
+        setOffsetPixels(menuOpen ? mMenuWidth : 0);
         mDrawerState = menuOpen ? STATE_OPEN : STATE_CLOSED;
     }
 }
