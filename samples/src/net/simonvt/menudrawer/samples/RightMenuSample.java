@@ -19,9 +19,9 @@ import java.util.List;
 
 public class RightMenuSample extends Activity {
 
-    private static final String STATE_MENUDRAWER = "net.simonvt.menudrawer.samples.ContentSample.menuDrawer";
-    private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
-    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.ContentSample.contentText";
+    private static final String STATE_MENUDRAWER = "net.simonvt.menudrawer.samples.RightMenuSample.menuDrawer";
+    private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.RightMenuSample.activePosition";
+    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.RightMenuSample.contentText";
 
     private static final int MENU_OVERFLOW = 1;
 
