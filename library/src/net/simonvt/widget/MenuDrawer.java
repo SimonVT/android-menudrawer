@@ -868,7 +868,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
             if (x != oldX) setOffsetPixels(x);
             if (x != mScroller.getFinalX()) {
-                postDelayed(mDragRunnable, ANIMATION_DELAY);
+                postOnAnimation(mDragRunnable);
                 return;
             }
         }
@@ -898,7 +898,7 @@ public abstract class MenuDrawer extends ViewGroup {
             if (x != oldX) setOffsetPixels(x);
 
             if (!mPeekScroller.isFinished()) {
-                postDelayed(mPeekRunnable, ANIMATION_DELAY);
+                postOnAnimation(mPeekRunnable);
                 return;
 
             } else if (mPeekDelay > 0) {
@@ -934,6 +934,15 @@ public abstract class MenuDrawer extends ViewGroup {
         removeCallbacks(mPeekStartRunnable);
         removeCallbacks(mPeekRunnable);
         stopLayerTranslation();
+    }
+
+    @Override
+    public void postOnAnimation(Runnable action) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            super.postOnAnimation(action);
+        } else {
+            postDelayed(action, ANIMATION_DELAY);
+        }
     }
 
     protected boolean isCloseEnough() {
