@@ -28,6 +28,8 @@ public class SamplesActivity extends ListActivity {
         mAdapter.addSample("ActionBar overlay sample", "A window sample, where the ActionBar is an overlay",
                 ActionBarOverlaySample.class);
         mAdapter.addSample("Right menu", "The menu is positioned to the right of the content", RightMenuSample.class);
+        mAdapter.addSample("Touch Mode", "The menu touch behavior change according to different"
+                + " content view state (Ex: View Pager)", ViewPagerSample.class);
 
         setListAdapter(mAdapter);
     }

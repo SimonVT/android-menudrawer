@@ -124,6 +124,21 @@ public abstract class MenuDrawer extends ViewGroup {
     public static final int MENU_POSITION_RIGHT = 1;
 
     /**
+     * Disallow opening the drawer by dragging the screen.
+     */
+    public static final int TOUCH_MODE_NONE = 0;
+
+    /**
+     * Allow opening drawer only by dragging on the edge of the screen.
+     */
+    public static final int TOUCH_MODE_BEZEL = 1;
+
+    /**
+     * Allow opening drawer by dragging anywhere on the screen.
+     */
+    public static final int TOUCH_MODE_FULLSCREEN = 2;
+
+    /**
      * Indicates that the drawer is currently closed.
      */
     public static final int STATE_CLOSED = 0;
@@ -248,12 +263,12 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * The maximum touch area width of the drawer in px.
      */
-    protected int mMaxDragBezelSize;
+    protected int mMaxTouchBezelWidth;
 
     /**
      * The touch area width of the drawer in px.
      */
-    protected int mDragBezelSize;
+    protected int mTouchWidth;
 
     /**
      * Indicates whether the drawer is currently being dragged.
@@ -340,6 +355,13 @@ public abstract class MenuDrawer extends ViewGroup {
     protected boolean mOffsetMenu = true;
 
     /**
+     * Touch mode for the Drawer.
+     * Possible values are {@link #TOUCH_MODE_NONE}, {@link #TOUCH_MODE_BEZEL} or {@link #TOUCH_MODE_FULLSCREEN}
+     * Default: {@link #TOUCH_MODE_BEZEL}
+     */
+    protected int mTouchMode = TOUCH_MODE_BEZEL;
+
+    /**
      * Distance in px from closed position from where the drawer is considered closed with regards to touch events.
      */
     protected int mCloseEnough;
@@ -414,7 +436,7 @@ public abstract class MenuDrawer extends ViewGroup {
         mScroller = new Scroller(context, SMOOTH_INTERPOLATOR);
         mPeekScroller = new Scroller(context, PEEK_INTERPOLATOR);
 
-        mMaxDragBezelSize = dpToPx(MAX_DRAG_BEZEL_DP);
+        mMaxTouchBezelWidth = dpToPx(MAX_DRAG_BEZEL_DP);
         mCloseEnough = dpToPx(CLOSE_ENOUGH);
     }
 
@@ -715,6 +737,26 @@ public abstract class MenuDrawer extends ViewGroup {
         mDragMode = dragMode;
     }
 
+    /**
+     * Returns the touch mode.
+     */
+    public int getTouchMode() {
+        return mTouchMode;
+    }
+
+    /**
+     * Sets the drawer touch mode. Possible values are {@link #TOUCH_MODE_NONE}, {@link #TOUCH_MODE_BEZEL} or
+     * {@link #TOUCH_MODE_FULLSCREEN}.
+     *
+     * @param dragMode The drag mode.
+     */
+    public void setTouchMode(int mode) {
+        if (mTouchMode != mode) {
+            mTouchMode = mode;
+            updateTouchAreaWidth();
+        }
+    }
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
@@ -817,8 +859,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
         setMeasuredDimension(width, height);
 
-        final int measuredWidth = getMeasuredWidth();
-        mDragBezelSize = Math.min(measuredWidth / 10, mMaxDragBezelSize);
+        updateTouchAreaWidth();
     }
 
     @Override
@@ -827,6 +868,21 @@ public abstract class MenuDrawer extends ViewGroup {
             mMenuContainer.setPadding(0, insets.top, 0, 0);
         }
         return super.fitSystemWindows(insets);
+    }
+
+    /**
+     * Compute the touch area based on the touched mode.
+     *
+     * @param dragMode The drag mode.
+     */
+    private void updateTouchAreaWidth() {
+        if (mTouchMode == TOUCH_MODE_BEZEL) {
+            mTouchWidth = Math.min(getMeasuredWidth() / 10, mMaxTouchBezelWidth);
+        } else if (mTouchMode == TOUCH_MODE_FULLSCREEN) {
+            mTouchWidth = getMeasuredWidth();
+        } else {
+            mTouchWidth = 0;
+        }
     }
 
     /**
@@ -1018,7 +1074,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * @param ev The motion event.
      * @return True if dragging the content should be allowed, false otherwise.
      */
-    protected abstract boolean onMoveAllowDrag(MotionEvent ev);
+    protected abstract boolean onMoveAllowDrag(MotionEvent ev, float dx);
 
     /**
      * Called when a move event has happened while dragging the content is in progress.
@@ -1049,6 +1105,10 @@ public abstract class MenuDrawer extends ViewGroup {
         // Always intercept events over the content while menu is visible.
         if (mMenuVisible && isContentTouch(ev)) return true;
 
+        if (mTouchMode == TOUCH_MODE_NONE) {
+            return false;
+        }
+
         if (action != MotionEvent.ACTION_DOWN) {
             if (mIsDragging) return true;
         }
@@ -1076,7 +1136,7 @@ public abstract class MenuDrawer extends ViewGroup {
                 final float yDiff = Math.abs(y - mLastMotionY);
 
                 if (xDiff > mTouchSlop && xDiff > yDiff) {
-                    final boolean allowDrag = onMoveAllowDrag(ev);
+                    final boolean allowDrag = onMoveAllowDrag(ev, dx);
 
                     if (allowDrag) {
                         setDrawerState(STATE_DRAGGING);
@@ -1108,6 +1168,9 @@ public abstract class MenuDrawer extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        if (!mMenuVisible && (mTouchMode == TOUCH_MODE_NONE)) {
+            return false;
+        }
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
         if (mVelocityTracker == null) mVelocityTracker = VelocityTracker.obtain();
@@ -1130,12 +1193,13 @@ public abstract class MenuDrawer extends ViewGroup {
             case MotionEvent.ACTION_MOVE: {
                 if (!mIsDragging) {
                     final float x = ev.getX();
-                    final float xDiff = Math.abs(x - mLastMotionX);
+                    final float dx = x - mLastMotionX;
+                    final float xDiff = Math.abs(dx);
                     final float y = ev.getY();
                     final float yDiff = Math.abs(y - mLastMotionY);
 
                     if (xDiff > mTouchSlop && xDiff > yDiff) {
-                        final boolean allowDrag = onMoveAllowDrag(ev);
+                        final boolean allowDrag = onMoveAllowDrag(ev, dx);
 
                         if (allowDrag) {
                             setDrawerState(STATE_DRAGGING);
