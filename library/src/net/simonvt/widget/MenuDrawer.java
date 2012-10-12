@@ -382,8 +382,13 @@ public abstract class MenuDrawer extends ViewGroup {
         }
 
         mDropShadowEnabled = a.getBoolean(R.styleable.MenuDrawer_mdDropShadowEnabled, true);
-        final int dropShadowColor = a.getColor(R.styleable.MenuDrawer_mdDropShadowColor, 0xFF000000);
-        setDropShadowColor(dropShadowColor);
+        
+        mDropShadowDrawable = a.getDrawable(R.styleable.MenuDrawer_mdDropShadow);
+
+        if (mDropShadowDrawable == null) {
+            final int dropShadowColor = a.getColor(R.styleable.MenuDrawer_mdDropShadowColor, 0xFF000000);
+            setDropShadowColor(dropShadowColor);
+        }
 
         mDropShadowWidth = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowWidth, dpToPx(6));
 
@@ -547,6 +552,32 @@ public abstract class MenuDrawer extends ViewGroup {
      * @param color The color of the drop shadow.
      */
     public abstract void setDropShadowColor(int color);
+
+    /**
+     * Sets the drawable of the drop shadow.
+     *
+     * @param drawable The drawable of the drop shadow.
+     */
+    public void setDropShadow(Drawable drawable) {
+        mDropShadowDrawable = drawable;
+        invalidate();
+    }
+
+    /**
+     * Sets the drawable of the drop shadow.
+     *
+     * @param resId The resource identifier of the the drawable.
+     */
+    public void setDropShadow(int resId) {
+        setDropShadow(getResources().getDrawable(resId));
+    }
+
+    /**
+     * Returns the drawable of the drop shadow.
+     */
+    public Drawable getDropShadow() {
+        return mDropShadowDrawable;
+    }
 
     /**
      * Sets the width of the drop shadow.
