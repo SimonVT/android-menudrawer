@@ -16,6 +16,8 @@ public class BuildLayerFrameLayout extends FrameLayout {
 
     private boolean mHardwareLayersEnabled = true;
 
+    private boolean mAttached;
+
     public BuildLayerFrameLayout(Context context) {
         super(context);
     }
@@ -30,6 +32,18 @@ public class BuildLayerFrameLayout extends FrameLayout {
 
     void setHardwareLayersEnabled(boolean enabled) {
         mHardwareLayersEnabled = enabled;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mAttached = true;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mAttached = false;
     }
 
     @Override
@@ -55,12 +69,14 @@ public class BuildLayerFrameLayout extends FrameLayout {
             post(new Runnable() {
                 @Override
                 public void run() {
-                    final int layerType = getLayerType();
-                    // If it's already a hardware layer, it'll be built anyway.
-                    if (layerType != LAYER_TYPE_HARDWARE) {
-                        setLayerType(LAYER_TYPE_HARDWARE, null);
-                        buildLayer();
-                        setLayerType(LAYER_TYPE_NONE, null);
+                    if (mAttached) {
+                        final int layerType = getLayerType();
+                        // If it's already a hardware layer, it'll be built anyway.
+                        if (layerType != LAYER_TYPE_HARDWARE) {
+                            setLayerType(LAYER_TYPE_HARDWARE, null);
+                            buildLayer();
+                            setLayerType(LAYER_TYPE_NONE, null);
+                        }
                     }
                 }
             });
