@@ -584,10 +584,10 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public void peekDrawer(final long startDelay, final long delay) {
         if (startDelay < 0) {
-            throw new IllegalArgumentException("startDelay must be zero or lager.");
+            throw new IllegalArgumentException("startDelay must be zero or larger.");
         }
         if (delay < 0) {
-            throw new IllegalArgumentException("delay must be zero or lager");
+            throw new IllegalArgumentException("delay must be zero or larger");
         }
 
         removeCallbacks(mPeekRunnable);
