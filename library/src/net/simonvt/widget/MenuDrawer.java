@@ -214,9 +214,10 @@ public abstract class MenuDrawer extends ViewGroup {
     protected int mMenuWidth;
 
     /**
-     * Indicates whether the menu width has been set in the theme.
+     * Indicates whether the menu width has been set explicity either via the
+     * theme or by calling {@link #setWidth(int)}
      */
-    private boolean mMenuWidthFromTheme;
+    private boolean mMenuWidthSet;
 
     /**
      * Current left position of the content.
@@ -374,7 +375,7 @@ public abstract class MenuDrawer extends ViewGroup {
         final Drawable menuBackground = a.getDrawable(R.styleable.MenuDrawer_mdMenuBackground);
 
         mMenuWidth = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuWidth, -1);
-        mMenuWidthFromTheme = mMenuWidth != -1;
+        mMenuWidthSet = mMenuWidth != -1;
 
         final int arrowResId = a.getResourceId(R.styleable.MenuDrawer_mdArrowDrawable, 0);
         if (arrowResId != 0) {
@@ -475,6 +476,21 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public boolean isMenuVisible() {
         return mMenuVisible;
+    }
+
+    /**
+     * Set the width of the menu drawer when open.
+     *
+     * @param width
+     */
+    public void setMenuWidth(final int width) {
+        mMenuWidth = width;
+        mMenuWidthSet = true;
+        if (mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING) {
+            setOffsetPixels(mMenuWidth);
+        }
+        requestLayout();
+        invalidate();
     }
 
     /**
@@ -757,7 +773,7 @@ public abstract class MenuDrawer extends ViewGroup {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (!mMenuWidthFromTheme) mMenuWidth = (int) (width * 0.8f);
+        if (!mMenuWidthSet) mMenuWidth = (int) (width * 0.8f);
         if (mOffsetPixels == -1) setOffsetPixels(mMenuWidth);
 
         final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuWidth);
