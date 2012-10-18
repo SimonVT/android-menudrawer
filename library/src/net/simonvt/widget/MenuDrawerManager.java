@@ -46,7 +46,7 @@ public class MenuDrawerManager {
     private int mDragMode = MenuDrawer.MENU_DRAG_CONTENT;
 
     /**
-     * Indicates whether the menu view has been attached to the Activitys layout.
+     * Indicates whether the menu view has been attached to the Activity's layout.
      */
     private boolean mMenuAttached;
 
@@ -89,7 +89,7 @@ public class MenuDrawerManager {
     }
 
     /**
-     * Attaches the menu drawer to the activitys layout.
+     * Attaches the menu drawer to the activity's layout.
      */
     private void attachMenuLayout() {
         if (!mMenuAttached) {
