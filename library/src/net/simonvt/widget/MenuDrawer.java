@@ -214,8 +214,8 @@ public abstract class MenuDrawer extends ViewGroup {
     protected int mMenuWidth;
 
     /**
-     * Indicates whether the menu width has been set explicity either via the
-     * theme or by calling {@link #setWidth(int)}
+     * Indicates whether the menu width has been set explicity either via the theme or by calling
+     * {@link #setMenuWidth(int)}.
      */
     private boolean mMenuWidthSet;
 
