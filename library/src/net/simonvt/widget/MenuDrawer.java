@@ -196,7 +196,7 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * Used when reading the position of the active view.
      */
-    protected Rect mActiveRect = new Rect();
+    protected final Rect mActiveRect = new Rect();
 
     /**
      * The parent of the menu view.
@@ -382,7 +382,7 @@ public abstract class MenuDrawer extends ViewGroup {
         }
 
         mDropShadowEnabled = a.getBoolean(R.styleable.MenuDrawer_mdDropShadowEnabled, true);
-        
+
         mDropShadowDrawable = a.getDrawable(R.styleable.MenuDrawer_mdDropShadow);
 
         if (mDropShadowDrawable == null) {

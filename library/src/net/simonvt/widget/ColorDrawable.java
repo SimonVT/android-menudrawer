@@ -139,7 +139,7 @@ public class ColorDrawable extends Drawable {
         return mState;
     }
 
-    final static class ColorState extends ConstantState {
+    static final class ColorState extends ConstantState {
 
         int mBaseColor; // base color, independent of setAlpha()
         int mUseColor;  // basecolor modulated by setAlpha()
