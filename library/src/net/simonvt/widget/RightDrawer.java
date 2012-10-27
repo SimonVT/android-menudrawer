@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 
 public class RightDrawer extends MenuDrawer {
 
-    private static final String TAG = "RightDrawer";
-
     public RightDrawer(Context context) {
         super(context);
     }
