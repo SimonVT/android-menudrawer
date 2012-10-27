@@ -1,8 +1,10 @@
 /*
 
 !.gitignore
+!.travis.yml
 !README.md
 !LICENSE
+!checkstyle.xml
 !pom.xml
 
 !art/
