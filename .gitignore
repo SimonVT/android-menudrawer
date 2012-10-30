@@ -22,6 +22,7 @@ library/*
 samples/*
 !samples/src/
 !samples/res/
+!samples/libs/
 !samples/AndroidManifest.xml
 !samples/build.xml
 !samples/pom.xml
