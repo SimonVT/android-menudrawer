@@ -9,3 +9,7 @@ before_install:
   - export ANDROID_HOME=~/builds/SimonVT/android-menudrawer/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   - android update sdk --filter 1,3 --no-ui --force
+
+install:
+  - "mvn package --quiet -DskipTests"
+  - "mvn verify"
