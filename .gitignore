@@ -2,6 +2,7 @@
 
 !.gitignore
 !.travis.yml
+!CHANGELOG.md
 !README.md
 !LICENSE
 !checkstyle.xml
