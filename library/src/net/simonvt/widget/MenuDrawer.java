@@ -749,7 +749,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * Sets the drawer touch mode. Possible values are {@link #TOUCH_MODE_NONE}, {@link #TOUCH_MODE_BEZEL} or
      * {@link #TOUCH_MODE_FULLSCREEN}.
      *
-     * @param dragMode The drag mode.
+     * @param mode The touch mode.
      */
     public void setTouchMode(int mode) {
         if (mTouchMode != mode) {
@@ -872,9 +872,7 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * Compute the touch area based on the touched mode.
-     *
-     * @param dragMode The drag mode.
+     * Compute the touch area based on the touch mode.
      */
     private void updateTouchAreaWidth() {
         if (mTouchMode == TOUCH_MODE_BEZEL) {
