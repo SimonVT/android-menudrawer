@@ -1,6 +1,7 @@
 package net.simonvt.widget;
 
 import net.simonvt.menudrawer.R;
+import net.simonvt.menudrawer.compat.Scroller;
 
 import android.content.Context;
 import android.content.res.TypedArray;
