@@ -688,6 +688,28 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Returns the ViewGroup used as a parent for the menu view.
+     *
+     * @return The menu view's parent.
+     */
+    public ViewGroup getMenuContainer() {
+        return mMenuContainer;
+    }
+
+    /**
+     * Returns the ViewGroup used as a parent for the content view.
+     *
+     * @return The content view's parent.
+     */
+    public ViewGroup getContentContainer() {
+        if (mDragMode == MENU_DRAG_CONTENT) {
+            return mContentView;
+        } else {
+            return (ViewGroup) findViewById(android.R.id.content);
+        }
+    }
+
+    /**
      * Sets the drawer state.
      *
      * @param state The drawer state. Must be one of {@link #STATE_CLOSED}, {@link #STATE_CLOSING},
