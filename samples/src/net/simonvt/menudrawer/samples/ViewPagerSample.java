@@ -1,7 +1,6 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.widget.MenuDrawer;
-import net.simonvt.widget.MenuDrawerManager;
 
 import android.content.Context;
 import android.os.Build;
@@ -28,7 +27,7 @@ public class ViewPagerSample extends FragmentActivity {
     private static final String STATE_MENUDRAWER = "net.simonvt.menudrawer.samples.ContentSample.menuDrawer";
     private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
 
-    private MenuDrawerManager mMenuDrawer;
+    private MenuDrawer mMenuDrawer;
 
     private MenuAdapter mAdapter;
     private MenuListView mList;
@@ -45,7 +44,7 @@ public class ViewPagerSample extends FragmentActivity {
             mActivePosition = inState.getInt(STATE_ACTIVE_POSITION);
         }
 
-        mMenuDrawer = new MenuDrawerManager(this, MenuDrawer.MENU_DRAG_CONTENT);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT);
         mMenuDrawer.setContentView(R.layout.activity_viewpagersample);
 
         List<Object> items = new ArrayList<Object>();
@@ -68,7 +67,7 @@ public class ViewPagerSample extends FragmentActivity {
         mList.setOnScrollChangedListener(new MenuListView.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
-                mMenuDrawer.getMenuDrawer().invalidate();
+                mMenuDrawer.invalidate();
             }
         });
 
@@ -78,19 +77,16 @@ public class ViewPagerSample extends FragmentActivity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mMenuDrawer.getMenuDrawer().setTouchMode(
-                MenuDrawer.TOUCH_MODE_FULLSCREEN);
+        mMenuDrawer.setTouchMode(MenuDrawer.TOUCH_MODE_FULLSCREEN);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager
                 .setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(final int position) {
-                        mMenuDrawer
-                                .getMenuDrawer()
-                                .setTouchMode(
-                                        (position == 0) ? MenuDrawer.TOUCH_MODE_FULLSCREEN
-                                                : MenuDrawer.TOUCH_MODE_NONE);
+                        mMenuDrawer.setTouchMode(position == 0
+                                ? MenuDrawer.TOUCH_MODE_FULLSCREEN
+                                : MenuDrawer.TOUCH_MODE_NONE);
                     }
                 });
 
@@ -115,24 +111,22 @@ public class ViewPagerSample extends FragmentActivity {
     @Override
     protected void onRestoreInstanceState(Bundle inState) {
         super.onRestoreInstanceState(inState);
-        mMenuDrawer.onRestoreDrawerState(inState
-                .getParcelable(STATE_MENUDRAWER));
+        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER,
-                mMenuDrawer.onSaveDrawerState());
+        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
         outState.putInt(STATE_ACTIVE_POSITION, mActivePosition);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            mMenuDrawer.toggleMenu();
-            return true;
+            case android.R.id.home:
+                mMenuDrawer.toggleMenu();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -260,10 +254,12 @@ public class ViewPagerSample extends FragmentActivity {
      * changes.
      */
     public static class PagerAdapter extends FragmentPagerAdapter {
+
         private final Context mContext;
         private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
         static final class TabInfo {
+
             private final Class<?> mClss;
             private final Bundle mArgs;
 
@@ -299,6 +295,7 @@ public class ViewPagerSample extends FragmentActivity {
     }
 
     public static class TextViewFragment extends Fragment {
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {

@@ -1,7 +1,6 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.widget.MenuDrawer;
-import net.simonvt.widget.MenuDrawerManager;
 
 import android.app.ListActivity;
 import android.os.Build;
@@ -22,7 +21,7 @@ public class ListActivitySample extends ListActivity {
 
     private static final String STATE_MENUDRAWER = "net.simonvt.menudrawer.samples.ListActivitySample.menuDrawer";
 
-    private MenuDrawerManager mMenuDrawer;
+    private MenuDrawer mMenuDrawer;
 
     private Handler mHandler;
     private Runnable mToggleUpRunnable;
@@ -32,7 +31,7 @@ public class ListActivitySample extends ListActivity {
     public void onCreate(Bundle inState) {
         super.onCreate(inState);
 
-        mMenuDrawer = new MenuDrawerManager(this, MenuDrawer.MENU_DRAG_CONTENT);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT);
 
         TextView menuView = new TextView(this);
         menuView.setGravity(Gravity.CENTER);
@@ -41,7 +40,7 @@ public class ListActivitySample extends ListActivity {
         menuView.setPadding(padding, padding, padding, padding);
         menuView.setText(R.string.sample_listactivity);
         mMenuDrawer.setMenuView(menuView);
-        mMenuDrawer.getMenuDrawer().setOffsetMenuEnabled(false);
+        mMenuDrawer.setOffsetMenuEnabled(false);
 
         List<String> items = new ArrayList<String>();
         for (int i = 1; i <= 20; i++) {
@@ -65,13 +64,13 @@ public class ListActivitySample extends ListActivity {
 
             mHandler.postDelayed(mToggleUpRunnable, 500);
 
-            mMenuDrawer.getMenuDrawer().setOnDrawerStateChangeListener(new MenuDrawer.OnDrawerStateChangeListener() {
+            mMenuDrawer.setOnDrawerStateChangeListener(new MenuDrawer.OnDrawerStateChangeListener() {
                 @Override
                 public void onDrawerStateChange(int oldState, int newState) {
                     if (newState == MenuDrawer.STATE_OPEN) {
                         mHandler.removeCallbacks(mToggleUpRunnable);
                         if (!mDisplayUp) getActionBar().setDisplayHomeAsUpEnabled(true);
-                        mMenuDrawer.getMenuDrawer().setOnDrawerStateChangeListener(null);
+                        mMenuDrawer.setOnDrawerStateChangeListener(null);
                     }
                 }
             });
@@ -98,13 +97,13 @@ public class ListActivitySample extends ListActivity {
     @Override
     protected void onRestoreInstanceState(Bundle inState) {
         super.onRestoreInstanceState(inState);
-        mMenuDrawer.onRestoreDrawerState(inState.getParcelable(STATE_MENUDRAWER));
+        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.onSaveDrawerState());
+        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
     }
 
     @Override

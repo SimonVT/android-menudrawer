@@ -1,7 +1,6 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.widget.MenuDrawer;
-import net.simonvt.widget.MenuDrawerManager;
 
 import android.app.Activity;
 import android.os.Build;
@@ -22,7 +21,7 @@ public class ContentSample extends Activity {
     private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
     private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.ContentSample.contentText";
 
-    private MenuDrawerManager mMenuDrawer;
+    private MenuDrawer mMenuDrawer;
 
     private MenuAdapter mAdapter;
     private MenuListView mList;
@@ -40,7 +39,7 @@ public class ContentSample extends Activity {
             mContentText = inState.getString(STATE_CONTENT_TEXT);
         }
 
-        mMenuDrawer = new MenuDrawerManager(this, MenuDrawer.MENU_DRAG_CONTENT);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT);
         mMenuDrawer.setContentView(R.layout.activity_contentsample);
 
         List<Object> items = new ArrayList<Object>();
@@ -62,7 +61,7 @@ public class ContentSample extends Activity {
         mList.setOnScrollChangedListener(new MenuListView.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
-                mMenuDrawer.getMenuDrawer().invalidate();
+                mMenuDrawer.invalidate();
             }
         });
 
@@ -89,13 +88,13 @@ public class ContentSample extends Activity {
     @Override
     protected void onRestoreInstanceState(Bundle inState) {
         super.onRestoreInstanceState(inState);
-        mMenuDrawer.onRestoreDrawerState(inState.getParcelable(STATE_MENUDRAWER));
+        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.onSaveDrawerState());
+        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
         outState.putInt(STATE_ACTIVE_POSITION, mActivePosition);
         outState.putString(STATE_CONTENT_TEXT, mContentText);
     }

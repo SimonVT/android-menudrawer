@@ -3,7 +3,7 @@ package net.simonvt.widget;
 import net.simonvt.menudrawer.R;
 import net.simonvt.menudrawer.compat.Scroller;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,8 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -215,6 +215,11 @@ public abstract class MenuDrawer extends ViewGroup {
     protected final Rect mActiveRect = new Rect();
 
     /**
+     * The custom menu view set by the user.
+     */
+    private View mMenuView;
+
+    /**
      * The parent of the menu view.
      */
     protected BuildLayerFrameLayout mMenuContainer;
@@ -222,7 +227,7 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * The parent of the content view.
      */
-    protected BuildLayerFrameLayout mContentView;
+    protected BuildLayerFrameLayout mContentContainer;
 
     /**
      * The width of the menu.
@@ -377,22 +382,102 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     private boolean mHardwareLayersEnabled = true;
 
-    public MenuDrawer(Context context) {
-        this(context, null);
+    /**
+     * The Activity the drawer is attached to.
+     */
+    private final Activity mActivity;
+
+    /**
+     * Attaches the MenuDrawer to the Activity.
+     *
+     * @param activity The activity that the MenuDrawer will be attached to.
+     * @return The created MenuDrawer instance.
+     */
+    public static MenuDrawer attach(Activity activity) {
+        return attach(activity, MENU_DRAG_CONTENT);
     }
 
-    public MenuDrawer(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.menuDrawerStyle);
+    /**
+     * Attaches the MenuDrawer to the Activity.
+     *
+     * @param activity The activity the menu drawer will be attached to.
+     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
+     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
+     * @return The created MenuDrawer instance.
+     */
+    public static MenuDrawer attach(Activity activity, int dragMode) {
+        return attach(activity, dragMode, MENU_POSITION_LEFT);
     }
 
-    public MenuDrawer(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    /**
+     * Attaches the MenuDrawer to the Activity.
+     *
+     * @param activity The activity the menu drawer will be attached to.
+     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
+     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
+     * @param gravity  Where to position the menu. Can be either {@link MenuDrawer#MENU_POSITION_LEFT} or
+     *                 {@link MenuDrawer#MENU_POSITION_RIGHT}.
+     * @return The created MenuDrawer instance.
+     */
+    public static MenuDrawer attach(Activity activity, int dragMode, int gravity) {
+        MenuDrawer menuDrawer = gravity == MenuDrawer.MENU_POSITION_RIGHT
+                ? new RightDrawer(activity, dragMode)
+                : new LeftDrawer(activity, dragMode);
+        menuDrawer.setId(R.id.md__layout);
+
+        switch (dragMode) {
+            case MenuDrawer.MENU_DRAG_CONTENT:
+                attachToContent(activity, menuDrawer);
+                break;
+
+            case MenuDrawer.MENU_DRAG_WINDOW:
+                attachToDecor(activity, menuDrawer);
+                break;
+
+            default:
+                throw new RuntimeException("Unknown menu mode: " + dragMode);
+        }
+
+        return menuDrawer;
+    }
+
+    /**
+     * Attaches the menu drawer to the content view.
+     */
+    private static void attachToContent(Activity activity, MenuDrawer menuDrawer) {
+        /**
+         * Do not call mActivity#setContentView.
+         * E.g. if using with a ListActivity, Activity#setContentView is overridden and dispatched to
+         * MenuDrawerManager#setContentView, which then again calls Activity#setContentView.
+         */
+        ViewGroup content = (ViewGroup) activity.findViewById(android.R.id.content);
+        content.removeAllViews();
+        content.addView(menuDrawer, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    }
+
+    /**
+     * Attaches the menu drawer to the window.
+     */
+    private static void attachToDecor(Activity activity, MenuDrawer menuDrawer) {
+        ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+        ViewGroup decorChild = (ViewGroup) decorView.getChildAt(0);
+
+        decorView.removeAllViews();
+        decorView.addView(menuDrawer, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+        menuDrawer.mContentContainer.addView(decorChild, decorChild.getLayoutParams());
+    }
+
+    MenuDrawer(Activity activity, int dragMode) {
+        super(activity, null, R.style.Widget_MenuDrawer);
+        mActivity = activity;
+        mDragMode = dragMode;
 
         setWillNotDraw(false);
         setFocusable(false);
 
-        TypedArray a =
-                context.obtainStyledAttributes(attrs, R.styleable.MenuDrawer, defStyle, R.style.Widget_MenuDrawer);
+        TypedArray a = activity.obtainStyledAttributes(null, R.styleable.MenuDrawer, R.attr.menuDrawerStyle,
+                R.style.Widget_MenuDrawer);
 
         final Drawable contentBackground = a.getDrawable(R.styleable.MenuDrawer_mdContentBackground);
         final Drawable menuBackground = a.getDrawable(R.styleable.MenuDrawer_mdMenuBackground);
@@ -418,24 +503,24 @@ public abstract class MenuDrawer extends ViewGroup {
 
         a.recycle();
 
-        mMenuContainer = new BuildLayerFrameLayout(context);
+        mMenuContainer = new BuildLayerFrameLayout(activity);
         mMenuContainer.setId(R.id.md__menu);
         mMenuContainer.setBackgroundDrawable(menuBackground);
         addView(mMenuContainer);
 
-        mContentView = new NoClickThroughFrameLayout(context);
-        mContentView.setId(R.id.md__content);
-        mContentView.setBackgroundDrawable(contentBackground);
-        addView(mContentView);
+        mContentContainer = new NoClickThroughFrameLayout(activity);
+        mContentContainer.setId(R.id.md__content);
+        mContentContainer.setBackgroundDrawable(contentBackground);
+        addView(mContentContainer);
 
         mMenuOverlay = new ColorDrawable(0xFF000000);
 
-        final ViewConfiguration configuration = ViewConfiguration.get(context);
+        final ViewConfiguration configuration = ViewConfiguration.get(activity);
         mTouchSlop = configuration.getScaledTouchSlop();
         mMaxVelocity = configuration.getScaledMaximumFlingVelocity();
 
-        mScroller = new Scroller(context, SMOOTH_INTERPOLATOR);
-        mPeekScroller = new Scroller(context, PEEK_INTERPOLATOR);
+        mScroller = new Scroller(activity, SMOOTH_INTERPOLATOR);
+        mPeekScroller = new Scroller(activity, PEEK_INTERPOLATOR);
 
         mMaxTouchBezelWidth = dpToPx(MAX_DRAG_BEZEL_DP);
         mCloseEnough = dpToPx(CLOSE_ENOUGH);
@@ -519,6 +604,15 @@ public abstract class MenuDrawer extends ViewGroup {
         }
         requestLayout();
         invalidate();
+    }
+
+    /**
+     * Set the active view. If the mdArrowDrawable attribute is set, this View will have an arrow drawn next to it.
+     *
+     * @param v The active view.
+     */
+    public void setActiveView(View v) {
+        setActiveView(v, 0);
     }
 
     /**
@@ -682,7 +776,7 @@ public abstract class MenuDrawer extends ViewGroup {
         if (enabled != mHardwareLayersEnabled) {
             mHardwareLayersEnabled = enabled;
             mMenuContainer.setHardwareLayersEnabled(enabled);
-            mContentView.setHardwareLayersEnabled(enabled);
+            mContentContainer.setHardwareLayersEnabled(enabled);
             stopLayerTranslation();
         }
     }
@@ -703,9 +797,97 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public ViewGroup getContentContainer() {
         if (mDragMode == MENU_DRAG_CONTENT) {
-            return mContentView;
+            return mContentContainer;
         } else {
             return (ViewGroup) findViewById(android.R.id.content);
+        }
+    }
+
+    /**
+     * Set the menu view from a layout resource.
+     *
+     * @param layoutResId Resource ID to be inflated.
+     */
+    public void setMenuView(int layoutResId) {
+        mMenuContainer.removeAllViews();
+        mMenuView = mActivity.getLayoutInflater().inflate(layoutResId, mMenuContainer, false);
+        mMenuContainer.addView(mMenuView);
+    }
+
+    /**
+     * Set the menu view to an explicit view.
+     *
+     * @param view The menu view.
+     */
+    public void setMenuView(View view) {
+        setMenuView(view, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
+
+    /**
+     * Set the menu view to an explicit view.
+     *
+     * @param view   The menu view.
+     * @param params Layout parameters for the view.
+     */
+    public void setMenuView(View view, LayoutParams params) {
+        mMenuView = view;
+        mMenuContainer.removeAllViews();
+        mMenuContainer.addView(view, params);
+    }
+
+    /**
+     * Returns the menu view.
+     *
+     * @return The menu view.
+     */
+    public View getMenuView() {
+        return mMenuView;
+    }
+
+    /**
+     * Set the content from a layout resource.
+     *
+     * @param layoutResId Resource ID to be inflated.
+     */
+    public void setContentView(int layoutResId) {
+        switch (mDragMode) {
+            case MenuDrawer.MENU_DRAG_CONTENT:
+                mContentContainer.removeAllViews();
+                LayoutInflater inflater = mActivity.getLayoutInflater();
+                inflater.inflate(layoutResId, mContentContainer, true);
+                break;
+
+            case MenuDrawer.MENU_DRAG_WINDOW:
+                mActivity.setContentView(layoutResId);
+                break;
+        }
+    }
+
+    /**
+     * Set the content to an explicit view.
+     *
+     * @param view The desired content to display.
+     */
+    public void setContentView(View view) {
+        setContentView(view, new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
+
+    /**
+     * Set the content to an explicit view.
+     *
+     * @param view   The desired content to display.
+     * @param params Layout parameters for the view.
+     */
+    public void setContentView(View view, LayoutParams params) {
+        switch (mDragMode) {
+            case MenuDrawer.MENU_DRAG_CONTENT:
+                mContentContainer.removeAllViews();
+                mContentContainer.addView(view, params);
+                break;
+
+            case MenuDrawer.MENU_DRAG_WINDOW:
+                mActivity.setContentView(view, params);
+                break;
         }
     }
 
@@ -749,15 +931,6 @@ public abstract class MenuDrawer extends ViewGroup {
             default:
                 Log.d(TAG, "[DrawerState] Unknown: " + state);
         }
-    }
-
-    /**
-     * Sets the drawer drag mode. Can be either {@link #MENU_DRAG_CONTENT} or {@link #MENU_DRAG_WINDOW}.
-     *
-     * @param dragMode The drag mode.
-     */
-    public void setDragMode(int dragMode) {
-        mDragMode = dragMode;
     }
 
     /**
@@ -841,7 +1014,7 @@ public abstract class MenuDrawer extends ViewGroup {
     protected void startLayerTranslation() {
         if (USE_TRANSLATIONS && mHardwareLayersEnabled && !mLayerTypeHardware) {
             mLayerTypeHardware = true;
-            mContentView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            mContentContainer.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             mMenuContainer.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
     }
@@ -852,7 +1025,7 @@ public abstract class MenuDrawer extends ViewGroup {
     private void stopLayerTranslation() {
         if (mLayerTypeHardware) {
             mLayerTypeHardware = false;
-            mContentView.setLayerType(View.LAYER_TYPE_NONE, null);
+            mContentContainer.setLayerType(View.LAYER_TYPE_NONE, null);
             mMenuContainer.setLayerType(View.LAYER_TYPE_NONE, null);
         }
     }
@@ -878,7 +1051,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
         final int contentWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, width);
         final int contentHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, height);
-        mContentView.measure(contentWidthMeasureSpec, contentHeightMeasureSpec);
+        mContentContainer.measure(contentWidthMeasureSpec, contentHeightMeasureSpec);
 
         setMeasuredDimension(width, height);
 

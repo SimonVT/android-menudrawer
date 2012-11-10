@@ -2,24 +2,15 @@ package net.simonvt.widget;
 
 import net.simonvt.menudrawer.R;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 public class LeftDrawer extends MenuDrawer {
 
-    public LeftDrawer(Context context) {
-        super(context);
-    }
-
-    public LeftDrawer(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public LeftDrawer(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    LeftDrawer(Activity activity, int dragMode) {
+        super(activity, dragMode);
     }
 
     @Override
@@ -42,9 +33,9 @@ public class LeftDrawer extends MenuDrawer {
         offsetMenu(offsetPixels);
 
         if (USE_TRANSLATIONS) {
-            mContentView.layout(0, 0, width, height);
+            mContentContainer.layout(0, 0, width, height);
         } else {
-            mContentView.layout(offsetPixels, 0, width + offsetPixels, height);
+            mContentContainer.layout(offsetPixels, 0, width + offsetPixels, height);
         }
     }
 
@@ -118,11 +109,11 @@ public class LeftDrawer extends MenuDrawer {
     @Override
     protected void onOffsetPixelsChanged(int offsetPixels) {
         if (USE_TRANSLATIONS) {
-            mContentView.setTranslationX(offsetPixels);
+            mContentContainer.setTranslationX(offsetPixels);
             offsetMenu(offsetPixels);
             invalidate();
         } else {
-            mContentView.offsetLeftAndRight(offsetPixels - mContentView.getLeft());
+            mContentContainer.offsetLeftAndRight(offsetPixels - mContentContainer.getLeft());
             offsetMenu(offsetPixels);
             invalidate();
         }

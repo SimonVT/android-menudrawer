@@ -1,7 +1,6 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.widget.MenuDrawer;
-import net.simonvt.widget.MenuDrawerManager;
 
 import android.app.Activity;
 import android.os.Build;
@@ -25,7 +24,7 @@ public class RightMenuSample extends Activity {
 
     private static final int MENU_OVERFLOW = 1;
 
-    private MenuDrawerManager mMenuDrawer;
+    private MenuDrawer mMenuDrawer;
 
     private MenuAdapter mAdapter;
     private MenuListView mList;
@@ -43,7 +42,7 @@ public class RightMenuSample extends Activity {
             mContentText = inState.getString(STATE_CONTENT_TEXT);
         }
 
-        mMenuDrawer = new MenuDrawerManager(this, MenuDrawer.MENU_DRAG_CONTENT, MenuDrawer.MENU_POSITION_RIGHT);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, MenuDrawer.MENU_POSITION_RIGHT);
         mMenuDrawer.setContentView(R.layout.activity_rightmenu);
 
         List<Object> items = new ArrayList<Object>();
@@ -65,7 +64,7 @@ public class RightMenuSample extends Activity {
         mList.setOnScrollChangedListener(new MenuListView.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
-                mMenuDrawer.getMenuDrawer().invalidate();
+                mMenuDrawer.invalidate();
             }
         });
 
@@ -88,13 +87,13 @@ public class RightMenuSample extends Activity {
     @Override
     protected void onRestoreInstanceState(Bundle inState) {
         super.onRestoreInstanceState(inState);
-        mMenuDrawer.onRestoreDrawerState(inState.getParcelable(STATE_MENUDRAWER));
+        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.onSaveDrawerState());
+        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
         outState.putInt(STATE_ACTIVE_POSITION, mActivePosition);
         outState.putString(STATE_CONTENT_TEXT, mContentText);
     }
