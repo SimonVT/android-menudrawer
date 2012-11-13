@@ -29,7 +29,7 @@ public class LeftDrawer extends MenuDrawer {
         final int height = b - t;
         final int offsetPixels = mOffsetPixels;
 
-        mMenuContainer.layout(0, 0, mMenuWidth, height);
+        mMenuContainer.layout(0, 0, mMenuSize, height);
         offsetMenu(offsetPixels);
 
         if (USE_TRANSLATIONS) {
@@ -45,8 +45,8 @@ public class LeftDrawer extends MenuDrawer {
      * @param offsetPixels The number of pixels the content if offset.
      */
     private void offsetMenu(int offsetPixels) {
-        if (mOffsetMenu && mMenuWidth != 0) {
-            final int menuWidth = mMenuWidth;
+        if (mOffsetMenu && mMenuSize != 0) {
+            final int menuWidth = mMenuSize;
             final float openRatio = (menuWidth - (float) offsetPixels) / menuWidth;
 
             if (USE_TRANSLATIONS) {
@@ -65,14 +65,14 @@ public class LeftDrawer extends MenuDrawer {
     protected void drawDropShadow(Canvas canvas, int offsetPixels) {
         final int height = getHeight();
 
-        mDropShadowDrawable.setBounds(offsetPixels - mDropShadowWidth, 0, offsetPixels, height);
+        mDropShadowDrawable.setBounds(offsetPixels - mDropShadowSize, 0, offsetPixels, height);
         mDropShadowDrawable.draw(canvas);
     }
 
     @Override
     protected void drawMenuOverlay(Canvas canvas, int offsetPixels) {
         final int height = getHeight();
-        final float openRatio = ((float) offsetPixels) / mMenuWidth;
+        final float openRatio = ((float) offsetPixels) / mMenuSize;
 
         mMenuOverlay.setBounds(0, 0, offsetPixels, height);
         mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * (1.f - openRatio)));
@@ -86,7 +86,7 @@ public class LeftDrawer extends MenuDrawer {
             final int pos = position == null ? 0 : position;
 
             if (pos == mActivePosition) {
-                final float openRatio = ((float) offsetPixels) / mMenuWidth;
+                final float openRatio = ((float) offsetPixels) / mMenuSize;
 
                 mActiveView.getDrawingRect(mActiveRect);
                 offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
@@ -126,19 +126,19 @@ public class LeftDrawer extends MenuDrawer {
 
     @Override
     protected boolean onDownAllowDrag(MotionEvent ev) {
-        return (!mMenuVisible && mInitialMotionX <= mTouchWidth)
+        return (!mMenuVisible && mInitialMotionX <= mTouchSize)
                 || (mMenuVisible && mInitialMotionX >= mOffsetPixels);
     }
 
     @Override
     protected boolean onMoveAllowDrag(MotionEvent ev, float diff) {
-        return (!mMenuVisible && mInitialMotionX <= mTouchWidth && (diff > 0))
+        return (!mMenuVisible && mInitialMotionX <= mTouchSize && (diff > 0))
                 || (mMenuVisible && mInitialMotionX >= mOffsetPixels);
     }
 
     @Override
     protected void onMoveEvent(float dx) {
-        setOffsetPixels(Math.min(Math.max(mOffsetPixels + (int) dx, 0), mMenuWidth));
+        setOffsetPixels(Math.min(Math.max(mOffsetPixels + (int) dx, 0), mMenuSize));
     }
 
     @Override
@@ -149,7 +149,7 @@ public class LeftDrawer extends MenuDrawer {
             mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
             final int initialVelocity = (int) mVelocityTracker.getXVelocity();
             mLastMotionX = ev.getX();
-            animateOffsetTo(mVelocityTracker.getXVelocity() > 0 ? mMenuWidth : 0, initialVelocity, true);
+            animateOffsetTo(mVelocityTracker.getXVelocity() > 0 ? mMenuSize : 0, initialVelocity, true);
 
             // Close the menu when content is clicked while the menu is visible.
         } else if (mMenuVisible && ev.getX() > offsetPixels) {

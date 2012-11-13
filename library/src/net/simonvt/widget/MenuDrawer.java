@@ -190,9 +190,9 @@ public abstract class MenuDrawer extends ViewGroup {
     protected Drawable mDropShadowDrawable;
 
     /**
-     * The width of the content drop shadow.
+     * The size of the content drop shadow.
      */
-    protected int mDropShadowWidth;
+    protected int mDropShadowSize;
 
     /**
      * Arrow bitmap used to indicate the active view.
@@ -230,15 +230,15 @@ public abstract class MenuDrawer extends ViewGroup {
     protected BuildLayerFrameLayout mContentContainer;
 
     /**
-     * The width of the menu.
+     * The size of the menu (width or height depending on the gravity).
      */
-    protected int mMenuWidth;
+    protected int mMenuSize;
 
     /**
-     * Indicates whether the menu width has been set explicity either via the theme or by calling
-     * {@link #setMenuWidth(int)}.
+     * Indicates whether the menu size has been set explicity either via the theme or by calling
+     * {@link #setMenuSize(int)}.
      */
-    private boolean mMenuWidthSet;
+    protected boolean mMenuSizeSet;
 
     /**
      * Current left position of the content.
@@ -267,14 +267,14 @@ public abstract class MenuDrawer extends ViewGroup {
     private int mDrawerState = STATE_CLOSED;
 
     /**
-     * The maximum touch area width of the drawer in px.
+     * The maximum touch area size of the drawer in px.
      */
-    protected int mMaxTouchBezelWidth;
+    protected int mMaxTouchBezelSize;
 
     /**
-     * The touch area width of the drawer in px.
+     * The touch area size of the drawer in px.
      */
-    protected int mTouchWidth;
+    protected int mTouchSize;
 
     /**
      * Indicates whether the drawer is currently being dragged.
@@ -305,6 +305,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * Runnable used when animating the drawer open/closed.
      */
     private final Runnable mDragRunnable = new Runnable() {
+        @Override
         public void run() {
             postAnimationInvalidate();
         }
@@ -482,8 +483,12 @@ public abstract class MenuDrawer extends ViewGroup {
         final Drawable contentBackground = a.getDrawable(R.styleable.MenuDrawer_mdContentBackground);
         final Drawable menuBackground = a.getDrawable(R.styleable.MenuDrawer_mdMenuBackground);
 
-        mMenuWidth = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuWidth, -1);
-        mMenuWidthSet = mMenuWidth != -1;
+        mMenuSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuSize, -1);
+        if (mMenuSize == -1) {
+            // 'mdMenuSize' not set. Try deprecated 'mdMenuWidth' instead.
+            mMenuSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuWidth, -1);
+        }
+        mMenuSizeSet = mMenuSize != -1;
 
         final int arrowResId = a.getResourceId(R.styleable.MenuDrawer_mdArrowDrawable, 0);
         if (arrowResId != 0) {
@@ -499,7 +504,11 @@ public abstract class MenuDrawer extends ViewGroup {
             setDropShadowColor(dropShadowColor);
         }
 
-        mDropShadowWidth = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowWidth, dpToPx(6));
+        mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowSize, -1);
+        if (mDropShadowSize == -1) {
+            // 'mdDropShadowSize' not set. Try deprecated 'mdDropShadowWidth' instead.
+            mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowWidth, dpToPx(6));
+        }
 
         a.recycle();
 
@@ -522,7 +531,7 @@ public abstract class MenuDrawer extends ViewGroup {
         mScroller = new Scroller(activity, SMOOTH_INTERPOLATOR);
         mPeekScroller = new Scroller(activity, PEEK_INTERPOLATOR);
 
-        mMaxTouchBezelWidth = dpToPx(MAX_DRAG_BEZEL_DP);
+        mMaxTouchBezelSize = dpToPx(MAX_DRAG_BEZEL_DP);
         mCloseEnough = dpToPx(CLOSE_ENOUGH);
     }
 
@@ -563,7 +572,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * @param animate Whether open/close should be animated.
      */
     public void openMenu(boolean animate) {
-        animateOffsetTo(mMenuWidth, 0, animate);
+        animateOffsetTo(mMenuSize, 0, animate);
     }
 
     /**
@@ -592,18 +601,30 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Set the size of the menu drawer when open.
+     *
+     * @param size
+     */
+    public void setMenuSize(final int size) {
+        mMenuSize = size;
+        mMenuSizeSet = true;
+        if (mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING) {
+            setOffsetPixels(mMenuSize);
+        }
+        requestLayout();
+        invalidate();
+    }
+
+    /**
+     * @deprecated Please use {@link #setMenuSize} instead.
+     *
      * Set the width of the menu drawer when open.
      *
      * @param width
      */
+    @Deprecated
     public void setMenuWidth(final int width) {
-        mMenuWidth = width;
-        mMenuWidthSet = true;
-        if (mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING) {
-            setOffsetPixels(mMenuWidth);
-        }
-        requestLayout();
-        invalidate();
+        setMenuSize(width);
     }
 
     /**
@@ -713,13 +734,25 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Sets the size of the drop shadow.
+     *
+     * @param size The size of the drop shadow in px.
+     */
+    public void setDropShadowSize(int size) {
+        mDropShadowSize = size;
+        invalidate();
+    }
+
+    /**
+     * @deprecated Please use setDropShadowSize instead.
+     *
      * Sets the width of the drop shadow.
      *
      * @param width The width of the drop shadow in px.
      */
+    @Deprecated
     public void setDropShadowWidth(int width) {
-        mDropShadowWidth = width;
-        invalidate();
+        setDropShadowSize(width);
     }
 
     /**
@@ -949,7 +982,7 @@ public abstract class MenuDrawer extends ViewGroup {
     public void setTouchMode(int mode) {
         if (mTouchMode != mode) {
             mTouchMode = mode;
-            updateTouchAreaWidth();
+            updateTouchAreaSize();
         }
     }
 
@@ -1042,10 +1075,10 @@ public abstract class MenuDrawer extends ViewGroup {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (!mMenuWidthSet) mMenuWidth = (int) (width * 0.8f);
-        if (mOffsetPixels == -1) setOffsetPixels(mMenuWidth);
+        if (!mMenuSizeSet) mMenuSize = (int) (width * 0.8f);
+        if (mOffsetPixels == -1) setOffsetPixels(mMenuSize);
 
-        final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuWidth);
+        final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuSize);
         final int menuHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, height);
         mMenuContainer.measure(menuWidthMeasureSpec, menuHeightMeasureSpec);
 
@@ -1055,7 +1088,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
         setMeasuredDimension(width, height);
 
-        updateTouchAreaWidth();
+        updateTouchAreaSize();
     }
 
     @Override
@@ -1069,13 +1102,13 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * Compute the touch area based on the touch mode.
      */
-    private void updateTouchAreaWidth() {
+    protected void updateTouchAreaSize() {
         if (mTouchMode == TOUCH_MODE_BEZEL) {
-            mTouchWidth = Math.min(getMeasuredWidth() / 10, mMaxTouchBezelWidth);
+            mTouchSize = Math.min(getMeasuredWidth() / 10, mMaxTouchBezelSize);
         } else if (mTouchMode == TOUCH_MODE_FULLSCREEN) {
-            mTouchWidth = getMeasuredWidth();
+            mTouchSize = getMeasuredWidth();
         } else {
-            mTouchWidth = 0;
+            mTouchSize = 0;
         }
     }
 
@@ -1137,7 +1170,7 @@ public abstract class MenuDrawer extends ViewGroup {
         if (velocity > 0) {
             duration = 4 * Math.round(1000.f * Math.abs((float) dx / velocity));
         } else {
-            duration = (int) (600.f * Math.abs((float) dx / mMenuWidth));
+            duration = (int) (600.f * Math.abs((float) dx / mMenuSize));
         }
 
         duration = Math.min(duration, DURATION_MAX);
@@ -1177,7 +1210,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * Starts peek drawer animation.
      */
     protected void startPeek() {
-        final int menuWidth = mMenuWidth;
+        final int menuWidth = mMenuSize;
         final int dx = menuWidth / 3;
         mPeekScroller.startScroll(0, 0, dx, 0, PEEK_DURATION);
 
@@ -1349,7 +1382,7 @@ public abstract class MenuDrawer extends ViewGroup {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 final int offsetPixels = mOffsetPixels;
-                animateOffsetTo(offsetPixels > mMenuWidth / 2 ? mMenuWidth : 0, 0, true);
+                animateOffsetTo(offsetPixels > mMenuSize / 2 ? mMenuSize : 0, 0, true);
                 break;
             }
         }
@@ -1447,7 +1480,7 @@ public abstract class MenuDrawer extends ViewGroup {
     public void restoreState(Parcelable in) {
         Bundle state = (Bundle) in;
         final boolean menuOpen = state.getBoolean(STATE_MENU_VISIBLE);
-        setOffsetPixels(menuOpen ? mMenuWidth : 0);
+        setOffsetPixels(menuOpen ? mMenuSize : 0);
         mDrawerState = menuOpen ? STATE_OPEN : STATE_CLOSED;
     }
 }
