@@ -41,4 +41,8 @@
         <item name="mdMenuSize">150dp</item>
     </style>
 
+    <style name="MenuDrawerStyle.Top" parent="Widget.MenuDrawer">
+        <item name="mdMenuWidth">64dp</item>
+    </style>
+
 </resources>

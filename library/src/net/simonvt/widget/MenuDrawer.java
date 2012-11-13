@@ -125,6 +125,11 @@ public abstract class MenuDrawer extends ViewGroup {
     public static final int MENU_POSITION_RIGHT = 1;
 
     /**
+     * Position the menu above the content.
+     */
+    public static final int MENU_POSITION_TOP = 2;
+
+    /**
      * Disallow opening the drawer by dragging the screen.
      */
     public static final int TOUCH_MODE_NONE = 0;
@@ -292,6 +297,11 @@ public abstract class MenuDrawer extends ViewGroup {
     protected float mInitialMotionX;
 
     /**
+     * The initial Y position of a drag.
+     */
+    protected float mInitialMotionY;
+
+    /**
      * The last X position of a drag.
      */
     protected float mLastMotionX = -1;
@@ -421,9 +431,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity, int dragMode, int gravity) {
-        MenuDrawer menuDrawer = gravity == MenuDrawer.MENU_POSITION_RIGHT
-                ? new RightDrawer(activity, dragMode)
-                : new LeftDrawer(activity, dragMode);
+        MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, gravity);
         menuDrawer.setId(R.id.md__layout);
 
         switch (dragMode) {
@@ -440,6 +448,23 @@ public abstract class MenuDrawer extends ViewGroup {
         }
 
         return menuDrawer;
+    }
+
+    /**
+     * Constructs the appropriate MenuDrawer based on the gravity.
+     */
+    private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, int gravity) {
+        switch (gravity) {
+            case MenuDrawer.MENU_POSITION_LEFT:
+                return new LeftDrawer(activity, dragMode);
+            case MenuDrawer.MENU_POSITION_RIGHT:
+                return new RightDrawer(activity, dragMode);
+            case MenuDrawer.MENU_POSITION_TOP:
+                return new TopDrawer(activity, dragMode);
+            default:
+                throw new IllegalArgumentException(
+                        "gravity must be one of MENU_POSITION_LEFT, MENU_POSITION_TOP or MENU_POSITION_RIGHT");
+        }
     }
 
     /**
@@ -1343,7 +1368,7 @@ public abstract class MenuDrawer extends ViewGroup {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
-                mLastMotionY = ev.getY();
+                mLastMotionY = mInitialMotionY = ev.getY();
                 final boolean allowDrag = onDownAllowDrag(ev);
 
                 if (allowDrag) {
@@ -1406,7 +1431,7 @@ public abstract class MenuDrawer extends ViewGroup {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 mLastMotionX = mInitialMotionX = ev.getX();
-                mLastMotionY = ev.getY();
+                mLastMotionY = mInitialMotionY = ev.getY();
                 final boolean allowDrag = onDownAllowDrag(ev);
 
                 if (allowDrag) {
