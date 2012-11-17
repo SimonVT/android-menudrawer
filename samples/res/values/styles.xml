@@ -33,12 +33,16 @@
 
     <style name="MenuDrawerStyle" parent="Widget.MenuDrawer">
         <item name="mdArrowDrawable">@drawable/menu_arrow</item>
-        <item name="mdMenuWidth">250dp</item>
+        <item name="mdMenuSize">250dp</item>
     </style>
 
     <style name="MenuDrawerStyle.Right" parent="Widget.MenuDrawer">
         <item name="mdArrowDrawable">@drawable/menu_arrow_right</item>
-        <item name="mdMenuWidth">150dp</item>
+        <item name="mdMenuSize">150dp</item>
+    </style>
+
+    <style name="MenuDrawerStyle.Top" parent="Widget.MenuDrawer">
+        <item name="mdMenuWidth">64dp</item>
     </style>
 
 </resources>

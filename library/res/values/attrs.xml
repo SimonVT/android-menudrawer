@@ -12,7 +12,10 @@
         <!-- Drawable to use for the background of the menu. -->
         <attr name="mdMenuBackground" format="reference" />
 
-        <!-- The width of the menu. -->
+        <!-- The size of the menu. -->
+        <attr name="mdMenuSize" format="dimension" />
+
+        <!-- This attribute is deprecated. Please use mdMenuSize instead. -->
         <attr name="mdMenuWidth" format="dimension" />
 
         <!-- Drawable to use for the arrow indicator. -->
@@ -21,8 +24,11 @@
         <!-- Defines whether the content will have a dropshadow onto the menu. Default is true. -->
         <attr name="mdDropShadowEnabled" format="boolean" />
 
-        <!-- The width of the drop shadow. Default is 6dp. -->
+        <!-- This attribute is deprecated. Please use mdDropShadowSize instead. -->
         <attr name="mdDropShadowWidth" format="dimension" />
+
+        <!-- The size of the drop shadow. Default is 6dp -->
+        <attr name="mdDropShadowSize" format="dimension" />
 
         <!-- The color of the drop shadow. Default is #FF000000. -->
         <attr name="mdDropShadowColor" format="color" />
@@ -30,6 +36,6 @@
         <!-- Drawable used for the drop shadow. -->
         <attr name="mdDropShadow" format="reference" />
 
-    </declare-styleable>
+        </declare-styleable>
 
 </resources>

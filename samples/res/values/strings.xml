@@ -21,4 +21,9 @@
     <string name="sample_rightmenu">This sample shows how to position the menu to the right of the content.\nRun on
         an API14+ device to see how it interacts with the overflow button.
     </string>
+
+    <string name="sample_topmenu">This sample shows how to position the menu above the content.\n\nYou can control whether
+        the menu appears above or below the title/action bar using MenuDrawer.setDragMode().\n\nIn this case the menu simply
+        contains two items with click listeners attached to them.
+    </string>
 </resources>
