@@ -81,30 +81,30 @@ public class TopDrawer extends HorizontalMenuDrawer {
     }
 
     @Override
-    protected void drawArrow(Canvas canvas, int offsetPixels) {
+    protected void drawIndicator(Canvas canvas, int offsetPixels) {
         if (mActiveView != null && mActiveView.getParent() != null) {
             Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
             final int pos = position == null ? 0 : position;
 
             if (pos == mActivePosition) {
                 final int menuHeight = mMenuSize;
-                final int indicatorHeight = mArrowBitmap.getHeight();
+                final int indicatorHeight = mActiveIndicator.getHeight();
 
                 final float openRatio = ((float) offsetPixels) / menuHeight;
 
                 mActiveView.getDrawingRect(mActiveRect);
                 offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
-                final int indicatorWidth = mArrowBitmap.getWidth();
+                final int indicatorWidth = mActiveIndicator.getWidth();
 
-                final float interpolatedRatio = 1.f - ARROW_INTERPOLATOR.getInterpolation((1.f - openRatio));
-                final int interpolatedArrowHeight = (int) (indicatorHeight * interpolatedRatio);
+                final float interpolatedRatio = 1.f - INDICATOR_INTERPOLATOR.getInterpolation((1.f - openRatio));
+                final int interpolatedHeight = (int) (indicatorHeight * interpolatedRatio);
 
-                final int indicatorTop = offsetPixels - interpolatedArrowHeight;
+                final int indicatorTop = offsetPixels - interpolatedHeight;
                 final int indicatorLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
 
                 canvas.save();
                 canvas.clipRect(indicatorLeft, indicatorTop, indicatorLeft + indicatorWidth, offsetPixels);
-                canvas.drawBitmap(mArrowBitmap, indicatorLeft, indicatorTop, null);
+                canvas.drawBitmap(mActiveIndicator, indicatorLeft, indicatorTop, null);
                 canvas.restore();
             }
         }

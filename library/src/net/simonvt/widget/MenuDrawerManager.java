@@ -50,7 +50,8 @@ public class MenuDrawerManager {
     }
 
     /**
-     * Set the active view. If the mdArrowDrawable attribute is set, this View will have an arrow drawn next to it.
+     * Set the active view.
+     * If the mdActiveIndicator attribute is set, this View will have the indicator drawn next to it.
      *
      * @param v The active view.
      */
@@ -59,7 +60,8 @@ public class MenuDrawerManager {
     }
 
     /**
-     * Set the active view. If the mdArrowDrawable attribute is set, this View will have an arrow drawn next to it.
+     * Set the active view.
+     * If the mdActiveIndicator attribute is set, this View will have the indicator drawn next to it.
      *
      * @param v        The active view.
      * @param position Optional position, usually used with ListView. v.setTag(R.id.mdActiveViewPosition, position)

@@ -88,7 +88,7 @@ public class RightDrawer extends MenuDrawer {
     }
 
     @Override
-    protected void drawArrow(Canvas canvas, int offsetPixels) {
+    protected void drawIndicator(Canvas canvas, int offsetPixels) {
         if (mActiveView != null && mActiveView.getParent() != null) {
             Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
             final int pos = position == null ? 0 : position;
@@ -96,7 +96,7 @@ public class RightDrawer extends MenuDrawer {
             if (pos == mActivePosition) {
                 final int width = getWidth();
                 final int menuWidth = mMenuSize;
-                final int arrowWidth = mArrowBitmap.getWidth();
+                final int indicatorWidth = mActiveIndicator.getWidth();
 
                 final int contentRight = width - offsetPixels;
                 final float openRatio = ((float) offsetPixels) / menuWidth;
@@ -104,17 +104,17 @@ public class RightDrawer extends MenuDrawer {
                 mActiveView.getDrawingRect(mActiveRect);
                 offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
 
-                final float interpolatedRatio = 1.f - ARROW_INTERPOLATOR.getInterpolation((1.f - openRatio));
-                final int interpolatedArrowWidth = (int) (arrowWidth * interpolatedRatio);
+                final float interpolatedRatio = 1.f - INDICATOR_INTERPOLATOR.getInterpolation((1.f - openRatio));
+                final int interpolatedWidth = (int) (indicatorWidth * interpolatedRatio);
 
-                final int arrowRight = contentRight + interpolatedArrowWidth;
-                final int arrowLeft = arrowRight - arrowWidth;
+                final int indicatorRight = contentRight + interpolatedWidth;
+                final int indicatorLeft = indicatorRight - indicatorWidth;
 
-                final int top = mActiveRect.top + ((mActiveRect.height() - mArrowBitmap.getHeight()) / 2);
+                final int top = mActiveRect.top + ((mActiveRect.height() - mActiveIndicator.getHeight()) / 2);
 
                 canvas.save();
-                canvas.clipRect(contentRight, 0, arrowRight, getHeight());
-                canvas.drawBitmap(mArrowBitmap, arrowLeft, top, null);
+                canvas.clipRect(contentRight, 0, indicatorRight, getHeight());
+                canvas.drawBitmap(mActiveIndicator, indicatorLeft, top, null);
                 canvas.restore();
             }
         }

@@ -83,5 +83,6 @@ public class TopMenuSample extends Activity implements OnClickListener {
     public void onClick(View v) {
         String tag = (String) v.getTag();
         mContentTextView.setText(String.format("%s clicked.", tag));
+        mMenuDrawer.setActiveView(v);
     }
 }

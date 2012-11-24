@@ -60,9 +60,9 @@ public abstract class MenuDrawer extends ViewGroup {
     protected static final int ANIMATION_DELAY = 1000 / 60;
 
     /**
-     * Interpolator used for stretching/retracting the arrow indicator.
+     * Interpolator used for stretching/retracting the active indicator.
      */
-    protected static final Interpolator ARROW_INTERPOLATOR = new AccelerateInterpolator();
+    protected static final Interpolator INDICATOR_INTERPOLATOR = new AccelerateInterpolator();
 
     /**
      * Interpolator used for peeking at the drawer.
@@ -200,9 +200,9 @@ public abstract class MenuDrawer extends ViewGroup {
     protected int mDropShadowSize;
 
     /**
-     * Arrow bitmap used to indicate the active view.
+     * Bitmap used to indicate the active view.
      */
-    protected Bitmap mArrowBitmap;
+    protected Bitmap mActiveIndicator;
 
     /**
      * The currently active view.
@@ -210,7 +210,8 @@ public abstract class MenuDrawer extends ViewGroup {
     protected View mActiveView;
 
     /**
-     * Position of the active view. This is compared to View#getTag(R.id.mdActiveViewPosition) when drawing the arrow.
+     * Position of the active view. This is compared to View#getTag(R.id.mdActiveViewPosition) when drawing the
+     * indicator.
      */
     protected int mActivePosition;
 
@@ -515,9 +516,14 @@ public abstract class MenuDrawer extends ViewGroup {
         }
         mMenuSizeSet = mMenuSize != -1;
 
-        final int arrowResId = a.getResourceId(R.styleable.MenuDrawer_mdArrowDrawable, 0);
-        if (arrowResId != 0) {
-            mArrowBitmap = BitmapFactory.decodeResource(getResources(), arrowResId);
+        final int indicatorResId = a.getResourceId(R.styleable.MenuDrawer_mdActiveIndicator, 0);
+        if (indicatorResId != 0) {
+            mActiveIndicator = BitmapFactory.decodeResource(getResources(), indicatorResId);
+        } else {
+            final int arrowResId = a.getResourceId(R.styleable.MenuDrawer_mdArrowDrawable, 0);
+            if (arrowResId != 0) {
+                mActiveIndicator = BitmapFactory.decodeResource(getResources(), arrowResId);
+            }
         }
 
         mDropShadowEnabled = a.getBoolean(R.styleable.MenuDrawer_mdDropShadowEnabled, true);
@@ -653,7 +659,8 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * Set the active view. If the mdArrowDrawable attribute is set, this View will have an arrow drawn next to it.
+     * Set the active view.
+     * If the mdActiveIndicator attribute is set, this View will have the indicator drawn next to it.
      *
      * @param v The active view.
      */
@@ -662,7 +669,8 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * Set the active view. If the mdArrowDrawable attribute is set, this View will have an arrow drawn next to it.
+     * Set the active view.
+     * If the mdActiveIndicator attribute is set, this View will have the indicator drawn next to it.
      *
      * @param v        The active view.
      * @param position Optional position, usually used with ListView. v.setTag(R.id.mdActiveViewPosition, position)
@@ -1018,7 +1026,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
         drawMenuOverlay(canvas, offsetPixels);
         if (mDropShadowEnabled) drawDropShadow(canvas, offsetPixels);
-        if (mArrowBitmap != null) drawArrow(canvas, offsetPixels);
+        if (mActiveIndicator != null) drawIndicator(canvas, offsetPixels);
     }
 
     /**
@@ -1038,12 +1046,12 @@ public abstract class MenuDrawer extends ViewGroup {
     protected abstract void drawMenuOverlay(Canvas canvas, int offsetPixels);
 
     /**
-     * Called when the arrow indicator should be drawn.
+     * Called when the active indicator should be drawn.
      *
      * @param canvas       The canvas on which to draw.
      * @param offsetPixels Value in pixels indicating the offset.
      */
-    protected abstract void drawArrow(Canvas canvas, int offsetPixels);
+    protected abstract void drawIndicator(Canvas canvas, int offsetPixels);
 
     /**
      * Sets the number of pixels the content should be offset.

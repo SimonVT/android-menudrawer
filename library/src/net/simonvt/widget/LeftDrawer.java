@@ -80,7 +80,7 @@ public class LeftDrawer extends MenuDrawer {
     }
 
     @Override
-    protected void drawArrow(Canvas canvas, int offsetPixels) {
+    protected void drawIndicator(Canvas canvas, int offsetPixels) {
         if (mActiveView != null && mActiveView.getParent() != null) {
             Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
             final int pos = position == null ? 0 : position;
@@ -91,16 +91,16 @@ public class LeftDrawer extends MenuDrawer {
                 mActiveView.getDrawingRect(mActiveRect);
                 offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
 
-                final float interpolatedRatio = 1.f - ARROW_INTERPOLATOR.getInterpolation((1.f - openRatio));
-                final int interpolatedArrowWidth = (int) (mArrowBitmap.getWidth() * interpolatedRatio);
+                final float interpolatedRatio = 1.f - INDICATOR_INTERPOLATOR.getInterpolation((1.f - openRatio));
+                final int interpolatedWidth = (int) (mActiveIndicator.getWidth() * interpolatedRatio);
 
-                final int top = mActiveRect.top + ((mActiveRect.height() - mArrowBitmap.getHeight()) / 2);
+                final int top = mActiveRect.top + ((mActiveRect.height() - mActiveIndicator.getHeight()) / 2);
                 final int right = offsetPixels;
-                final int left = right - interpolatedArrowWidth;
+                final int left = right - interpolatedWidth;
 
                 canvas.save();
                 canvas.clipRect(left, 0, right, getHeight());
-                canvas.drawBitmap(mArrowBitmap, left, top, null);
+                canvas.drawBitmap(mActiveIndicator, left, top, null);
                 canvas.restore();
             }
         }
