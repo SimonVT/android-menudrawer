@@ -51,13 +51,18 @@ public class TopDrawer extends HorizontalMenuDrawer {
             final float openRatio = (menuSize - (float) offsetPixels) / menuSize;
 
             if (USE_TRANSLATIONS) {
-                final int offset = (int) (0.25f * (-openRatio * menuSize));
-                mMenuContainer.setTranslationY(offset);
+                if (offsetPixels > 0) {
+                    final int offset = (int) (0.25f * (-openRatio * menuSize));
+                    mMenuContainer.setTranslationY(offset);
+                } else {
+                    mMenuContainer.setTranslationY(-menuSize);
+                }
 
             } else {
                 final int oldMenuTop = mMenuContainer.getTop();
                 final int offset = (int) (0.25f * (-openRatio * menuSize)) - oldMenuTop;
                 mMenuContainer.offsetTopAndBottom(offset);
+                mMenuContainer.setVisibility(offsetPixels == 0 ? INVISIBLE : VISIBLE);
             }
         }
     }

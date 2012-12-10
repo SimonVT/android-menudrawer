@@ -50,13 +50,18 @@ public class LeftDrawer extends MenuDrawer {
             final float openRatio = (menuWidth - (float) offsetPixels) / menuWidth;
 
             if (USE_TRANSLATIONS) {
-                final int menuLeft = (int) (0.25f * (-openRatio * menuWidth));
-                mMenuContainer.setTranslationX(menuLeft);
+                if (offsetPixels > 0) {
+                    final int menuLeft = (int) (0.25f * (-openRatio * menuWidth));
+                    mMenuContainer.setTranslationX(menuLeft);
+                } else {
+                    mMenuContainer.setTranslationX(-menuWidth);
+                }
 
             } else {
                 final int oldMenuLeft = mMenuContainer.getLeft();
                 final int offset = (int) (0.25f * (-openRatio * menuWidth)) - oldMenuLeft;
                 mMenuContainer.offsetLeftAndRight(offset);
+                mMenuContainer.setVisibility(offsetPixels == 0 ? INVISIBLE : VISIBLE);
             }
         }
     }

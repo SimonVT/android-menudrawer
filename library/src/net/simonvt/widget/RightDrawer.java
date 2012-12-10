@@ -50,8 +50,12 @@ public class RightDrawer extends MenuDrawer {
             final float openRatio = (menuWidth - (float) offsetPixels) / menuWidth;
 
             if (USE_TRANSLATIONS) {
-                final int offset = (int) (0.25f * (openRatio * menuWidth));
-                mMenuContainer.setTranslationX(offset);
+                if (offsetPixels > 0) {
+                    final int offset = (int) (0.25f * (openRatio * menuWidth));
+                    mMenuContainer.setTranslationX(offset);
+                } else {
+                    mMenuContainer.setTranslationX(menuWidth);
+                }
 
             } else {
                 final int width = getWidth();
@@ -59,6 +63,7 @@ public class RightDrawer extends MenuDrawer {
                 final int newRight = width + (int) (0.25f * (openRatio * menuWidth));
                 final int offset = newRight - oldMenuRight;
                 mMenuContainer.offsetLeftAndRight(offset);
+                mMenuContainer.setVisibility(offsetPixels == 0 ? INVISIBLE : VISIBLE);
             }
         }
     }
