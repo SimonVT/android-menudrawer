@@ -18,16 +18,21 @@ public class BuildLayerFrameLayout extends FrameLayout {
 
     private boolean mAttached;
 
+    private boolean mFirst = true;
+
     public BuildLayerFrameLayout(Context context) {
         super(context);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
     }
 
     public BuildLayerFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
     }
 
     public BuildLayerFrameLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
     }
 
     void setHardwareLayersEnabled(boolean enabled) {
@@ -72,7 +77,8 @@ public class BuildLayerFrameLayout extends FrameLayout {
                     if (mAttached) {
                         final int layerType = getLayerType();
                         // If it's already a hardware layer, it'll be built anyway.
-                        if (layerType != LAYER_TYPE_HARDWARE) {
+                        if (layerType != LAYER_TYPE_HARDWARE || mFirst) {
+                            mFirst = false;
                             setLayerType(LAYER_TYPE_HARDWARE, null);
                             buildLayer();
                             setLayerType(LAYER_TYPE_NONE, null);
