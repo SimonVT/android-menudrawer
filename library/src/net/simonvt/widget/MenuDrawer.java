@@ -251,7 +251,7 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * Current left position of the content.
      */
-    protected int mOffsetPixels;
+    protected float mOffsetPixels;
 
     /**
      * Indicates whether the menu is currently visible.
@@ -676,11 +676,10 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * @deprecated Please use {@link #setMenuSize} instead.
-     *
-     * Set the width of the menu drawer when open.
-     *
      * @param width
+     * @deprecated Please use {@link #setMenuSize} instead.
+     *             <p/>
+     *             Set the width of the menu drawer when open.
      */
     @Deprecated
     public void setMenuWidth(final int width) {
@@ -806,11 +805,10 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * @deprecated Please use setDropShadowSize instead.
-     *
-     * Sets the width of the drop shadow.
-     *
      * @param width The width of the drop shadow in px.
+     * @deprecated Please use setDropShadowSize instead.
+     *             <p/>
+     *             Sets the width of the drop shadow.
      */
     @Deprecated
     public void setDropShadowWidth(int width) {
@@ -1050,7 +1048,7 @@ public abstract class MenuDrawer extends ViewGroup {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        final int offsetPixels = mOffsetPixels;
+        final int offsetPixels = (int) mOffsetPixels;
 
         drawMenuOverlay(canvas, offsetPixels);
         if (mDropShadowEnabled) drawDropShadow(canvas, offsetPixels);
@@ -1086,12 +1084,15 @@ public abstract class MenuDrawer extends ViewGroup {
      *
      * @param offsetPixels The number of pixels to offset the content by.
      */
-    protected void setOffsetPixels(int offsetPixels) {
-        if (offsetPixels != mOffsetPixels) {
-            onOffsetPixelsChanged(offsetPixels);
+    protected void setOffsetPixels(float offsetPixels) {
+        final int oldOffset = (int) mOffsetPixels;
+        final int newOffset = (int) offsetPixels;
+
+        if (newOffset != oldOffset) {
+            onOffsetPixelsChanged(newOffset);
 
             mOffsetPixels = offsetPixels;
-            mMenuVisible = offsetPixels != 0;
+            mMenuVisible = newOffset != 0;
         }
     }
 
@@ -1216,7 +1217,7 @@ public abstract class MenuDrawer extends ViewGroup {
         endDrag();
         endPeek();
 
-        final int startX = mOffsetPixels;
+        final int startX = (int) mOffsetPixels;
         final int dx = position - startX;
         if (dx == 0 || !animate) {
             setOffsetPixels(position);
@@ -1254,7 +1255,7 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     private void postAnimationInvalidate() {
         if (mScroller.computeScrollOffset()) {
-            final int oldX = mOffsetPixels;
+            final int oldX = (int) mOffsetPixels;
             final int x = mScroller.getCurrX();
 
             if (x != oldX) setOffsetPixels(x);
@@ -1284,7 +1285,7 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     private void peekDrawerInvalidate() {
         if (mPeekScroller.computeScrollOffset()) {
-            final int oldX = mOffsetPixels;
+            final int oldX = (int) mOffsetPixels;
             final int x = mPeekScroller.getCurrX();
             if (x != oldX) setOffsetPixels(x);
 
@@ -1442,7 +1443,7 @@ public abstract class MenuDrawer extends ViewGroup {
              * */
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                final int offsetPixels = mOffsetPixels;
+                final int offsetPixels = (int) mOffsetPixels;
                 animateOffsetTo(offsetPixels > mMenuSize / 2 ? mMenuSize : 0, 0, true);
                 break;
             }

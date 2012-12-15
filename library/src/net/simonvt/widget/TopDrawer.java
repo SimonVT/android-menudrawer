@@ -42,7 +42,7 @@ public class TopDrawer extends HorizontalMenuDrawer {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int width = r - l;
         final int height = b - t;
-        final int offsetPixels = mOffsetPixels;
+        final int offsetPixels = (int) mOffsetPixels;
 
         mMenuContainer.layout(0, 0, width, mMenuSize);
         offsetMenu(offsetPixels);
@@ -161,12 +161,12 @@ public class TopDrawer extends HorizontalMenuDrawer {
 
     @Override
     protected void onMoveEvent(float dx) {
-        setOffsetPixels(Math.min(Math.max(mOffsetPixels + (int) dx, 0), mMenuSize));
+        setOffsetPixels(Math.min(Math.max(mOffsetPixels + dx, 0), mMenuSize));
     }
 
     @Override
     protected void onUpEvent(MotionEvent ev) {
-        final int offsetPixels = mOffsetPixels;
+        final int offsetPixels = (int) mOffsetPixels;
 
         if (mIsDragging) {
             mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);

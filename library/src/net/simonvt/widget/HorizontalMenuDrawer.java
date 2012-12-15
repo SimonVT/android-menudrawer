@@ -120,7 +120,7 @@ public abstract class HorizontalMenuDrawer extends MenuDrawer {
              */
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                final int offsetPixels = mOffsetPixels;
+                final int offsetPixels = (int) mOffsetPixels;
                 animateOffsetTo(offsetPixels > mMenuSize / 2 ? mMenuSize : 0, 0, true);
                 break;
             }
