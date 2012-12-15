@@ -36,6 +36,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.simonvt.menudrawer.samples.SamplesActivity" />
         </activity>
+        <activity android:name="net.simonvt.menudrawer.samples.LayoutSample" />
     </application>
 
 </manifest>

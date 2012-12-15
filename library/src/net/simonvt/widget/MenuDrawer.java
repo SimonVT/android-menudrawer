@@ -4,6 +4,7 @@ import net.simonvt.menudrawer.R;
 import net.simonvt.menudrawer.compat.Scroller;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -259,7 +261,7 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * The drag mode of the drawer. Can be either {@link #MENU_DRAG_CONTENT} or {@link #MENU_DRAG_WINDOW}.
      */
-    private int mDragMode;
+    private int mDragMode = MENU_DRAG_CONTENT;
 
     /**
      * The current drawer state.
@@ -397,7 +399,7 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * The Activity the drawer is attached to.
      */
-    private final Activity mActivity;
+    private Activity mActivity;
 
     /**
      * Attaches the MenuDrawer to the Activity.
@@ -433,7 +435,6 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public static MenuDrawer attach(Activity activity, int dragMode, int gravity) {
         MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, gravity);
-        menuDrawer.setId(R.id.md__layout);
 
         switch (dragMode) {
             case MenuDrawer.MENU_DRAG_CONTENT:
@@ -496,14 +497,26 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     MenuDrawer(Activity activity, int dragMode) {
-        super(activity, null, R.style.Widget_MenuDrawer);
+        this(activity);
+
         mActivity = activity;
         mDragMode = dragMode;
+    }
 
+    public MenuDrawer(Context context) {
+        this(context, null);
+    }
+
+    public MenuDrawer(Context context, AttributeSet attrs) {
+        this(context, attrs, R.attr.menuDrawerStyle);
+    }
+
+    public MenuDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
         setWillNotDraw(false);
         setFocusable(false);
 
-        TypedArray a = activity.obtainStyledAttributes(null, R.styleable.MenuDrawer, R.attr.menuDrawerStyle,
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MenuDrawer, R.attr.menuDrawerStyle,
                 R.style.Widget_MenuDrawer);
 
         final Drawable contentBackground = a.getDrawable(R.styleable.MenuDrawer_mdContentBackground);
@@ -543,27 +556,43 @@ public abstract class MenuDrawer extends ViewGroup {
 
         a.recycle();
 
-        mMenuContainer = new BuildLayerFrameLayout(activity);
+        mMenuContainer = new BuildLayerFrameLayout(context);
         mMenuContainer.setId(R.id.md__menu);
         mMenuContainer.setBackgroundDrawable(menuBackground);
         addView(mMenuContainer);
 
-        mContentContainer = new NoClickThroughFrameLayout(activity);
+        mContentContainer = new NoClickThroughFrameLayout(context);
         mContentContainer.setId(R.id.md__content);
         mContentContainer.setBackgroundDrawable(contentBackground);
         addView(mContentContainer);
 
         mMenuOverlay = new ColorDrawable(0xFF000000);
 
-        final ViewConfiguration configuration = ViewConfiguration.get(activity);
+        final ViewConfiguration configuration = ViewConfiguration.get(context);
         mTouchSlop = configuration.getScaledTouchSlop();
         mMaxVelocity = configuration.getScaledMaximumFlingVelocity();
 
-        mScroller = new Scroller(activity, SMOOTH_INTERPOLATOR);
-        mPeekScroller = new Scroller(activity, PEEK_INTERPOLATOR);
+        mScroller = new Scroller(context, SMOOTH_INTERPOLATOR);
+        mPeekScroller = new Scroller(context, PEEK_INTERPOLATOR);
 
         mMaxTouchBezelSize = dpToPx(MAX_DRAG_BEZEL_DP);
         mCloseEnough = dpToPx(CLOSE_ENOUGH);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        View mv = findViewById(R.id.mdMenu);
+        if (mv != null) {
+            removeView(mv);
+            mMenuContainer.addView(mv);
+        }
+
+        View cv = findViewById(R.id.mdContent);
+        if (cv != null) {
+            removeView(cv);
+            mContentContainer.addView(cv);
+        }
     }
 
     private int dpToPx(int dp) {
@@ -876,7 +905,7 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public void setMenuView(int layoutResId) {
         mMenuContainer.removeAllViews();
-        mMenuView = mActivity.getLayoutInflater().inflate(layoutResId, mMenuContainer, false);
+        mMenuView = LayoutInflater.from(getContext()).inflate(layoutResId, mMenuContainer, false);
         mMenuContainer.addView(mMenuView);
     }
 
@@ -919,8 +948,7 @@ public abstract class MenuDrawer extends ViewGroup {
         switch (mDragMode) {
             case MenuDrawer.MENU_DRAG_CONTENT:
                 mContentContainer.removeAllViews();
-                LayoutInflater inflater = mActivity.getLayoutInflater();
-                inflater.inflate(layoutResId, mContentContainer, true);
+                LayoutInflater.from(getContext()).inflate(layoutResId, mContentContainer, true);
                 break;
 
             case MenuDrawer.MENU_DRAG_WINDOW:

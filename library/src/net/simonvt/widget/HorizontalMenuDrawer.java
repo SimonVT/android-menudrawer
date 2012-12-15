@@ -1,6 +1,8 @@
 package net.simonvt.widget;
 
 import android.app.Activity;
+import android.content.Context;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 
@@ -8,6 +10,18 @@ public abstract class HorizontalMenuDrawer extends MenuDrawer {
 
     HorizontalMenuDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
+    }
+
+    public HorizontalMenuDrawer(Context context) {
+        super(context);
+    }
+
+    public HorizontalMenuDrawer(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public HorizontalMenuDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
     @Override

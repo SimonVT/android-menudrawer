@@ -26,4 +26,8 @@
         the menu appears above or below the title/action bar using MenuDrawer.setDragMode().\n\nIn this case the menu simply
         contains two items with click listeners attached to them.
     </string>
+
+    <string name="sample_layout">This sample shows how to use the drawer in a layout file.
+        \nThe top drawer is used in this sample.
+    </string>
 </resources>

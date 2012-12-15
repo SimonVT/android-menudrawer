@@ -3,14 +3,28 @@ package net.simonvt.widget;
 import net.simonvt.menudrawer.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 public class TopDrawer extends HorizontalMenuDrawer {
 
     TopDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
+    }
+
+    public TopDrawer(Context context) {
+        super(context);
+    }
+
+    public TopDrawer(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public TopDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
     @Override

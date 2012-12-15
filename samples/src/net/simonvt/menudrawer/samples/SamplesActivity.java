@@ -31,6 +31,7 @@ public class SamplesActivity extends ListActivity {
         mAdapter.addSample("Top menu", "The menu is positioned above the content", TopMenuSample.class);
         mAdapter.addSample("Touch Mode", "The menu touch behavior change according to different"
                 + " content view state (Ex: View Pager)", ViewPagerSample.class);
+        mAdapter.addSample("Layout xml", "The drawer and its menu and content is defined in XML", LayoutSample.class);
 
         setListAdapter(mAdapter);
     }
