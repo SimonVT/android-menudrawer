@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class ContentSample extends Activity {
     private MenuDrawer mMenuDrawer;
 
     private MenuAdapter mAdapter;
-    private MenuListView mList;
+    private ListView mList;
 
     private int mActivePosition = -1;
     private String mContentText;
@@ -54,13 +56,17 @@ public class ContentSample extends Activity {
 
         // A custom ListView is needed so the drawer can be notified when it's scrolled. This is to update the position
         // of the arrow indicator.
-        mList = new MenuListView(this);
+        mList = new ListView(this);
         mAdapter = new MenuAdapter(items);
         mList.setAdapter(mAdapter);
         mList.setOnItemClickListener(mItemClickListener);
-        mList.setOnScrollChangedListener(new MenuListView.OnScrollChangedListener() {
+        mList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollChanged() {
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 mMenuDrawer.invalidate();
             }
         });
