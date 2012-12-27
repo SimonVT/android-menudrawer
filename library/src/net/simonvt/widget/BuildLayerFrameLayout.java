@@ -22,17 +22,23 @@ public class BuildLayerFrameLayout extends FrameLayout {
 
     public BuildLayerFrameLayout(Context context) {
         super(context);
-        setLayerType(LAYER_TYPE_HARDWARE, null);
+        if (MenuDrawer.USE_TRANSLATIONS) {
+            setLayerType(LAYER_TYPE_HARDWARE, null);
+        }
     }
 
     public BuildLayerFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayerType(LAYER_TYPE_HARDWARE, null);
+        if (MenuDrawer.USE_TRANSLATIONS) {
+            setLayerType(LAYER_TYPE_HARDWARE, null);
+        }
     }
 
     public BuildLayerFrameLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setLayerType(LAYER_TYPE_HARDWARE, null);
+        if (MenuDrawer.USE_TRANSLATIONS) {
+            setLayerType(LAYER_TYPE_HARDWARE, null);
+        }
     }
 
     void setHardwareLayersEnabled(boolean enabled) {
