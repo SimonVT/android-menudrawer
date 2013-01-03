@@ -1096,10 +1096,10 @@ public abstract class MenuDrawer extends ViewGroup {
         final int oldOffset = (int) mOffsetPixels;
         final int newOffset = (int) offsetPixels;
 
+        mOffsetPixels = offsetPixels;
+
         if (newOffset != oldOffset) {
             onOffsetPixelsChanged(newOffset);
-
-            mOffsetPixels = offsetPixels;
             mMenuVisible = newOffset != 0;
         }
     }
