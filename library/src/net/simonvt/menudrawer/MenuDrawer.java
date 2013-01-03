@@ -1362,7 +1362,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * Returns true if the touch event occurs over the content.
      *
      * @param ev The motion event.
-     * @return True if the touch event occured over the content, false otherwise.
+     * @return True if the touch event occurred over the content, false otherwise.
      */
     protected abstract boolean isContentTouch(MotionEvent ev);
 
