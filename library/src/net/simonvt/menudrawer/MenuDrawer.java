@@ -473,7 +473,7 @@ public abstract class MenuDrawer extends ViewGroup {
         /**
          * Do not call mActivity#setContentView.
          * E.g. if using with a ListActivity, Activity#setContentView is overridden and dispatched to
-         * MenuDrawerManager#setContentView, which then again calls Activity#setContentView.
+         * MenuDrawer#setContentView, which then again would call Activity#setContentView.
          */
         ViewGroup content = (ViewGroup) activity.findViewById(android.R.id.content);
         content.removeAllViews();
