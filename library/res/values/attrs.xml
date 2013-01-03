@@ -15,20 +15,11 @@
         <!-- The size of the menu. -->
         <attr name="mdMenuSize" format="dimension" />
 
-        <!-- This attribute is deprecated. Please use mdMenuSize instead. -->
-        <attr name="mdMenuWidth" format="dimension" />
-
-        <!-- Drawable to use for the arrow indicator. Deprecated, use mdArrowIndicator. -->
-        <attr name="mdArrowDrawable" format="reference" />
-
         <!-- Drawable used as indicator for the active view. -->
         <attr name="mdActiveIndicator" format="reference" />
 
         <!-- Defines whether the content will have a dropshadow onto the menu. Default is true. -->
         <attr name="mdDropShadowEnabled" format="boolean" />
-
-        <!-- This attribute is deprecated. Please use mdDropShadowSize instead. -->
-        <attr name="mdDropShadowWidth" format="dimension" />
 
         <!-- The size of the drop shadow. Default is 6dp -->
         <attr name="mdDropShadowSize" format="dimension" />

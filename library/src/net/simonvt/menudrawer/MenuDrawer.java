@@ -89,9 +89,14 @@ public abstract class MenuDrawer extends ViewGroup {
     private static final int PEEK_DURATION = 5000;
 
     /**
-     * The maximum touch area width of the drawer in dp.
+     * The default touch bezel size of the drawer in dp.
      */
     private static final int DEFAULT_DRAG_BEZEL_DP = 24;
+
+    /**
+     * The default drop shadow size in dp.
+     */
+    private static final int DEFAULT_DROP_SHADOW_DP = 6;
 
     /**
      * The maximum animation duration.
@@ -520,20 +525,11 @@ public abstract class MenuDrawer extends ViewGroup {
         final Drawable menuBackground = a.getDrawable(R.styleable.MenuDrawer_mdMenuBackground);
 
         mMenuSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuSize, -1);
-        if (mMenuSize == -1) {
-            // 'mdMenuSize' not set. Try deprecated 'mdMenuWidth' instead.
-            mMenuSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuWidth, -1);
-        }
         mMenuSizeSet = mMenuSize != -1;
 
         final int indicatorResId = a.getResourceId(R.styleable.MenuDrawer_mdActiveIndicator, 0);
         if (indicatorResId != 0) {
             mActiveIndicator = BitmapFactory.decodeResource(getResources(), indicatorResId);
-        } else {
-            final int arrowResId = a.getResourceId(R.styleable.MenuDrawer_mdArrowDrawable, 0);
-            if (arrowResId != 0) {
-                mActiveIndicator = BitmapFactory.decodeResource(getResources(), arrowResId);
-            }
         }
 
         mDropShadowEnabled = a.getBoolean(R.styleable.MenuDrawer_mdDropShadowEnabled, true);
@@ -545,16 +541,11 @@ public abstract class MenuDrawer extends ViewGroup {
             setDropShadowColor(dropShadowColor);
         }
 
-        mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowSize, -1);
-        if (mDropShadowSize == -1) {
-            // 'mdDropShadowSize' not set. Try deprecated 'mdDropShadowWidth' instead.
-            mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowWidth, dpToPx(6));
-        }
+        mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowSize,
+                dpToPx(DEFAULT_DROP_SHADOW_DP));
 
-        mTouchBezelSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdTouchBezelSize, -1);
-        if (mTouchBezelSize == -1) {
-            mTouchBezelSize = dpToPx(DEFAULT_DRAG_BEZEL_DP);
-        }
+        mTouchBezelSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdTouchBezelSize,
+                dpToPx(DEFAULT_DRAG_BEZEL_DP));
 
         a.recycle();
 
