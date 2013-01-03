@@ -1,4 +1,4 @@
-package net.simonvt.widget;
+package net.simonvt.menudrawer;
 
 import android.app.Activity;
 import android.os.Parcelable;
@@ -207,7 +207,7 @@ public class MenuDrawerManager {
      * Returns the views current state.
      *
      * @return Returns a Parcelable object containing the MenuDrawer's current state.
-     * @deprecated Use {@link net.simonvt.widget.MenuDrawer#saveState()} instead.
+     * @deprecated Use {@link MenuDrawer#saveState()} instead.
      */
     public Parcelable onSaveDrawerState() {
         return mMenuDrawer.saveState();

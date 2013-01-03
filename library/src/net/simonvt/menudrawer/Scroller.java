@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.simonvt.menudrawer.compat;
+package net.simonvt.menudrawer;
 
 import android.content.Context;
 import android.hardware.SensorManager;

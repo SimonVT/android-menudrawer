@@ -1,4 +1,4 @@
-package net.simonvt.widget;
+package net.simonvt.menudrawer;
 
 import android.content.Context;
 import android.graphics.Canvas;

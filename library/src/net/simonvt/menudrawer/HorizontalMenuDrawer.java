@@ -1,4 +1,4 @@
-package net.simonvt.widget;
+package net.simonvt.menudrawer;
 
 import android.app.Activity;
 import android.content.Context;

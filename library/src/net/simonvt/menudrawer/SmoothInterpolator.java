@@ -1,4 +1,4 @@
-package net.simonvt.widget;
+package net.simonvt.menudrawer;
 
 import android.view.animation.Interpolator;
 

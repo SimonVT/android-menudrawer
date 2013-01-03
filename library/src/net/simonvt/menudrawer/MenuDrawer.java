@@ -1,7 +1,4 @@
-package net.simonvt.widget;
-
-import net.simonvt.menudrawer.R;
-import net.simonvt.menudrawer.compat.Scroller;
+package net.simonvt.menudrawer;
 
 import android.app.Activity;
 import android.content.Context;

@@ -1,6 +1,6 @@
 package net.simonvt.menudrawer.samples;
 
-import net.simonvt.widget.MenuDrawer;
+import net.simonvt.menudrawer.MenuDrawer;
 
 import android.app.Activity;
 import android.os.Build;

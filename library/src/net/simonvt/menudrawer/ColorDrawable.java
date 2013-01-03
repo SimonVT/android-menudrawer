@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.simonvt.widget;
+package net.simonvt.menudrawer;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
