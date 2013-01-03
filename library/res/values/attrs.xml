@@ -39,6 +39,9 @@
         <!-- Drawable used for the drop shadow. -->
         <attr name="mdDropShadow" format="reference" />
 
-        </declare-styleable>
+        <!-- The touch bezel size. -->
+        <attr name="mdTouchBezelSize" format="dimension" />
+
+    </declare-styleable>
 
 </resources>

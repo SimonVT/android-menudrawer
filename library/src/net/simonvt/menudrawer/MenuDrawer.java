@@ -91,7 +91,7 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * The maximum touch area width of the drawer in dp.
      */
-    private static final int MAX_DRAG_BEZEL_DP = 24;
+    private static final int DEFAULT_DRAG_BEZEL_DP = 24;
 
     /**
      * The maximum animation duration.
@@ -272,9 +272,9 @@ public abstract class MenuDrawer extends ViewGroup {
     private int mDrawerState = STATE_CLOSED;
 
     /**
-     * The maximum touch area size of the drawer in px.
+     * The touch bezel size of the drawer in px.
      */
-    protected int mMaxTouchBezelSize;
+    protected int mTouchBezelSize;
 
     /**
      * The touch area size of the drawer in px.
@@ -551,6 +551,11 @@ public abstract class MenuDrawer extends ViewGroup {
             mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowWidth, dpToPx(6));
         }
 
+        mTouchBezelSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdTouchBezelSize, -1);
+        if (mTouchBezelSize == -1) {
+            mTouchBezelSize = dpToPx(DEFAULT_DRAG_BEZEL_DP);
+        }
+
         a.recycle();
 
         mMenuContainer = new BuildLayerFrameLayout(context);
@@ -572,7 +577,6 @@ public abstract class MenuDrawer extends ViewGroup {
         mScroller = new Scroller(context, SMOOTH_INTERPOLATOR);
         mPeekScroller = new Scroller(context, PEEK_INTERPOLATOR);
 
-        mMaxTouchBezelSize = dpToPx(MAX_DRAG_BEZEL_DP);
         mCloseEnough = dpToPx(CLOSE_ENOUGH);
     }
 
@@ -1042,6 +1046,22 @@ public abstract class MenuDrawer extends ViewGroup {
         }
     }
 
+    /**
+     * Sets the size of the touch bezel.
+     *
+     * @param size The touch bezel size in px.
+     */
+    public void setTouchBezelSize(int size) {
+        mTouchBezelSize = size;
+    }
+
+    /**
+     * Returns the size of the touch bezel in px.
+     */
+    public int getTouchBezelSize() {
+        return mTouchBezelSize;
+    }
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
@@ -1163,7 +1183,7 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     protected void updateTouchAreaSize() {
         if (mTouchMode == TOUCH_MODE_BEZEL) {
-            mTouchSize = Math.min(getMeasuredWidth() / 10, mMaxTouchBezelSize);
+            mTouchSize = mTouchBezelSize;
         } else if (mTouchMode == TOUCH_MODE_FULLSCREEN) {
             mTouchSize = getMeasuredWidth();
         } else {
