@@ -6,21 +6,21 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 
-public abstract class HorizontalMenuDrawer extends MenuDrawer {
+public abstract class VerticalMenuDrawer extends MenuDrawer {
 
-    HorizontalMenuDrawer(Activity activity, int dragMode) {
+    VerticalMenuDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
     }
 
-    public HorizontalMenuDrawer(Context context) {
+    public VerticalMenuDrawer(Context context) {
         super(context);
     }
 
-    public HorizontalMenuDrawer(Context context, AttributeSet attrs) {
+    public VerticalMenuDrawer(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public HorizontalMenuDrawer(Context context, AttributeSet attrs, int defStyle) {
+    public VerticalMenuDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

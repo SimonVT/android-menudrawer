@@ -27,6 +27,8 @@
         contains two items with click listeners attached to them.
     </string>
 
+    <string name="sample_bottommenu">This sample shows how to position the menu below the content.</string>
+
     <string name="sample_layout">This sample shows how to use the drawer in a layout file.
         \nThe top drawer is used in this sample.
     </string>

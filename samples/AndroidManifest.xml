@@ -36,6 +36,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.simonvt.menudrawer.samples.SamplesActivity" />
         </activity>
+        <activity
+            android:name="net.simonvt.menudrawer.samples.BottomMenuSample"
+            android:theme="@style/SampleTheme.BottomDrawer" />
         <activity android:name="net.simonvt.menudrawer.samples.LayoutSample" />
     </application>
 

@@ -119,21 +119,6 @@ public abstract class MenuDrawer extends ViewGroup {
     public static final int MENU_DRAG_WINDOW = 1;
 
     /**
-     * Position the menu to the left of the content.
-     */
-    public static final int MENU_POSITION_LEFT = 0;
-
-    /**
-     * Position the menu to the right of the content.
-     */
-    public static final int MENU_POSITION_RIGHT = 1;
-
-    /**
-     * Position the menu above the content.
-     */
-    public static final int MENU_POSITION_TOP = 2;
-
-    /**
      * Disallow opening the drawer by dragging the screen.
      */
     public static final int TOUCH_MODE_NONE = 0;
@@ -422,7 +407,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity, int dragMode) {
-        return attach(activity, dragMode, MENU_POSITION_LEFT);
+        return attach(activity, dragMode, Position.LEFT);
     }
 
     /**
@@ -431,12 +416,11 @@ public abstract class MenuDrawer extends ViewGroup {
      * @param activity The activity the menu drawer will be attached to.
      * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
      *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
-     * @param gravity  Where to position the menu. Can be either {@link MenuDrawer#MENU_POSITION_LEFT} or
-     *                 {@link MenuDrawer#MENU_POSITION_RIGHT}.
+     * @param position  Where to position the menu.
      * @return The created MenuDrawer instance.
      */
-    public static MenuDrawer attach(Activity activity, int dragMode, int gravity) {
-        MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, gravity);
+    public static MenuDrawer attach(Activity activity, int dragMode, Position position) {
+        MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, position);
 
         switch (dragMode) {
             case MenuDrawer.MENU_DRAG_CONTENT:
@@ -455,19 +439,21 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
-     * Constructs the appropriate MenuDrawer based on the gravity.
+     * Constructs the appropriate MenuDrawer based on the position.
      */
-    private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, int gravity) {
-        switch (gravity) {
-            case MenuDrawer.MENU_POSITION_LEFT:
+    private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, Position position) {
+        switch (position) {
+            case LEFT:
                 return new LeftDrawer(activity, dragMode);
-            case MenuDrawer.MENU_POSITION_RIGHT:
+            case RIGHT:
                 return new RightDrawer(activity, dragMode);
-            case MenuDrawer.MENU_POSITION_TOP:
+            case TOP:
                 return new TopDrawer(activity, dragMode);
+            case BOTTOM:
+                return new BottomDrawer(activity, dragMode);
             default:
                 throw new IllegalArgumentException(
-                        "gravity must be one of MENU_POSITION_LEFT, MENU_POSITION_TOP or MENU_POSITION_RIGHT");
+                        "gravity must be one of POSITION_LEFT, POSITION_TOP, POSITION_RIGHT or POSITION_BOTTOM");
         }
     }
 

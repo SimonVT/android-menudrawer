@@ -1,6 +1,7 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.menudrawer.MenuDrawer;
+import net.simonvt.menudrawer.Position;
 
 import android.app.Activity;
 import android.os.Build;
@@ -44,7 +45,7 @@ public class RightMenuSample extends Activity {
             mContentText = inState.getString(STATE_CONTENT_TEXT);
         }
 
-        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, MenuDrawer.MENU_POSITION_RIGHT);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.RIGHT);
         mMenuDrawer.setContentView(R.layout.activity_rightmenu);
 
         List<Object> items = new ArrayList<Object>();
