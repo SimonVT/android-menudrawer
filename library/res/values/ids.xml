@@ -12,6 +12,9 @@
     <!-- The ID of the menu container. -->
     <item name="md__menu" type="id" />
 
+    <!-- The ID of the drawer. -->
+    <item name="md__drawer" type="id" />
+
     <!-- Used with View#setTag(int) to specify a position for the active view. -->
     <item name="mdActiveViewPosition" type="id" />
 </resources>

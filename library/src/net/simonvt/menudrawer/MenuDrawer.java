@@ -422,6 +422,7 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public static MenuDrawer attach(Activity activity, int dragMode, Position position) {
         MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, position);
+        menuDrawer.setId(R.id.md__drawer);
 
         switch (dragMode) {
             case MenuDrawer.MENU_DRAG_CONTENT:
