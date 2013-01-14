@@ -95,18 +95,6 @@ public class ListActivitySample extends ListActivity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle inState) {
-        super.onRestoreInstanceState(inState);
-        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:

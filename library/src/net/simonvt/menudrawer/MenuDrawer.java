@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -416,7 +417,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * @param activity The activity the menu drawer will be attached to.
      * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
      *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
-     * @param position  Where to position the menu.
+     * @param position Where to position the menu.
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity, int dragMode, Position position) {
@@ -1538,5 +1539,57 @@ public abstract class MenuDrawer extends ViewGroup {
         final boolean menuOpen = state.getBoolean(STATE_MENU_VISIBLE);
         setOffsetPixels(menuOpen ? mMenuSize : 0);
         mDrawerState = menuOpen ? STATE_OPEN : STATE_CLOSED;
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState state = new SavedState(superState);
+        state.mMenuVisible = mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING;
+
+        return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+
+        setOffsetPixels(savedState.mMenuVisible ? mMenuSize : 0);
+        mDrawerState = savedState.mMenuVisible ? STATE_OPEN : STATE_CLOSED;
+    }
+
+    static class SavedState extends BaseSavedState {
+
+        boolean mMenuVisible;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        public SavedState(Parcel in) {
+            super(in);
+            mMenuVisible = in.readInt() == 1;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(mMenuVisible ? 1 : 0);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }

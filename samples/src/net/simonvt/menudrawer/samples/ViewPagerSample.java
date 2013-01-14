@@ -26,7 +26,6 @@ import java.util.List;
 
 public class ViewPagerSample extends FragmentActivity {
 
-    private static final String STATE_MENUDRAWER = "net.simonvt.menudrawer.samples.ContentSample.menuDrawer";
     private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
 
     private MenuDrawer mMenuDrawer;
@@ -115,15 +114,8 @@ public class ViewPagerSample extends FragmentActivity {
     };
 
     @Override
-    protected void onRestoreInstanceState(Bundle inState) {
-        super.onRestoreInstanceState(inState);
-        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
         outState.putInt(STATE_ACTIVE_POSITION, mActivePosition);
     }
 

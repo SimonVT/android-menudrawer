@@ -19,7 +19,6 @@ import java.util.List;
 
 public class ContentSample extends Activity {
 
-    private static final String STATE_MENUDRAWER = "net.simonvt.menudrawer.samples.ContentSample.menuDrawer";
     private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
     private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.ContentSample.contentText";
 
@@ -92,15 +91,8 @@ public class ContentSample extends Activity {
     };
 
     @Override
-    protected void onRestoreInstanceState(Bundle inState) {
-        super.onRestoreInstanceState(inState);
-        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
         outState.putInt(STATE_ACTIVE_POSITION, mActivePosition);
         outState.putString(STATE_CONTENT_TEXT, mContentText);
     }

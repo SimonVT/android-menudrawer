@@ -18,8 +18,6 @@ import android.widget.TextView;
  * Sample class illustrating how to add a menu drawer above the content area.
  */
 public class TopMenuSample extends Activity implements OnClickListener {
-    private static final String STATE_MENUDRAWER =
-            "net.simonvt.menudrawer.samples.ContentSample.menuDrawer";
 
     private static final int MENU_OVERFLOW = 1;
 
@@ -41,18 +39,6 @@ public class TopMenuSample extends Activity implements OnClickListener {
         mContentTextView = (TextView) findViewById(R.id.contentText);
         findViewById(R.id.item1).setOnClickListener(this);
         findViewById(R.id.item2).setOnClickListener(this);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle inState) {
-        super.onRestoreInstanceState(inState);
-        mMenuDrawer.restoreState(inState.getParcelable(STATE_MENUDRAWER));
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(STATE_MENUDRAWER, mMenuDrawer.saveState());
     }
 
     @Override
