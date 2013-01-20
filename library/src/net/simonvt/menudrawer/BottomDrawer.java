@@ -7,7 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-public class BottomDrawer extends VerticalMenuDrawer {
+public class BottomDrawer extends VerticalDrawer {
 
     BottomDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
@@ -23,6 +23,16 @@ public class BottomDrawer extends VerticalMenuDrawer {
 
     public BottomDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    public void openMenu(boolean animate) {
+        animateOffsetTo(-mMenuSize, 0, animate);
+    }
+
+    @Override
+    public void closeMenu(boolean animate) {
+        animateOffsetTo(0, 0, animate);
     }
 
     @Override
@@ -49,7 +59,7 @@ public class BottomDrawer extends VerticalMenuDrawer {
         if (USE_TRANSLATIONS) {
             mContentContainer.layout(0, 0, width, height);
         } else {
-            mContentContainer.layout(0, -offsetPixels, width, height - offsetPixels);
+            mContentContainer.layout(0, offsetPixels, width, height + offsetPixels);
         }
     }
 
@@ -62,10 +72,10 @@ public class BottomDrawer extends VerticalMenuDrawer {
         if (mOffsetMenu && mMenuSize != 0) {
             final int height = getHeight();
             final int menuSize = mMenuSize;
-            final float openRatio = (menuSize - (float) offsetPixels) / menuSize;
+            final float openRatio = (menuSize + (float) offsetPixels) / menuSize;
 
             if (USE_TRANSLATIONS) {
-                if (offsetPixels > 0) {
+                if (offsetPixels != 0) {
                     final int offset = (int) (0.25f * (openRatio * menuSize));
                     mMenuContainer.setTranslationY(offset);
                 } else {
@@ -87,7 +97,7 @@ public class BottomDrawer extends VerticalMenuDrawer {
         final int width = getWidth();
         final int height = getHeight();
 
-        mDropShadowDrawable.setBounds(0, height - offsetPixels, width, height - offsetPixels + mDropShadowSize);
+        mDropShadowDrawable.setBounds(0, height + offsetPixels, width, height + offsetPixels + mDropShadowSize);
         mDropShadowDrawable.draw(canvas);
     }
 
@@ -95,9 +105,9 @@ public class BottomDrawer extends VerticalMenuDrawer {
     protected void drawMenuOverlay(Canvas canvas, int offsetPixels) {
         final int width = getWidth();
         final int height = getHeight();
-        final float openRatio = ((float) offsetPixels) / mMenuSize;
+        final float openRatio = ((float) Math.abs(offsetPixels)) / mMenuSize;
 
-        mMenuOverlay.setBounds(0, height - offsetPixels, width, height);
+        mMenuOverlay.setBounds(0, height + offsetPixels, width, height);
         mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * (1.f - openRatio)));
         mMenuOverlay.draw(canvas);
     }
@@ -113,7 +123,7 @@ public class BottomDrawer extends VerticalMenuDrawer {
                 final int menuHeight = mMenuSize;
                 final int indicatorHeight = mActiveIndicator.getHeight();
 
-                final float openRatio = ((float) offsetPixels) / menuHeight;
+                final float openRatio = ((float) Math.abs(offsetPixels)) / menuHeight;
 
                 mActiveView.getDrawingRect(mActiveRect);
                 offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
@@ -122,12 +132,12 @@ public class BottomDrawer extends VerticalMenuDrawer {
                 final float interpolatedRatio = 1.f - INDICATOR_INTERPOLATOR.getInterpolation((1.f - openRatio));
                 final int interpolatedHeight = (int) (indicatorHeight * interpolatedRatio);
 
-                final int indicatorBottom = height - offsetPixels + interpolatedHeight;
+                final int indicatorBottom = height + offsetPixels + interpolatedHeight;
                 final int indicatorTop = indicatorBottom - indicatorHeight;
                 final int indicatorLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
 
                 canvas.save();
-                canvas.clipRect(indicatorLeft, height - offsetPixels, indicatorLeft + indicatorWidth,
+                canvas.clipRect(indicatorLeft, height + offsetPixels, indicatorLeft + indicatorWidth,
                         indicatorBottom);
                 canvas.drawBitmap(mActiveIndicator, indicatorLeft, indicatorTop, null);
                 canvas.restore();
@@ -136,40 +146,50 @@ public class BottomDrawer extends VerticalMenuDrawer {
     }
 
     @Override
+    protected void initPeekScroller() {
+        final int dx = -mMenuSize / 3;
+        mPeekScroller.startScroll(0, 0, dx, 0, PEEK_DURATION);
+    }
+
+    @Override
     protected void onOffsetPixelsChanged(int offsetPixels) {
         if (USE_TRANSLATIONS) {
-            mContentContainer.setTranslationY(-offsetPixels);
+            mContentContainer.setTranslationY(offsetPixels);
             offsetMenu(offsetPixels);
             invalidate();
         } else {
-            mContentContainer.offsetTopAndBottom(-offsetPixels - mContentContainer.getTop());
+            mContentContainer.offsetTopAndBottom(offsetPixels - mContentContainer.getTop());
             offsetMenu(offsetPixels);
             invalidate();
         }
     }
 
+    //////////////////////////////////////////////////////////////////////
+    // Touch handling
+    //////////////////////////////////////////////////////////////////////
+
     @Override
     protected boolean isContentTouch(MotionEvent ev) {
-        return ev.getY() < getHeight() - mOffsetPixels;
+        return ev.getY() < getHeight() + mOffsetPixels;
     }
 
     @Override
     protected boolean onDownAllowDrag(MotionEvent ev) {
         final int height = getHeight();
         return (!mMenuVisible && mInitialMotionY >= height - mTouchSize)
-                || (mMenuVisible && mInitialMotionY <= height - mOffsetPixels);
+                || (mMenuVisible && mInitialMotionY <= height + mOffsetPixels);
     }
 
     @Override
     protected boolean onMoveAllowDrag(MotionEvent ev, float diff) {
         final int height = getHeight();
         return (!mMenuVisible && mInitialMotionY >= height - mTouchSize && (diff < 0))
-                || (mMenuVisible && mInitialMotionY <= height - mOffsetPixels);
+                || (mMenuVisible && mInitialMotionY <= height + mOffsetPixels);
     }
 
     @Override
     protected void onMoveEvent(float dx) {
-        setOffsetPixels(Math.min(Math.max(mOffsetPixels - dx, 0), mMenuSize));
+        setOffsetPixels(Math.max(Math.min(mOffsetPixels + dx, 0), -mMenuSize));
     }
 
     @Override
@@ -180,11 +200,11 @@ public class BottomDrawer extends VerticalMenuDrawer {
             mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
             final int initialVelocity = (int) mVelocityTracker.getXVelocity();
             mLastMotionY = ev.getY();
-            animateOffsetTo(mVelocityTracker.getYVelocity() < 0 ? mMenuSize : 0, initialVelocity,
+            animateOffsetTo(mVelocityTracker.getYVelocity() < 0 ? -mMenuSize : 0, initialVelocity,
                     true);
 
             // Close the menu when content is clicked while the menu is visible.
-        } else if (mMenuVisible && ev.getY() < getHeight() - offsetPixels) {
+        } else if (mMenuVisible && ev.getY() < getHeight() + offsetPixels) {
             closeMenu();
         }
     }

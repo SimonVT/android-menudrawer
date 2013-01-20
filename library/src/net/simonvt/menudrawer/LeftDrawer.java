@@ -7,7 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-public class LeftDrawer extends MenuDrawer {
+public class LeftDrawer extends HorizontalDrawer {
 
     LeftDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
@@ -23,6 +23,16 @@ public class LeftDrawer extends MenuDrawer {
 
     public LeftDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    public void openMenu(boolean animate) {
+        animateOffsetTo(mMenuSize, 0, animate);
+    }
+
+    @Override
+    public void closeMenu(boolean animate) {
+        animateOffsetTo(0, 0, animate);
     }
 
     @Override
@@ -124,6 +134,12 @@ public class LeftDrawer extends MenuDrawer {
     }
 
     @Override
+    protected void initPeekScroller() {
+        final int dx = mMenuSize / 3;
+        mPeekScroller.startScroll(0, 0, dx, 0, PEEK_DURATION);
+    }
+
+    @Override
     protected void onOffsetPixelsChanged(int offsetPixels) {
         if (USE_TRANSLATIONS) {
             mContentContainer.setTranslationX(offsetPixels);
@@ -135,6 +151,10 @@ public class LeftDrawer extends MenuDrawer {
             invalidate();
         }
     }
+
+    //////////////////////////////////////////////////////////////////////
+    // Touch handling
+    //////////////////////////////////////////////////////////////////////
 
     @Override
     protected boolean isContentTouch(MotionEvent ev) {

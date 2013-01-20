@@ -6,21 +6,23 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 
-public abstract class VerticalMenuDrawer extends MenuDrawer {
+public abstract class HorizontalDrawer extends DraggableDrawer {
 
-    VerticalMenuDrawer(Activity activity, int dragMode) {
+    private static final String TAG = "HorizontalDrawer";
+
+    HorizontalDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
     }
 
-    public VerticalMenuDrawer(Context context) {
+    public HorizontalDrawer(Context context) {
         super(context);
     }
 
-    public VerticalMenuDrawer(Context context, AttributeSet attrs) {
+    public HorizontalDrawer(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public VerticalMenuDrawer(Context context, AttributeSet attrs, int defStyle) {
+    public HorizontalDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -36,13 +38,11 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (!mMenuSizeSet)
-            mMenuSize = (int) (height * 0.25f);
-        if (mOffsetPixels == -1)
-            setOffsetPixels(mMenuSize);
+        if (!mMenuSizeSet) mMenuSize = (int) (width * 0.8f);
+        if (mOffsetPixels == -1) setOffsetPixels(mMenuSize);
 
-        final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, width);
-        final int menuHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuSize);
+        final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuSize);
+        final int menuHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, height);
         mMenuContainer.measure(menuWidthMeasureSpec, menuHeightMeasureSpec);
 
         final int contentWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, width);
@@ -66,16 +66,14 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
         }
 
         // Always intercept events over the content while menu is visible.
-        if (mMenuVisible && isContentTouch(ev))
-            return true;
+        if (mMenuVisible && isContentTouch(ev)) return true;
 
         if (mTouchMode == TOUCH_MODE_NONE) {
             return false;
         }
 
         if (action != MotionEvent.ACTION_DOWN) {
-            if (mIsDragging)
-                return true;
+            if (mIsDragging) return true;
         }
 
         switch (action) {
@@ -98,11 +96,10 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
                 final float dx = x - mLastMotionX;
                 final float xDiff = Math.abs(dx);
                 final float y = ev.getY();
-                final float dy = y - mLastMotionY;
-                final float yDiff = Math.abs(dy);
+                final float yDiff = Math.abs(y - mLastMotionY);
 
-                if (yDiff > mTouchSlop && yDiff > xDiff) {
-                    final boolean allowDrag = onMoveAllowDrag(ev, dy);
+                if (xDiff > mTouchSlop && xDiff > yDiff) {
+                    final boolean allowDrag = onMoveAllowDrag(ev, dx);
 
                     if (allowDrag) {
                         setDrawerState(STATE_DRAGGING);
@@ -115,19 +112,21 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
             }
 
             /**
-             * If you click really fast, an up or cancel event is delivered here. Just snap content to
-             * whatever is closest.
-             */
+             * If you click really fast, an up or cancel event is delivered here.
+             * Just snap content to whatever is closest.
+             * */
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                final int offsetPixels = (int) mOffsetPixels;
-                animateOffsetTo(offsetPixels > mMenuSize / 2 ? mMenuSize : 0, 0, true);
+                if (Math.abs(mOffsetPixels) > mMenuSize / 2) {
+                    openMenu();
+                } else {
+                    closeMenu();
+                }
                 break;
             }
         }
 
-        if (mVelocityTracker == null)
-            mVelocityTracker = VelocityTracker.obtain();
+        if (mVelocityTracker == null) mVelocityTracker = VelocityTracker.obtain();
         mVelocityTracker.addMovement(ev);
 
         return mIsDragging;
@@ -140,8 +139,7 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
         }
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
-        if (mVelocityTracker == null)
-            mVelocityTracker = VelocityTracker.obtain();
+        if (mVelocityTracker == null) mVelocityTracker = VelocityTracker.obtain();
         mVelocityTracker.addMovement(ev);
 
         switch (action) {
@@ -164,18 +162,17 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
                     final float dx = x - mLastMotionX;
                     final float xDiff = Math.abs(dx);
                     final float y = ev.getY();
-                    final float dy = y - mLastMotionY;
-                    final float yDiff = Math.abs(dy);
+                    final float yDiff = Math.abs(y - mLastMotionY);
 
-                    if (yDiff > mTouchSlop && yDiff > xDiff) {
-                        final boolean allowDrag = onMoveAllowDrag(ev, dy);
+                    if (xDiff > mTouchSlop && xDiff > yDiff) {
+                        final boolean allowDrag = onMoveAllowDrag(ev, dx);
 
                         if (allowDrag) {
                             setDrawerState(STATE_DRAGGING);
                             mIsDragging = true;
-                            mLastMotionY = y - mInitialMotionY > 0
-                                    ? mInitialMotionY + mTouchSlop
-                                    : mInitialMotionY - mTouchSlop;
+                            mLastMotionX = x - mInitialMotionX > 0
+                                    ? mInitialMotionX + mTouchSlop
+                                    : mInitialMotionX - mTouchSlop;
                         }
                     }
                 }
@@ -183,11 +180,11 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
                 if (mIsDragging) {
                     startLayerTranslation();
 
-                    final float y = ev.getY();
-                    final float dy = y - mLastMotionY;
+                    final float x = ev.getX();
+                    final float dx = x - mLastMotionX;
 
-                    mLastMotionY = y;
-                    onMoveEvent(dy);
+                    mLastMotionX = x;
+                    onMoveEvent(dx);
                 }
                 break;
             }
@@ -201,5 +198,4 @@ public abstract class VerticalMenuDrawer extends MenuDrawer {
 
         return true;
     }
-
 }
