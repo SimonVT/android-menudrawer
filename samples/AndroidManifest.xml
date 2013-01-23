@@ -40,6 +40,7 @@
             android:name="net.simonvt.menudrawer.samples.BottomMenuSample"
             android:theme="@style/SampleTheme.BottomDrawer" />
         <activity android:name="net.simonvt.menudrawer.samples.LayoutSample" />
+        <activity android:name="net.simonvt.menudrawer.samples.StaticDrawerSample" />
     </application>
 
 </manifest>

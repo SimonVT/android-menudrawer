@@ -32,4 +32,6 @@
     <string name="sample_layout">This sample shows how to use the drawer in a layout file.
         \nThe top drawer is used in this sample.
     </string>
+
+    <string name="sample_static">This sample shows how to attach a drawer that is always visible.</string>
 </resources>

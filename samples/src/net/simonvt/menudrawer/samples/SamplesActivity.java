@@ -33,6 +33,7 @@ public class SamplesActivity extends ListActivity {
         mAdapter.addSample("Touch Mode", "The menu touch behavior change according to different"
                 + " content view state (Ex: View Pager)", ViewPagerSample.class);
         mAdapter.addSample("Layout xml", "The drawer and its menu and content is defined in XML", LayoutSample.class);
+        mAdapter.addSample("Static drawer", "The drawer is always visible", StaticDrawerSample.class);
 
         setListAdapter(mAdapter);
     }

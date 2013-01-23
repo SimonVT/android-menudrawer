@@ -258,7 +258,21 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity, int dragMode, Position position) {
-        MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, position);
+        return attach(activity, dragMode, position, false);
+    }
+
+    /**
+     * Attaches the MenuDrawer to the Activity.
+     *
+     * @param activity     The activity the menu drawer will be attached to.
+     * @param dragMode     The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
+     *                     or {@link MenuDrawer#MENU_DRAG_WINDOW}.
+     * @param position     Where to position the menu.
+     * @param attachStatic Whether a static (non-draggable, always visible) drawer should be used.
+     * @return The created MenuDrawer instance.
+     */
+    public static MenuDrawer attach(Activity activity, int dragMode, Position position, boolean attachStatic) {
+        MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, position, attachStatic);
         menuDrawer.setId(R.id.md__drawer);
 
         switch (dragMode) {
@@ -280,7 +294,23 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * Constructs the appropriate MenuDrawer based on the position.
      */
-    private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, Position position) {
+    private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, Position position,
+            boolean attachStatic) {
+        if (attachStatic) {
+            switch (position) {
+                case LEFT:
+                    return new LeftStaticDrawer(activity, dragMode);
+                case RIGHT:
+                    return new RightStaticDrawer(activity, dragMode);
+                case TOP:
+                    return new TopStaticDrawer(activity, dragMode);
+                case BOTTOM:
+                    return new BottomStaticDrawer(activity, dragMode);
+                default:
+                    throw new IllegalArgumentException("position must be one of LEFT, TOP, RIGHT or BOTTOM");
+            }
+        }
+
         switch (position) {
             case LEFT:
                 return new LeftDrawer(activity, dragMode);
@@ -291,8 +321,7 @@ public abstract class MenuDrawer extends ViewGroup {
             case BOTTOM:
                 return new BottomDrawer(activity, dragMode);
             default:
-                throw new IllegalArgumentException(
-                        "gravity must be one of POSITION_LEFT, POSITION_TOP, POSITION_RIGHT or POSITION_BOTTOM");
+                throw new IllegalArgumentException("position must be one of LEFT, TOP, RIGHT or BOTTOM");
         }
     }
 

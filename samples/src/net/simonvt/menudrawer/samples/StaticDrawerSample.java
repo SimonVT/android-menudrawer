@@ -1,11 +1,10 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.menudrawer.MenuDrawer;
+import net.simonvt.menudrawer.Position;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContentSample extends Activity {
+public class StaticDrawerSample extends Activity {
 
     private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
     private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.ContentSample.contentText";
@@ -40,7 +39,7 @@ public class ContentSample extends Activity {
             mContentText = inState.getString(STATE_CONTENT_TEXT);
         }
 
-        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.LEFT, true);
         mMenuDrawer.setContentView(R.layout.activity_contentsample);
 
         List<Object> items = new ArrayList<Object>();
@@ -70,10 +69,6 @@ public class ContentSample extends Activity {
 
         mMenuDrawer.setMenuView(mList);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
         mContentTextView = (TextView) findViewById(R.id.contentText);
         mContentTextView.setText(mContentText);
     }
@@ -84,7 +79,6 @@ public class ContentSample extends Activity {
             mActivePosition = position;
             mMenuDrawer.setActiveView(view, position);
             mContentTextView.setText(((TextView) view).getText());
-            mMenuDrawer.closeMenu();
         }
     };
 
@@ -93,28 +87,6 @@ public class ContentSample extends Activity {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_ACTIVE_POSITION, mActivePosition);
         outState.putString(STATE_CONTENT_TEXT, mContentText);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mMenuDrawer.toggleMenu();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        final int drawerState = mMenuDrawer.getDrawerState();
-        if (drawerState == MenuDrawer.STATE_OPEN || drawerState == MenuDrawer.STATE_OPENING) {
-            mMenuDrawer.closeMenu();
-            return;
-        }
-
-        super.onBackPressed();
     }
 
     private static class Item {
