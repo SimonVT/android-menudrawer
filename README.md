@@ -23,7 +23,7 @@ Usage
 =====
 
 This library is very simple to use. It requires no extension of custom classes,
-it's simply added to an activity by calling one of the MenuDrawer#attach(...)
+it's simply added to an activity by calling one of the `MenuDrawer#attach(...)`
 methods.
 
 For more examples on how to use this library, check out the sample app.
