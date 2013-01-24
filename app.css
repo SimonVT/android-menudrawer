@@ -1,0 +1,30 @@
+body {
+	background: #f0f0f0 url('static/furley_bg.png') repeat;
+}
+
+.content {
+	padding-top: 100px;
+}
+
+h1 {
+	font-weight: 200;
+}
+h1 small {
+	font-weight: 100;
+}
+h2 {
+	margin: 30px 0 50px;
+	font-weight: 200;
+	font-size: 20px;
+	line-height: 24px;
+}
+ul {
+	margin-bottom: 30px;
+}
+
+a.btn {
+	font-weight: 100;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	color: #eee;
+}

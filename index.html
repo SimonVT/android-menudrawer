@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MenuDrawer</title>
+		<link href="static/bootstrap.min.css" rel="stylesheet">
+		<link href="static/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="app.css" rel="stylesheet">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+		<script src="static/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="span6 content">
+					<h1>MenuDrawer <small>version 2.0.0</small></h1>
+					<h2>A slide-out menu implementation, which allows users to navigate between views in your app.</h2>
+					<p>Features:</p>
+					<ul>
+						<li>The menu can be positioned along all four edges.</li>
+						<li>Supports attaching an always visible, non-draggable menu, which is useful on tablets.</li>
+						<li>The menu can wrap both the content and the entire window.</li>
+						<li>Allows the drawer to be opened by dragging the edge, the entire screen or not at all.</li>
+						<li>Can be used in XML layouts.</li>
+						<li>Indicator that shows which screen is currently visible.</li>
+					</ul>
+					<p>
+						<a href="https://github.com/SimonVT/android-menudrawer/archive/master.zip" class="btn btn-large btn-inverse">Download Library</a>
+						<a href="android-menudrawer-sample-2.0.0.apk" class="btn btn-large btn-inverse">Download Sample</a>
+					</p>
+				</div>
+				<div class="span5 offset1">
+					<div id="myCarousel" class="carousel slide" data-interval="3000">
+						<div class="carousel-inner">
+							<div class="active item">
+								<img src="static/left_content.png">
+							</div>
+							<div class="item">
+								<img src="static/left_window.png">
+							</div>
+							<div class="item">
+								<img src="static/bottom.png">
+							</div>
+						</div>
+						<!-- Carousel nav -->
+						<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+						<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
