@@ -252,6 +252,17 @@ public abstract class MenuDrawer extends ViewGroup {
      * Attaches the MenuDrawer to the Activity.
      *
      * @param activity The activity the menu drawer will be attached to.
+     * @param position Where to position the menu.
+     * @return The created MenuDrawer instance.
+     */
+    public static MenuDrawer attach(Activity activity, Position position) {
+        return attach(activity, MENU_DRAG_CONTENT, position);
+    }
+
+    /**
+     * Attaches the MenuDrawer to the Activity.
+     *
+     * @param activity The activity the menu drawer will be attached to.
      * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
      *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
      * @param position Where to position the menu.
