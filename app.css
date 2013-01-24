@@ -28,3 +28,10 @@ a.btn {
 	padding-bottom: 5px;
 	color: #eee;
 }
+
+#ribbon img {
+    position: fixed;
+    top: 0;
+    right: 0;
+    border: 0;
+}
