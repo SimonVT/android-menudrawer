@@ -1,9 +1,74 @@
 MenuDrawer
-=========
+==========
 
-A menu drawer implementation based on [this article][1] by [Cyril Mottier][2].
+A slide-out menu implementation, which allows users to navigate between views
+in your app. Most commonly the menu is revealed by either dragging the edge
+of the screen, or clicking the 'up' button in the action bar.
 
-It allows dragging of both the content, and the entire window.
+
+Features
+--------
+
+ * The menu can be positioned along all four edges.
+ * Supports attaching an always visible, non-draggable menu, which is useful
+   on e.g. tablets.
+ * The menu can wrap both the content and the entire window.
+ * Allows the drawer to be opened by dragging the edge, the entire screen or
+   not at all.
+ * Can be used in XML layouts.
+ * Indicator that shows which screen is currently visible.
+
+
+Usage
+=====
+
+This library is very simple to use. It requires no extension of custom classes,
+it's simply added to an activity by calling one of the MenuDrawer#attach(...)
+methods.
+
+For more examples on how to use this library, check out the sample app.
+
+
+Left menu
+---------
+```java
+public class SampleActivity extends Activity {
+
+    private MenuDrawer mDrawer;
+
+    @Override
+    protected void onCreate(Bundle state) {
+        super.onCreate(state);
+        mDrawer = MenuDrawer.attach(this);
+        mDrawer.setContentView(R.layout.activity_sample);
+        mDrawer.setMenu(R.layout.menu_sample);
+    }
+}
+```
+
+
+Right menu
+----------
+```java
+public class SampleActivity extends Activity {
+
+    private MenuDrawer mDrawer;
+
+    @Override
+    protected void onCreate(Bundle state) {
+        super.onCreate(state);
+        mDrawer = MenuDrawer.attach(this, Position.RIGHT);
+        mDrawer.setContentView(R.layout.activity_sample);
+        mDrawer.setMenu(R.layout.menu_sample);
+    }
+}
+```
+
+
+Credits
+=======
+
+ * Cyril Mottier for his [articles][1] on the pattern
 
 
 License
@@ -29,4 +94,3 @@ License
 
 
  [1]: http://android.cyrilmottier.com/?p=658
- [2]: https://github.com/cyrilmottier
