@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 public class BottomStaticDrawer extends StaticDrawer {
 
     BottomStaticDrawer(Activity activity, int dragMode) {
-        super(activity, dragMode, Position.BOTTOM);
+        super(activity, dragMode);
     }
 
     public BottomStaticDrawer(Context context) {
@@ -21,6 +21,12 @@ public class BottomStaticDrawer extends StaticDrawer {
 
     public BottomStaticDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super.initDrawer(context, attrs, defStyle);
+        mPosition = Position.BOTTOM;
     }
 
     @Override

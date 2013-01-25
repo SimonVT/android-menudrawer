@@ -8,12 +8,10 @@ import android.util.AttributeSet;
 
 public abstract class StaticDrawer extends MenuDrawer {
 
-    private Position mPosition;
+    protected Position mPosition;
 
-    StaticDrawer(Activity activity, int dragMode, Position position) {
+    StaticDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
-
-        mPosition = position;
     }
 
     public StaticDrawer(Context context) {

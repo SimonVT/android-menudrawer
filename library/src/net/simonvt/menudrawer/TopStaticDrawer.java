@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 public class TopStaticDrawer extends StaticDrawer {
 
     TopStaticDrawer(Activity activity, int dragMode) {
-        super(activity, dragMode, Position.TOP);
+        super(activity, dragMode);
     }
 
     public TopStaticDrawer(Context context) {
@@ -21,6 +21,12 @@ public class TopStaticDrawer extends StaticDrawer {
 
     public TopStaticDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super.initDrawer(context, attrs, defStyle);
+        mPosition = Position.TOP;
     }
 
     @Override

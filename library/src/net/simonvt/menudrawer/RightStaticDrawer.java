@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 public class RightStaticDrawer extends StaticDrawer {
 
     RightStaticDrawer(Activity activity, int dragMode) {
-        super(activity, dragMode, Position.RIGHT);
+        super(activity, dragMode);
     }
 
     public RightStaticDrawer(Context context) {
@@ -21,6 +21,12 @@ public class RightStaticDrawer extends StaticDrawer {
 
     public RightStaticDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super.initDrawer(context, attrs, defStyle);
+        mPosition = Position.RIGHT;
     }
 
     @Override
