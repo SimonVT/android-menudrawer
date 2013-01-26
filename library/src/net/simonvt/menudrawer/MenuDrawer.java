@@ -421,30 +421,31 @@ public abstract class MenuDrawer extends ViewGroup {
         mMenuContainer = new BuildLayerFrameLayout(context);
         mMenuContainer.setId(R.id.md__menu);
         mMenuContainer.setBackgroundDrawable(menuBackground);
-        addView(mMenuContainer);
+        super.addView(mMenuContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mContentContainer = new NoClickThroughFrameLayout(context);
         mContentContainer.setId(R.id.md__content);
         mContentContainer.setBackgroundDrawable(contentBackground);
-        addView(mContentContainer);
+        super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mMenuOverlay = new ColorDrawable(0xFF000000);
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        View mv = findViewById(R.id.mdMenu);
-        if (mv != null) {
-            removeView(mv);
-            mMenuContainer.addView(mv);
+    public void addView(View child, int index, LayoutParams params) {
+        int childCount = mMenuContainer.getChildCount();
+        if (childCount == 0) {
+            mMenuContainer.addView(child, index, params);
+            return;
         }
 
-        View cv = findViewById(R.id.mdContent);
-        if (cv != null) {
-            removeView(cv);
-            mContentContainer.addView(cv);
+        childCount = mContentContainer.getChildCount();
+        if (childCount == 0) {
+            mContentContainer.addView(child, index, params);
+            return;
         }
+
+        throw new IllegalStateException("MenuDrawer can only hold two child views");
     }
 
     protected int dpToPx(int dp) {
