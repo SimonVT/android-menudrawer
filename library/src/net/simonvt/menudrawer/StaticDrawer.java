@@ -3,7 +3,6 @@ package net.simonvt.menudrawer;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 
 public abstract class StaticDrawer extends MenuDrawer {
@@ -205,14 +204,5 @@ public abstract class StaticDrawer extends MenuDrawer {
     @Override
     public int getTouchBezelSize() {
         return 0;
-    }
-
-    @Override
-    public Parcelable saveState() {
-        return null;
-    }
-
-    @Override
-    public void restoreState(Parcelable in) {
     }
 }

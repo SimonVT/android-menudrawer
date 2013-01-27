@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -266,6 +268,11 @@ public abstract class MenuDrawer extends ViewGroup {
      * Whether the indicator is currently animating.
      */
     protected boolean mIndicatorAnimating;
+
+    /**
+     * Bundle used to hold the drawers state.
+     */
+    protected Bundle mState;
 
     /**
      * Attaches the MenuDrawer to the Activity.
@@ -918,13 +925,75 @@ public abstract class MenuDrawer extends ViewGroup {
      *
      * @return Returns a Parcelable containing the drawer state.
      */
-    public abstract Parcelable saveState();
+    public final Parcelable saveState() {
+        if (mState == null) mState = new Bundle();
+        saveState(mState);
+        return mState;
+    }
+
+    void saveState(Bundle state) {
+        // State saving isn't required for subclasses.
+    }
 
     /**
      * Restores the state of the drawer.
      *
      * @param in A parcelable containing the drawer state.
      */
-    public abstract void restoreState(Parcelable in);
+    public void restoreState(Parcelable in) {
+        mState = (Bundle) in;
+    }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState state = new SavedState(superState);
+
+        if (mState == null) mState = new Bundle();
+        saveState(mState);
+
+        state.mState = mState;
+        return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+
+        restoreState(savedState.mState);
+    }
+
+    static class SavedState extends BaseSavedState {
+
+        Bundle mState;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        public SavedState(Parcel in) {
+            super(in);
+            mState = in.readBundle();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeBundle(mState);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
 }
