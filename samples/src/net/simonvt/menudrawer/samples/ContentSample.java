@@ -52,6 +52,12 @@ public class ContentSample extends Activity {
         items.add(new Category("Cat 2"));
         items.add(new Item("Item 5", R.drawable.ic_action_refresh_dark));
         items.add(new Item("Item 6", R.drawable.ic_action_select_all_dark));
+        items.add(new Category("Cat 3"));
+        items.add(new Item("Item 7", R.drawable.ic_action_refresh_dark));
+        items.add(new Item("Item 8", R.drawable.ic_action_select_all_dark));
+        items.add(new Category("Cat 4"));
+        items.add(new Item("Item 9", R.drawable.ic_action_refresh_dark));
+        items.add(new Item("Item 10", R.drawable.ic_action_select_all_dark));
 
         mList = new ListView(this);
         mAdapter = new MenuAdapter(items);
