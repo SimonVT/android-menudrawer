@@ -31,7 +31,7 @@
             android:theme="@style/SampleTheme.RightDrawer" />
         <activity
             android:name="net.simonvt.menudrawer.samples.TopMenuSample"
-            android:theme="@style/SampleTheme.TopDrawer" >
+            android:theme="@style/SampleTheme.TopDrawer">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.simonvt.menudrawer.samples.SamplesActivity" />
@@ -39,7 +39,9 @@
         <activity
             android:name="net.simonvt.menudrawer.samples.BottomMenuSample"
             android:theme="@style/SampleTheme.BottomDrawer" />
-        <activity android:name="net.simonvt.menudrawer.samples.LayoutSample" />
+        <activity
+            android:name="net.simonvt.menudrawer.samples.LayoutSample"
+            android:theme="@style/SampleTheme.TopDrawer" />
         <activity android:name="net.simonvt.menudrawer.samples.StaticDrawerSample" />
     </application>
 
