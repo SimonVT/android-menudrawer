@@ -2,10 +2,13 @@ package net.simonvt.menudrawer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 
 public class BottomStaticDrawer extends StaticDrawer {
+
+    private int mIndicatorLeft;
 
     BottomStaticDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
@@ -37,5 +40,46 @@ public class BottomStaticDrawer extends StaticDrawer {
                 endColor,
         });
         invalidate();
+    }
+
+    @Override
+    protected void drawIndicator(Canvas canvas) {
+        if (mActiveView != null && mActiveView.getParent() != null) {
+            Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
+            final int pos = position == null ? 0 : position;
+
+            if (pos == mActivePosition) {
+                final int height = getHeight();
+                final int menuHeight = mMenuSize;
+                final int indicatorHeight = mActiveIndicator.getHeight();
+
+                mActiveView.getDrawingRect(mActiveRect);
+                offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
+                final int indicatorWidth = mActiveIndicator.getWidth();
+
+                final int indicatorTop = height - menuHeight;
+                final int indicatorBottom = indicatorTop + indicatorHeight;
+                if (mIndicatorAnimating) {
+                    final int finalLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
+                    final int startLeft = mIndicatorStartPos;
+                    final int diff = finalLeft - startLeft;
+                    final int startOffset = (int) (diff * mIndicatorOffset);
+                    mIndicatorLeft = startLeft + startOffset;
+                } else {
+                    mIndicatorLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
+                }
+
+                canvas.save();
+                canvas.clipRect(mIndicatorLeft, indicatorTop, mIndicatorLeft + indicatorWidth,
+                        indicatorBottom);
+                canvas.drawBitmap(mActiveIndicator, mIndicatorLeft, indicatorTop, null);
+                canvas.restore();
+            }
+        }
+    }
+
+    @Override
+    protected int getIndicatorStartPos() {
+        return mIndicatorLeft;
     }
 }

@@ -33,11 +33,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
     private static final Interpolator PEEK_INTERPOLATOR = new PeekInterpolator();
 
     /**
-     * Interpolator used when animating the drawer open/closed.
-     */
-    private static final Interpolator SMOOTH_INTERPOLATOR = new SmoothInterpolator();
-
-    /**
      * The time between each frame when animating the drawer.
      */
     protected static final int ANIMATION_DELAY = 1000 / 60;
@@ -196,7 +191,7 @@ public abstract class DraggableDrawer extends MenuDrawer {
         mTouchSlop = configuration.getScaledTouchSlop();
         mMaxVelocity = configuration.getScaledMaximumFlingVelocity();
 
-        mScroller = new Scroller(context, DraggableDrawer.SMOOTH_INTERPOLATOR);
+        mScroller = new Scroller(context, MenuDrawer.SMOOTH_INTERPOLATOR);
         mPeekScroller = new Scroller(context, DraggableDrawer.PEEK_INTERPOLATOR);
 
         mCloseEnough = dpToPx(DraggableDrawer.CLOSE_ENOUGH);

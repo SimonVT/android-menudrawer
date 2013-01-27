@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 
 public abstract class MenuDrawer extends ViewGroup {
 
@@ -105,6 +106,16 @@ public abstract class MenuDrawer extends ViewGroup {
      * Indicates whether to use {@link View#setTranslationX(float)} when positioning views.
      */
     static final boolean USE_TRANSLATIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
+
+    /**
+     * Time to animate the indicator to the new active view.
+     */
+    static final int INDICATOR_ANIM_DURATION = 800;
+
+    /**
+     * Interpolator used when animating the drawer open/closed.
+     */
+    protected static final Interpolator SMOOTH_INTERPOLATOR = new SmoothInterpolator();
 
     /**
      * Drawable used as menu overlay.
@@ -225,6 +236,36 @@ public abstract class MenuDrawer extends ViewGroup {
      * The Activity the drawer is attached to.
      */
     private Activity mActivity;
+
+    /**
+     * Scroller used when animating the indicator to a new position.
+     */
+    private FloatScroller mIndicatorScroller;
+
+    /**
+     * Runnable used when animating the indicator to a new position.
+     */
+    private Runnable mIndicatorRunnable = new Runnable() {
+        @Override
+        public void run() {
+            animateIndicatorInvalidate();
+        }
+    };
+
+    /**
+     * The start position of the indicator when animating it to a new position.
+     */
+    protected int mIndicatorStartPos;
+
+    /**
+     * [0..1] value indicating the current progress of the animation.
+     */
+    protected float mIndicatorOffset;
+
+    /**
+     * Whether the indicator is currently animating.
+     */
+    protected boolean mIndicatorAnimating;
 
     /**
      * Attaches the MenuDrawer to the Activity.
@@ -429,6 +470,8 @@ public abstract class MenuDrawer extends ViewGroup {
         super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mMenuOverlay = new ColorDrawable(0xFF000000);
+
+        mIndicatorScroller = new FloatScroller(SMOOTH_INTERPOLATOR);
     }
 
     @Override
@@ -527,8 +570,59 @@ public abstract class MenuDrawer extends ViewGroup {
      *                 must be called first.
      */
     public void setActiveView(View v, int position) {
+        final View oldView = mActiveView;
         mActiveView = v;
         mActivePosition = position;
+
+        if (oldView != null) {
+            startAnimatingIndicator();
+        }
+
+        invalidate();
+    }
+
+    /**
+     * Starts animating the indicator to a new position.
+     */
+    private void startAnimatingIndicator() {
+        mIndicatorStartPos = getIndicatorStartPos();
+        mIndicatorAnimating = true;
+        mIndicatorScroller.startScroll(0.0f, 1.0f, INDICATOR_ANIM_DURATION);
+
+        animateIndicatorInvalidate();
+    }
+
+    /**
+     * Returns the start position of the indicator.
+     *
+     * @return The start position of the indicator.
+     */
+    protected abstract int getIndicatorStartPos();
+
+    /**
+     * Callback when each frame in the indicator animation should be drawn.
+     */
+    private void animateIndicatorInvalidate() {
+        if (mIndicatorScroller.computeScrollOffset()) {
+            mIndicatorOffset = mIndicatorScroller.getCurr();
+            Log.d(TAG, "New offset: " + mIndicatorOffset);
+            invalidate();
+
+            if (!mIndicatorScroller.isFinished()) {
+                postOnAnimation(mIndicatorRunnable);
+                return;
+            }
+        }
+
+        completeAnimatingIndicator();
+    }
+
+    /**
+     * Called when the indicator animation has completed.
+     */
+    private void completeAnimatingIndicator() {
+        mIndicatorOffset = 1.0f;
+        mIndicatorAnimating = false;
         invalidate();
     }
 

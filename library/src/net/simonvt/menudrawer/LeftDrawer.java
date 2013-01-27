@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 
 public class LeftDrawer extends HorizontalDrawer {
 
+    private int mIndicatorTop;
+
     LeftDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
     }
@@ -121,16 +123,30 @@ public class LeftDrawer extends HorizontalDrawer {
                 final float interpolatedRatio = 1.f - INDICATOR_INTERPOLATOR.getInterpolation((1.f - openRatio));
                 final int interpolatedWidth = (int) (mActiveIndicator.getWidth() * interpolatedRatio);
 
-                final int top = mActiveRect.top + ((mActiveRect.height() - mActiveIndicator.getHeight()) / 2);
+                if (mIndicatorAnimating) {
+                    final int indicatorFinalTop = mActiveRect.top + ((mActiveRect.height()
+                            - mActiveIndicator.getHeight()) / 2);
+                    final int indicatorStartTop = mIndicatorStartPos;
+                    final int diff = indicatorFinalTop - indicatorStartTop;
+                    final int startOffset = (int) (diff * mIndicatorOffset);
+                    mIndicatorTop = indicatorStartTop + startOffset;
+                } else {
+                    mIndicatorTop = mActiveRect.top + ((mActiveRect.height() - mActiveIndicator.getHeight()) / 2);
+                }
                 final int right = offsetPixels;
                 final int left = right - interpolatedWidth;
 
                 canvas.save();
                 canvas.clipRect(left, 0, right, getHeight());
-                canvas.drawBitmap(mActiveIndicator, left, top, null);
+                canvas.drawBitmap(mActiveIndicator, left, mIndicatorTop, null);
                 canvas.restore();
             }
         }
+    }
+
+    @Override
+    protected int getIndicatorStartPos() {
+        return mIndicatorTop;
     }
 
     @Override

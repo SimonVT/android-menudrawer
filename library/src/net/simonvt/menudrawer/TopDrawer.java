@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 
 public class TopDrawer extends VerticalDrawer {
 
+    private int mIndicatorLeft;
+
     TopDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
     }
@@ -127,14 +129,27 @@ public class TopDrawer extends VerticalDrawer {
                 final int interpolatedHeight = (int) (indicatorHeight * interpolatedRatio);
 
                 final int indicatorTop = offsetPixels - interpolatedHeight;
-                final int indicatorLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
+                if (mIndicatorAnimating) {
+                    final int finalLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
+                    final int startLeft = mIndicatorStartPos;
+                    final int diff = finalLeft - startLeft;
+                    final int startOffset = (int) (diff * mIndicatorOffset);
+                    mIndicatorLeft = startLeft + startOffset;
+                } else {
+                    mIndicatorLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
+                }
 
                 canvas.save();
-                canvas.clipRect(indicatorLeft, indicatorTop, indicatorLeft + indicatorWidth, offsetPixels);
-                canvas.drawBitmap(mActiveIndicator, indicatorLeft, indicatorTop, null);
+                canvas.clipRect(mIndicatorLeft, indicatorTop, mIndicatorLeft + indicatorWidth, offsetPixels);
+                canvas.drawBitmap(mActiveIndicator, mIndicatorLeft, indicatorTop, null);
                 canvas.restore();
             }
         }
+    }
+
+    @Override
+    protected int getIndicatorStartPos() {
+        return mIndicatorLeft;
     }
 
     @Override
