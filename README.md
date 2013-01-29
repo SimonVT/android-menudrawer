@@ -41,7 +41,7 @@ public class SampleActivity extends Activity {
         super.onCreate(state);
         mDrawer = MenuDrawer.attach(this);
         mDrawer.setContentView(R.layout.activity_sample);
-        mDrawer.setMenu(R.layout.menu_sample);
+        mDrawer.setMenuView(R.layout.menu_sample);
     }
 }
 ```
@@ -59,7 +59,7 @@ public class SampleActivity extends Activity {
         super.onCreate(state);
         mDrawer = MenuDrawer.attach(this, Position.RIGHT);
         mDrawer.setContentView(R.layout.activity_sample);
-        mDrawer.setMenu(R.layout.menu_sample);
+        mDrawer.setMenuView(R.layout.menu_sample);
     }
 }
 ```
