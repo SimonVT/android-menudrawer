@@ -45,6 +45,11 @@ public abstract class MenuDrawer extends ViewGroup {
     private static final boolean DEBUG = false;
 
     /**
+     * The time between each frame when animating the drawer.
+     */
+    protected static final int ANIMATION_DELAY = 1000 / 60;
+
+    /**
      * The default touch bezel size of the drawer in dp.
      */
     private static final int DEFAULT_DRAG_BEZEL_DP = 24;
@@ -911,6 +916,15 @@ public abstract class MenuDrawer extends ViewGroup {
      * Returns the size of the touch bezel in px.
      */
     public abstract int getTouchBezelSize();
+
+    @Override
+    public void postOnAnimation(Runnable action) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            super.postOnAnimation(action);
+        } else {
+            postDelayed(action, ANIMATION_DELAY);
+        }
+    }
 
     @Override
     protected boolean fitSystemWindows(Rect insets) {

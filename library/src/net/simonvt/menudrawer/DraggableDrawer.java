@@ -3,7 +3,6 @@ package net.simonvt.menudrawer;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -30,11 +29,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
      * Interpolator used for peeking at the drawer.
      */
     private static final Interpolator PEEK_INTERPOLATOR = new PeekInterpolator();
-
-    /**
-     * The time between each frame when animating the drawer.
-     */
-    protected static final int ANIMATION_DELAY = 1000 / 60;
 
     /**
      * The maximum alpha of the dark menu overlay used for dimming the menu.
@@ -499,15 +493,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
         removeCallbacks(mPeekStartRunnable);
         removeCallbacks(mPeekRunnable);
         stopLayerTranslation();
-    }
-
-    @Override
-    public void postOnAnimation(Runnable action) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            super.postOnAnimation(action);
-        } else {
-            postDelayed(action, ANIMATION_DELAY);
-        }
     }
 
     protected boolean isCloseEnough() {
