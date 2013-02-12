@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 2.0.1 *(2013-02-12)*
+----------------------------
+ * Indicator now animates between active views
+ * Fixed restoring state for right/bottom drawer
+
 Version 2.0.0 *(2013-01-23)*
 ----------------------------
 
