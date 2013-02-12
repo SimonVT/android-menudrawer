@@ -581,7 +581,11 @@ public abstract class DraggableDrawer extends MenuDrawer {
         super.restoreState(in);
         Bundle state = (Bundle) in;
         final boolean menuOpen = state.getBoolean(STATE_MENU_VISIBLE);
-        setOffsetPixels(menuOpen ? mMenuSize : 0);
+        if (menuOpen) {
+            openMenu(false);
+        } else {
+            setOffsetPixels(0);
+        }
         mDrawerState = menuOpen ? STATE_OPEN : STATE_CLOSED;
     }
 }

@@ -39,7 +39,7 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
         if (!mMenuSizeSet) mMenuSize = (int) (width * 0.8f);
-        if (mOffsetPixels == -1) setOffsetPixels(mMenuSize);
+        if (mOffsetPixels == -1) openMenu(false);
 
         final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuSize);
         final int menuHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, height);

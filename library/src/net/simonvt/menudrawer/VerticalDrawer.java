@@ -37,7 +37,7 @@ public abstract class VerticalDrawer extends DraggableDrawer {
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
         if (!mMenuSizeSet) mMenuSize = (int) (height * 0.25f);
-        if (mOffsetPixels == -1) setOffsetPixels(mMenuSize);
+        if (mOffsetPixels == -1) openMenu(false);
 
         final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, width);
         final int menuHeightMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, mMenuSize);
