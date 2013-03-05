@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -63,16 +62,6 @@ public class ContentSample extends Activity {
         mAdapter = new MenuAdapter(items);
         mList.setAdapter(mAdapter);
         mList.setOnItemClickListener(mItemClickListener);
-        mList.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                mMenuDrawer.invalidate();
-            }
-        });
 
         mMenuDrawer.setMenuView(mList);
 

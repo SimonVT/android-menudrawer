@@ -30,14 +30,6 @@ public class WindowSample extends Activity implements View.OnClickListener {
         mMenuDrawer.setContentView(R.layout.activity_windowsample);
         mMenuDrawer.setMenuView(R.layout.menu_scrollview);
 
-        MenuScrollView msv = (MenuScrollView) mMenuDrawer.getMenuView();
-        msv.setOnScrollChangedListener(new MenuScrollView.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                mMenuDrawer.invalidate();
-            }
-        });
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }

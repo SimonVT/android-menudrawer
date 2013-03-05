@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.simonvt.menudrawer.samples.MenuScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -70,4 +70,4 @@
             style="@style/MenuDrawer.Widget.Title" />
 
     </LinearLayout>
-</net.simonvt.menudrawer.samples.MenuScrollView>
+</ScrollView>

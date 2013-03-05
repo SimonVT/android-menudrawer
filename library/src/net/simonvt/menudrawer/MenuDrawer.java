@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.animation.Interpolator;
 
 public abstract class MenuDrawer extends ViewGroup {
@@ -165,6 +166,11 @@ public abstract class MenuDrawer extends ViewGroup {
      * Used when reading the position of the active view.
      */
     protected final Rect mActiveRect = new Rect();
+
+    /**
+     * Temporary {@link Rect} used for deciding whether the view should be invalidated so the indicator can be redrawn.
+     */
+    private final Rect mTempRect = new Rect();
 
     /**
      * The custom menu view set by the user.
@@ -521,6 +527,18 @@ public abstract class MenuDrawer extends ViewGroup {
         return false;
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        getViewTreeObserver().addOnScrollChangedListener(mScrollListener);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        getViewTreeObserver().removeOnScrollChangedListener(mScrollListener);
+        super.onDetachedFromWindow();
+    }
+
     /**
      * Toggles the menu open and close with animation.
      */
@@ -615,6 +633,23 @@ public abstract class MenuDrawer extends ViewGroup {
 
         invalidate();
     }
+
+    /**
+     * Scroll listener that checks whether the active view has moved before the drawer is invalidated.
+     */
+    private ViewTreeObserver.OnScrollChangedListener mScrollListener = new ViewTreeObserver.OnScrollChangedListener() {
+        @Override
+        public void onScrollChanged() {
+            if (mActiveView != null && isViewDescendant(mActiveView)) {
+                mActiveView.getDrawingRect(mTempRect);
+                offsetDescendantRectToMyCoords(mActiveView, mTempRect);
+                if (mTempRect.left != mActiveRect.left || mTempRect.top != mActiveRect.top
+                        || mTempRect.right != mActiveRect.right || mTempRect.bottom != mActiveRect.bottom) {
+                    invalidate();
+                }
+            }
+        }
+    };
 
     /**
      * Starts animating the indicator to a new position.
