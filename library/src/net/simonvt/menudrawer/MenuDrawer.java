@@ -675,7 +675,6 @@ public abstract class MenuDrawer extends ViewGroup {
     private void animateIndicatorInvalidate() {
         if (mIndicatorScroller.computeScrollOffset()) {
             mIndicatorOffset = mIndicatorScroller.getCurr();
-            Log.d(TAG, "New offset: " + mIndicatorOffset);
             invalidate();
 
             if (!mIndicatorScroller.isFinished()) {
