@@ -33,6 +33,9 @@
         <!-- The touch bezel size. -->
         <attr name="mdTouchBezelSize" format="dimension" />
 
+        <!-- Whether the indicator should be animated between active views. -->
+        <attr name="mdAllowIndicatorAnimation" format="boolean" />
+
     </declare-styleable>
 
 </resources>

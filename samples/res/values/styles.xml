@@ -44,6 +44,7 @@
     <style name="MenuDrawerStyle.Top" parent="Widget.MenuDrawer">
         <item name="mdActiveIndicator">@drawable/menu_arrow_top</item>
         <item name="mdMenuSize">64dp</item>
+        <item name="mdAllowIndicatorAnimation">true</item>
     </style>
 
     <style name="MenuDrawerStyle.Bottom" parent="Widget.MenuDrawer">

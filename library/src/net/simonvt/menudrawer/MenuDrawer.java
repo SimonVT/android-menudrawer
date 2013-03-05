@@ -163,6 +163,11 @@ public abstract class MenuDrawer extends ViewGroup {
     protected int mActivePosition;
 
     /**
+     * Whether the indicator should be animated between positions.
+     */
+    private boolean mAllowIndicatorAnimation;
+
+    /**
      * Used when reading the position of the active view.
      */
     protected final Rect mActiveRect = new Rect();
@@ -476,6 +481,8 @@ public abstract class MenuDrawer extends ViewGroup {
         mTouchBezelSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdTouchBezelSize,
                 dpToPx(DEFAULT_DRAG_BEZEL_DP));
 
+        mAllowIndicatorAnimation = a.getBoolean(R.styleable.MenuDrawer_mdAllowIndicatorAnimation, false);
+
         a.recycle();
 
         mMenuContainer = new BuildLayerFrameLayout(context);
@@ -627,11 +634,32 @@ public abstract class MenuDrawer extends ViewGroup {
         mActiveView = v;
         mActivePosition = position;
 
-        if (oldView != null) {
+        if (mAllowIndicatorAnimation && oldView != null) {
             startAnimatingIndicator();
         }
 
         invalidate();
+    }
+
+    /**
+     * Sets whether the indicator should be animated between active views.
+     *
+     * @param animate Whether the indicator should be animated between active views.
+     */
+    public void setAllowIndicatorAnimation(boolean animate) {
+        if (animate != mAllowIndicatorAnimation) {
+            mAllowIndicatorAnimation = animate;
+            completeAnimatingIndicator();
+        }
+    }
+
+    /**
+     * Indicates whether the indicator should be animated between active views.
+     *
+     * @return Whether the indicator should be animated between active views.
+     */
+    public boolean getAllowIndicatorAnimation() {
+        return mAllowIndicatorAnimation;
     }
 
     /**
