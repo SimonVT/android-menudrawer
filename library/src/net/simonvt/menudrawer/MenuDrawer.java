@@ -573,9 +573,18 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * Set the size of the menu drawer when open.
      *
-     * @param size
+     * @param size The size of the menu.
      */
     public abstract void setMenuSize(int size);
+
+    /**
+     * Returns the size of the menu.
+     *
+     * @return The size of the menu.
+     */
+    public int getMenuSize() {
+        return mMenuSize;
+    }
 
     /**
      * Set the active view.
