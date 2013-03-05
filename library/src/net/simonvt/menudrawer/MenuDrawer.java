@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.Interpolator;
 
 public abstract class MenuDrawer extends ViewGroup {
@@ -505,6 +506,19 @@ public abstract class MenuDrawer extends ViewGroup {
 
     protected int dpToPx(int dp) {
         return (int) (getResources().getDisplayMetrics().density * dp + 0.5f);
+    }
+
+    protected boolean isViewDescendant(View v) {
+        ViewParent parent = v.getParent();
+        while (parent != null) {
+            if (parent == this) {
+                return true;
+            }
+
+            parent = parent.getParent();
+        }
+
+        return false;
     }
 
     /**

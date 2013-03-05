@@ -44,7 +44,7 @@ public class RightStaticDrawer extends StaticDrawer {
 
     @Override
     protected void drawIndicator(Canvas canvas) {
-        if (mActiveView != null && mActiveView.getParent() != null) {
+        if (mActiveView != null && isViewDescendant(mActiveView)) {
             Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
             final int pos = position == null ? 0 : position;
 

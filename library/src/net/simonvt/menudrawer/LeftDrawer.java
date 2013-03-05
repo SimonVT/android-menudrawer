@@ -110,7 +110,7 @@ public class LeftDrawer extends HorizontalDrawer {
 
     @Override
     protected void drawIndicator(Canvas canvas, int offsetPixels) {
-        if (mActiveView != null && mActiveView.getParent() != null) {
+        if (mActiveView != null && isViewDescendant(mActiveView)) {
             Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
             final int pos = position == null ? 0 : position;
 
