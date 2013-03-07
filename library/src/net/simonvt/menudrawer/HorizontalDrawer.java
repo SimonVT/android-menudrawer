@@ -99,6 +99,12 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
                 final float yDiff = Math.abs(y - mLastMotionY);
 
                 if (xDiff > mTouchSlop && xDiff > yDiff) {
+                    if (mOnInterceptMoveEventListener != null && mTouchMode == TOUCH_MODE_FULLSCREEN
+                            && canChildScrollHorizontally(mContentContainer, (int) dx, (int) x, (int) y)) {
+                        endDrag(); // Release the velocity tracker
+                        return false;
+                    }
+
                     final boolean allowDrag = onMoveAllowDrag(ev, dx);
 
                     if (allowDrag) {

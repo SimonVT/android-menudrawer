@@ -37,6 +37,25 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Callback that is invoked when the drawer is in the process of deciding whether it should intercept the touch
+     * event. This lets the listener decide if the pointer is on a view that would disallow dragging of the drawer.
+     * This is only called when the touch mode is {@link #TOUCH_MODE_FULLSCREEN}.
+     */
+    public interface OnInterceptMoveEventListener {
+
+        /**
+         * Called for each child the pointer i on when the drawer is deciding whether to intercept the touch event.
+         *
+         * @param v  View to test for draggability
+         * @param dx Delta drag in pixels
+         * @param x  X coordinate of the active touch point
+         * @param y  Y coordinate of the active touch point
+         * @return true if view is draggable by delta dx.
+         */
+        boolean isViewDraggable(View v, int dx, int x, int y);
+    }
+
+    /**
      * Tag used when logging.
      */
     private static final String TAG = "MenuDrawer";
@@ -290,6 +309,11 @@ public abstract class MenuDrawer extends ViewGroup {
      * Bundle used to hold the drawers state.
      */
     protected Bundle mState;
+
+    /**
+     * Callback that lets the listener override intercepting of touch events.
+     */
+    protected OnInterceptMoveEventListener mOnInterceptMoveEventListener;
 
     /**
      * Attaches the MenuDrawer to the Activity.
@@ -748,6 +772,15 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public void setOnDrawerStateChangeListener(OnDrawerStateChangeListener listener) {
         mOnDrawerStateChangeListener = listener;
+    }
+
+    /**
+     * Register a callback that will be invoked when the drawer is about to intercept touch events.
+     *
+     * @param listener The callback that will be invoked.
+     */
+    public void setOnInterceptMoveEventListener(OnInterceptMoveEventListener listener) {
+        mOnInterceptMoveEventListener = listener;
     }
 
     /**

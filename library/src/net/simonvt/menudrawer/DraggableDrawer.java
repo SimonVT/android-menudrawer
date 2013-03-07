@@ -3,6 +3,7 @@ package net.simonvt.menudrawer;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -10,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
@@ -344,7 +346,7 @@ public abstract class DraggableDrawer extends MenuDrawer {
     /**
      * Called when a drag has been ended.
      */
-    private void endDrag() {
+    protected void endDrag() {
         mIsDragging = false;
 
         if (mVelocityTracker != null) {
@@ -514,6 +516,88 @@ public abstract class DraggableDrawer extends MenuDrawer {
      * @return True if dragging the content should be allowed, false otherwise.
      */
     protected abstract boolean onDownAllowDrag(MotionEvent ev);
+
+    /**
+     * Tests scrollability within child views of v given a delta of dx.
+     *
+     * @param v      View to test for horizontal scrollability
+     * @param dx     Delta scrolled in pixels
+     * @param x      X coordinate of the active touch point
+     * @param y      Y coordinate of the active touch point
+     * @return true if child views of v can be scrolled by delta of dx.
+     */
+    protected boolean canChildScrollHorizontally(View v, int dx, int x, int y) {
+        if (v instanceof ViewGroup) {
+            final ViewGroup group = (ViewGroup) v;
+
+            final int count = group.getChildCount();
+            // Count backwards - let topmost views consume scroll distance first.
+            for (int i = count - 1; i >= 0; i--) {
+                final View child = group.getChildAt(i);
+
+                final int childLeft = child.getLeft() + supportGetTranslationX(child);
+                final int childRight = child.getRight() + supportGetTranslationX(child);
+                final int childTop = child.getTop() + supportGetTranslationY(child);
+                final int childBottom = child.getBottom() + supportGetTranslationY(child);
+
+                if (x >= childLeft && x < childRight && y >= childTop && y < childBottom
+                        &&  mOnInterceptMoveEventListener.isViewDraggable(child, dx, x - childLeft, y - childTop)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Tests scrollability within child views of v given a delta of dx.
+     *
+     * @param v      View to test for horizontal scrollability
+     * @param dx     Delta scrolled in pixels
+     * @param x      X coordinate of the active touch point
+     * @param y      Y coordinate of the active touch point
+     * @return true if child views of v can be scrolled by delta of dx.
+     */
+    protected boolean canChildScrollVertically(View v, int dx, int x, int y) {
+        if (v instanceof ViewGroup) {
+            final ViewGroup group = (ViewGroup) v;
+
+            final int count = group.getChildCount();
+            // Count backwards - let topmost views consume scroll distance first.
+            for (int i = count - 1; i >= 0; i--) {
+                final View child = group.getChildAt(i);
+
+                final int childLeft = child.getLeft() + supportGetTranslationX(child);
+                final int childRight = child.getRight() + supportGetTranslationX(child);
+                final int childTop = child.getTop() + supportGetTranslationY(child);
+                final int childBottom = child.getBottom() + supportGetTranslationY(child);
+
+                if (x >= childLeft && x < childRight && y >= childTop && y < childBottom
+                        && mOnInterceptMoveEventListener.isViewDraggable(child, dx, x - childLeft, y - childTop)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private int supportGetTranslationY(View v) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return (int) v.getTranslationY();
+        }
+
+        return 0;
+    }
+
+    private int supportGetTranslationX(View v) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return (int) v.getTranslationX();
+        }
+
+        return 0;
+    }
 
     /**
      * Returns true if dragging the content should be allowed.

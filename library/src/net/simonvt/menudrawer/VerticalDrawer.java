@@ -102,6 +102,12 @@ public abstract class VerticalDrawer extends DraggableDrawer {
                 final float yDiff = Math.abs(dy);
 
                 if (yDiff > mTouchSlop && yDiff > xDiff) {
+                    if (mOnInterceptMoveEventListener != null && mTouchMode == TOUCH_MODE_FULLSCREEN
+                            && canChildScrollVertically(mContentContainer, (int) dx, (int) x, (int) y)) {
+                        endDrag(); // Release the velocity tracker
+                        return false;
+                    }
+
                     final boolean allowDrag = onMoveAllowDrag(ev, dy);
 
                     if (allowDrag) {

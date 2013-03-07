@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class ContentSample extends Activity {
 
         mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT);
         mMenuDrawer.setContentView(R.layout.activity_contentsample);
+        mMenuDrawer.setTouchMode(MenuDrawer.TOUCH_MODE_FULLSCREEN);
 
         List<Object> items = new ArrayList<Object>();
         items.add(new Item("Item 1", R.drawable.ic_action_refresh_dark));
@@ -71,6 +73,13 @@ public class ContentSample extends Activity {
 
         mContentTextView = (TextView) findViewById(R.id.contentText);
         mContentTextView.setText(mContentText);
+
+        mMenuDrawer.setOnInterceptMoveEventListener(new MenuDrawer.OnInterceptMoveEventListener() {
+            @Override
+            public boolean isViewDraggable(View v, int dx, int x, int y) {
+                return v instanceof SeekBar;
+            }
+        });
     }
 
     private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
