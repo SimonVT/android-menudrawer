@@ -521,12 +521,13 @@ public abstract class DraggableDrawer extends MenuDrawer {
      * Tests scrollability within child views of v given a delta of dx.
      *
      * @param v      View to test for horizontal scrollability
+     * @param checkV Whether the view should be checked for draggability
      * @param dx     Delta scrolled in pixels
      * @param x      X coordinate of the active touch point
      * @param y      Y coordinate of the active touch point
      * @return true if child views of v can be scrolled by delta of dx.
      */
-    protected boolean canChildScrollHorizontally(View v, int dx, int x, int y) {
+    protected boolean canChildScrollHorizontally(View v, boolean checkV, int dx, int x, int y) {
         if (v instanceof ViewGroup) {
             final ViewGroup group = (ViewGroup) v;
 
@@ -541,25 +542,26 @@ public abstract class DraggableDrawer extends MenuDrawer {
                 final int childBottom = child.getBottom() + supportGetTranslationY(child);
 
                 if (x >= childLeft && x < childRight && y >= childTop && y < childBottom
-                        &&  mOnInterceptMoveEventListener.isViewDraggable(child, dx, x - childLeft, y - childTop)) {
+                        &&  canChildScrollHorizontally(child, true, dx, x - childLeft, y - childTop)) {
                     return true;
                 }
             }
         }
 
-        return false;
+        return checkV && mOnInterceptMoveEventListener.isViewDraggable(v, dx, x, y);
     }
 
     /**
      * Tests scrollability within child views of v given a delta of dx.
      *
      * @param v      View to test for horizontal scrollability
+     * @param checkV Whether the view should be checked for draggability
      * @param dx     Delta scrolled in pixels
      * @param x      X coordinate of the active touch point
      * @param y      Y coordinate of the active touch point
      * @return true if child views of v can be scrolled by delta of dx.
      */
-    protected boolean canChildScrollVertically(View v, int dx, int x, int y) {
+    protected boolean canChildScrollVertically(View v, boolean checkV, int dx, int x, int y) {
         if (v instanceof ViewGroup) {
             final ViewGroup group = (ViewGroup) v;
 
@@ -574,13 +576,13 @@ public abstract class DraggableDrawer extends MenuDrawer {
                 final int childBottom = child.getBottom() + supportGetTranslationY(child);
 
                 if (x >= childLeft && x < childRight && y >= childTop && y < childBottom
-                        && mOnInterceptMoveEventListener.isViewDraggable(child, dx, x - childLeft, y - childTop)) {
+                        && canChildScrollVertically(child, true, dx, x - childLeft, y - childTop)) {
                     return true;
                 }
             }
         }
 
-        return false;
+        return checkV && mOnInterceptMoveEventListener.isViewDraggable(v, dx, x, y);
     }
 
     private int supportGetTranslationY(View v) {

@@ -3,6 +3,7 @@ package net.simonvt.menudrawer;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 
@@ -100,8 +101,9 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
 
                 if (xDiff > mTouchSlop && xDiff > yDiff) {
                     if (mOnInterceptMoveEventListener != null && mTouchMode == TOUCH_MODE_FULLSCREEN
-                            && canChildScrollHorizontally(mContentContainer, (int) dx, (int) x, (int) y)) {
+                            && canChildScrollHorizontally(mContentContainer, false, (int) dx, (int) x, (int) y)) {
                         endDrag(); // Release the velocity tracker
+                        Log.d(TAG, "[onInterceptTouchEvent] child can scroll");
                         return false;
                     }
 

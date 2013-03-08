@@ -103,7 +103,7 @@ public abstract class VerticalDrawer extends DraggableDrawer {
 
                 if (yDiff > mTouchSlop && yDiff > xDiff) {
                     if (mOnInterceptMoveEventListener != null && mTouchMode == TOUCH_MODE_FULLSCREEN
-                            && canChildScrollVertically(mContentContainer, (int) dx, (int) x, (int) y)) {
+                            && canChildScrollVertically(mContentContainer, false, (int) dx, (int) x, (int) y)) {
                         endDrag(); // Release the velocity tracker
                         return false;
                     }
