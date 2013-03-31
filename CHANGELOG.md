@@ -1,6 +1,18 @@
 Change Log
 ==========
 
+Version 2.0.2 *(2013-03-31)*
+----------------------------
+ * Added listener that makes it possible to disabllow intercepting touch events over
+   certain views
+ * Added setter for the maximum animation duration
+ * Added getter for menu size
+ * Added methods that enable/disable indicator animation
+ * Fix: Removed log statements
+ * Fix: Drawing the active indicator might cause crash if the active view is not a
+        child of the MenuDrawer
+ * Fix: Crash in static drawer if no active indicator bitmap was set
+
 Version 2.0.1 *(2013-02-12)*
 ----------------------------
  * Indicator now animates between active views
