@@ -141,6 +141,11 @@ public abstract class MenuDrawer extends ViewGroup {
     static final int INDICATOR_ANIM_DURATION = 800;
 
     /**
+     * The maximum animation duration.
+     */
+    private static final int DEFAULT_ANIMATION_DURATION = 600;
+
+    /**
      * Interpolator used when animating the drawer open/closed.
      */
     protected static final Interpolator SMOOTH_INTERPOLATOR = new SmoothInterpolator();
@@ -309,6 +314,11 @@ public abstract class MenuDrawer extends ViewGroup {
      * Bundle used to hold the drawers state.
      */
     protected Bundle mState;
+
+    /**
+     * The maximum duration of open/close animations.
+     */
+    protected int mMaxAnimationDuration = DEFAULT_ANIMATION_DURATION;
 
     /**
      * Callback that lets the listener override intercepting of touch events.
@@ -506,6 +516,8 @@ public abstract class MenuDrawer extends ViewGroup {
                 dpToPx(DEFAULT_DRAG_BEZEL_DP));
 
         mAllowIndicatorAnimation = a.getBoolean(R.styleable.MenuDrawer_mdAllowIndicatorAnimation, false);
+
+        mMaxAnimationDuration = a.getInt(R.styleable.MenuDrawer_mdMaxAnimationDuration, DEFAULT_ANIMATION_DURATION);
 
         a.recycle();
 
@@ -864,6 +876,14 @@ public abstract class MenuDrawer extends ViewGroup {
      * @param enabled Whether hardware layers are enabled.
      */
     public abstract void setHardwareLayerEnabled(boolean enabled);
+
+    /**
+     * Sets the maximum duration of open/close animations.
+     * @param duration The maximum duration in milliseconds.
+     */
+    public void setMaxAnimationDuration(int duration) {
+        mMaxAnimationDuration = duration;
+    }
 
     /**
      * Returns the ViewGroup used as a parent for the menu view.

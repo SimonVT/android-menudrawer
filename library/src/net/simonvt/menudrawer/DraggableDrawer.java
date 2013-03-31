@@ -53,11 +53,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
     protected static final int PEEK_DURATION = 5000;
 
     /**
-     * The maximum animation duration.
-     */
-    private static final int DURATION_MAX = 600;
-
-    /**
      * Distance in dp from closed position from where the drawer is considered closed with regards to touch events.
      */
     private static final int CLOSE_ENOUGH = 3;
@@ -404,7 +399,7 @@ public abstract class DraggableDrawer extends MenuDrawer {
             duration = (int) (600.f * Math.abs((float) dx / mMenuSize));
         }
 
-        duration = Math.min(duration, DURATION_MAX);
+        duration = Math.min(duration, mMaxAnimationDuration);
 
         if (dx > 0) {
             setDrawerState(STATE_OPENING);
