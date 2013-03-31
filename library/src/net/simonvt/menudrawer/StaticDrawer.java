@@ -28,8 +28,8 @@ public abstract class StaticDrawer extends MenuDrawer {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        drawDropShadow(canvas);
-        drawIndicator(canvas);
+        if (mDropShadowEnabled) drawDropShadow(canvas);
+        if (mActiveIndicator != null) drawIndicator(canvas);
     }
 
     private void drawDropShadow(Canvas canvas) {
