@@ -35,6 +35,8 @@ public class ViewPagerSample extends FragmentActivity {
     private int mActivePosition = -1;
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
+    private int mPagerOffsetPixels;
+    private int mPagerPosition;
 
     @Override
     protected void onCreate(Bundle inState) {
@@ -72,15 +74,24 @@ public class ViewPagerSample extends FragmentActivity {
         }
 
         mMenuDrawer.setTouchMode(MenuDrawer.TOUCH_MODE_FULLSCREEN);
+        mMenuDrawer.setOnInterceptMoveEventListener(new MenuDrawer.OnInterceptMoveEventListener() {
+            @Override
+            public boolean isViewDraggable(View v, int dx, int x, int y) {
+                if (v == mViewPager) {
+                    return !(mPagerPosition == 0 && mPagerOffsetPixels == 0) || dx < 0;
+                }
+
+                return false;
+            }
+        });
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager
                 .setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
                     @Override
-                    public void onPageSelected(final int position) {
-                        mMenuDrawer.setTouchMode(position == 0
-                                ? MenuDrawer.TOUCH_MODE_FULLSCREEN
-                                : MenuDrawer.TOUCH_MODE_NONE);
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                        mPagerPosition = position;
+                        mPagerOffsetPixels = positionOffsetPixels;
                     }
                 });
 
