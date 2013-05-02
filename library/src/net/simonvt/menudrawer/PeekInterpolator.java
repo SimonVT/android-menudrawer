@@ -2,7 +2,7 @@ package net.simonvt.menudrawer;
 
 import android.view.animation.Interpolator;
 
-public class PeekInterpolator implements Interpolator {
+class PeekInterpolator implements Interpolator {
 
     private static final String TAG = "PeekInterpolator";
 

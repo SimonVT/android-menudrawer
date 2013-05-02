@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
  * <p/>
  * If it's not posted twice the layer either wont be built on start, or it'll be built twice.
  */
-public class BuildLayerFrameLayout extends FrameLayout {
+class BuildLayerFrameLayout extends FrameLayout {
 
     private boolean mChanged;
 

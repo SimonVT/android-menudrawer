@@ -32,7 +32,7 @@ import android.view.animation.Interpolator;
  * automatically moved to its final stage and computeScrollOffset()
  * will always return false to indicate that scrolling is over.
  */
-public class Scroller  {
+class Scroller  {
     private int mMode;
 
     private int mStartX;

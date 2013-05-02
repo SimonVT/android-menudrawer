@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 /**
  * FrameLayout which doesn't let touch events propagate to views positioned behind it in the view hierarchy.
  */
-public class NoClickThroughFrameLayout extends BuildLayerFrameLayout {
+class NoClickThroughFrameLayout extends BuildLayerFrameLayout {
 
     public NoClickThroughFrameLayout(Context context) {
         super(context);

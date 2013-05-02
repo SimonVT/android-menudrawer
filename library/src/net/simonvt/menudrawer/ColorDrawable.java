@@ -31,7 +31,7 @@ import android.graphics.drawable.Drawable;
  *
  * @attr ref android.R.styleable#ColorDrawable_color
  */
-public class ColorDrawable extends Drawable {
+class ColorDrawable extends Drawable {
 
     private ColorState mState;
     private final Paint mPaint = new Paint();
