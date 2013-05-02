@@ -200,16 +200,16 @@ public class TopDrawer extends VerticalDrawer {
     @Override
     protected void onUpEvent(MotionEvent ev) {
         final int offsetPixels = (int) mOffsetPixels;
+        final int pointerIndex = ev.findPointerIndex(mActivePointerId);
 
         if (mIsDragging) {
             mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-            final int initialVelocity = (int) mVelocityTracker.getXVelocity();
-            mLastMotionY = ev.getY();
-            animateOffsetTo(mVelocityTracker.getYVelocity() > 0 ? mMenuSize : 0, initialVelocity,
-                    true);
+            final int initialVelocity = (int) mVelocityTracker.getYVelocity(mActivePointerId);
+            mLastMotionY = ev.getY(pointerIndex);
+            animateOffsetTo(initialVelocity > 0 ? mMenuSize : 0, initialVelocity, true);
 
             // Close the menu when content is clicked while the menu is visible.
-        } else if (mMenuVisible && ev.getY() > offsetPixels) {
+        } else if (mMenuVisible && ev.getY(pointerIndex) > offsetPixels) {
             closeMenu();
         }
     }

@@ -84,6 +84,10 @@ public abstract class VerticalDrawer extends DraggableDrawer {
                 mLastMotionY = mInitialMotionY = ev.getY();
                 final boolean allowDrag = onDownAllowDrag(ev);
 
+                final int index = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                mActivePointerId = ev.getPointerId(index);
+
                 if (allowDrag) {
                     setDrawerState(mMenuVisible ? STATE_OPEN : STATE_CLOSED);
                     stopAnimation();
@@ -94,10 +98,18 @@ public abstract class VerticalDrawer extends DraggableDrawer {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                final float x = ev.getX();
+                final int activePointerId = mActivePointerId;
+                if (activePointerId == INVALID_POINTER) {
+                    // If we don't have a valid id, the touch down wasn't on content.
+                    break;
+                }
+
+                final int pointerIndex = ev.findPointerIndex(activePointerId);
+
+                final float x = ev.getX(pointerIndex);
                 final float dx = x - mLastMotionX;
                 final float xDiff = Math.abs(dx);
-                final float y = ev.getY();
+                final float y = ev.getY(pointerIndex);
                 final float dy = y - mLastMotionY;
                 final float yDiff = Math.abs(dy);
 
@@ -126,6 +138,8 @@ public abstract class VerticalDrawer extends DraggableDrawer {
              */
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
+                mActivePointerId = INVALID_POINTER;
+
                 if (Math.abs(mOffsetPixels) > mMenuSize / 2) {
                     openMenu();
                 } else {
@@ -161,6 +175,8 @@ public abstract class VerticalDrawer extends DraggableDrawer {
                 mLastMotionY = mInitialMotionY = ev.getY();
                 final boolean allowDrag = onDownAllowDrag(ev);
 
+                mActivePointerId = ev.getPointerId(0);
+
                 if (allowDrag) {
                     stopAnimation();
                     endPeek();
@@ -171,10 +187,12 @@ public abstract class VerticalDrawer extends DraggableDrawer {
 
             case MotionEvent.ACTION_MOVE: {
                 if (!mIsDragging) {
-                    final float x = ev.getX();
+                    final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+
+                    final float x = ev.getX(pointerIndex);
                     final float dx = x - mLastMotionX;
                     final float xDiff = Math.abs(dx);
-                    final float y = ev.getY();
+                    final float y = ev.getY(pointerIndex);
                     final float dy = y - mLastMotionY;
                     final float yDiff = Math.abs(dy);
 
@@ -194,7 +212,9 @@ public abstract class VerticalDrawer extends DraggableDrawer {
                 if (mIsDragging) {
                     startLayerTranslation();
 
-                    final float y = ev.getY();
+                    final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+
+                    final float y = ev.getY(pointerIndex);
                     final float dy = y - mLastMotionY;
 
                     mLastMotionY = y;
@@ -206,11 +226,36 @@ public abstract class VerticalDrawer extends DraggableDrawer {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
                 onUpEvent(ev);
+                mActivePointerId = INVALID_POINTER;
                 break;
             }
+
+            case MotionEvent.ACTION_POINTER_DOWN:
+                final int index = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                mLastMotionY = ev.getY(index);
+                mActivePointerId = ev.getPointerId(index);
+                break;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                onPointerUp(ev);
+                mLastMotionY = ev.getY(ev.findPointerIndex(mActivePointerId));
+                break;
         }
 
         return true;
     }
 
+    private void onPointerUp(MotionEvent ev) {
+        final int pointerIndex = ev.getActionIndex();
+        final int pointerId = ev.getPointerId(pointerIndex);
+        if (pointerId == mActivePointerId) {
+            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+            mLastMotionY = ev.getY(newPointerIndex);
+            mActivePointerId = ev.getPointerId(newPointerIndex);
+            if (mVelocityTracker != null) {
+                mVelocityTracker.clear();
+            }
+        }
+    }
 }

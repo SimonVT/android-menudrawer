@@ -879,6 +879,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
     /**
      * Sets the maximum duration of open/close animations.
+     *
      * @param duration The maximum duration in milliseconds.
      */
     public void setMaxAnimationDuration(int duration) {

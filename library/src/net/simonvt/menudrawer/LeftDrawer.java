@@ -197,15 +197,16 @@ public class LeftDrawer extends HorizontalDrawer {
     @Override
     protected void onUpEvent(MotionEvent ev) {
         final int offsetPixels = (int) mOffsetPixels;
+        final int pointerIndex = ev.findPointerIndex(mActivePointerId);
 
         if (mIsDragging) {
             mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-            final int initialVelocity = (int) mVelocityTracker.getXVelocity();
-            mLastMotionX = ev.getX();
-            animateOffsetTo(mVelocityTracker.getXVelocity() > 0 ? mMenuSize : 0, initialVelocity, true);
+            final int initialVelocity = (int) mVelocityTracker.getXVelocity(mActivePointerId);
+            mLastMotionX = ev.getX(pointerIndex);
+            animateOffsetTo(initialVelocity > 0 ? mMenuSize : 0, initialVelocity, true);
 
             // Close the menu when content is clicked while the menu is visible.
-        } else if (mMenuVisible && ev.getX() > offsetPixels) {
+        } else if (mMenuVisible && ev.getX(pointerIndex) > offsetPixels) {
             closeMenu();
         }
     }

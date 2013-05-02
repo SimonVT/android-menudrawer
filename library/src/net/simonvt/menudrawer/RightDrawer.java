@@ -218,16 +218,17 @@ public class RightDrawer extends HorizontalDrawer {
     @Override
     protected void onUpEvent(MotionEvent ev) {
         final int offsetPixels = (int) mOffsetPixels;
+        final int pointerIndex = ev.findPointerIndex(mActivePointerId);
         final int width = getWidth();
 
         if (mIsDragging) {
             mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-            final int initialVelocity = (int) mVelocityTracker.getXVelocity();
-            mLastMotionX = ev.getX();
-            animateOffsetTo(mVelocityTracker.getXVelocity() > 0 ? 0 : -mMenuSize, initialVelocity, true);
+            final int initialVelocity = (int) mVelocityTracker.getXVelocity(mActivePointerId);
+            mLastMotionX = ev.getX(pointerIndex);
+            animateOffsetTo(initialVelocity > 0 ? 0 : -mMenuSize, initialVelocity, true);
 
             // Close the menu when content is clicked while the menu is visible.
-        } else if (mMenuVisible && ev.getX() < width + offsetPixels) {
+        } else if (mMenuVisible && ev.getX(pointerIndex) < width + offsetPixels) {
             closeMenu();
         }
     }
