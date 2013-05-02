@@ -43,6 +43,7 @@
             android:name="net.simonvt.menudrawer.samples.LayoutSample"
             android:theme="@style/SampleTheme.TopDrawer" />
         <activity android:name="net.simonvt.menudrawer.samples.StaticDrawerSample" />
+        <activity android:name="net.simonvt.menudrawer.samples.FragmentSample" />
     </application>
 
 </manifest>
