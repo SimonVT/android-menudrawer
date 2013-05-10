@@ -12,7 +12,6 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
 public abstract class DraggableDrawer extends MenuDrawer {
@@ -21,11 +20,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
      * Key used when saving menu visibility state.
      */
     private static final String STATE_MENU_VISIBLE = "net.simonvt.menudrawer.MenuDrawer.menuVisible";
-
-    /**
-     * Interpolator used for stretching/retracting the active indicator.
-     */
-    protected static final Interpolator INDICATOR_INTERPOLATOR = new AccelerateInterpolator();
 
     /**
      * Interpolator used for peeking at the drawer.
@@ -83,11 +77,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
             postAnimationInvalidate();
         }
     };
-
-    /**
-     * Current left position of the content.
-     */
-    protected float mOffsetPixels;
 
     /**
      * Indicates whether the drawer is currently being dragged.
@@ -642,17 +631,7 @@ public abstract class DraggableDrawer extends MenuDrawer {
         final int offsetPixels = (int) mOffsetPixels;
 
         if (offsetPixels != 0) drawMenuOverlay(canvas, offsetPixels);
-        if (mDropShadowEnabled) drawDropShadow(canvas, offsetPixels);
-        if (mActiveIndicator != null) drawIndicator(canvas, offsetPixels);
     }
-
-    /**
-     * Called when the content drop shadow should be drawn.
-     *
-     * @param canvas       The canvas on which to draw.
-     * @param offsetPixels Value in pixels indicating the offset.
-     */
-    protected abstract void drawDropShadow(Canvas canvas, int offsetPixels);
 
     /**
      * Called when the menu overlay should be drawn.
@@ -661,14 +640,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
      * @param offsetPixels Value in pixels indicating the offset.
      */
     protected abstract void drawMenuOverlay(Canvas canvas, int offsetPixels);
-
-    /**
-     * Called when the active indicator should be drawn.
-     *
-     * @param canvas       The canvas on which to draw.
-     * @param offsetPixels Value in pixels indicating the offset.
-     */
-    protected abstract void drawIndicator(Canvas canvas, int offsetPixels);
 
     void saveState(Bundle state) {
         final boolean menuVisible = mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING;

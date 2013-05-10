@@ -2,17 +2,10 @@ package net.simonvt.menudrawer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-public abstract class StaticDrawer extends MenuDrawer {
-
-    protected Position mPosition;
-
-    StaticDrawer(Activity activity, int dragMode) {
-        super(activity, dragMode);
-    }
+public class StaticDrawer extends MenuDrawer {
 
     public StaticDrawer(Context context) {
         super(context);
@@ -27,40 +20,10 @@ public abstract class StaticDrawer extends MenuDrawer {
     }
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
-        if (mDropShadowEnabled) drawDropShadow(canvas);
-        if (mActiveIndicator != null) drawIndicator(canvas);
+    protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super.initDrawer(context, attrs, defStyle);
+        mIsStatic = true;
     }
-
-    private void drawDropShadow(Canvas canvas) {
-        final int width = getWidth();
-        final int height = getHeight();
-        final int menuSize = mMenuSize;
-        final int dropShadowSize = mDropShadowSize;
-
-        switch (mPosition) {
-            case LEFT:
-                mDropShadowDrawable.setBounds(menuSize - dropShadowSize, 0, menuSize, height);
-                break;
-
-            case TOP:
-                mDropShadowDrawable.setBounds(0, menuSize - dropShadowSize, width, menuSize);
-                break;
-
-            case RIGHT:
-                mDropShadowDrawable.setBounds(width - menuSize, 0, width - menuSize + dropShadowSize, height);
-                break;
-
-            case BOTTOM:
-                mDropShadowDrawable.setBounds(0, height - menuSize, width, height - menuSize + dropShadowSize);
-                break;
-        }
-
-        mDropShadowDrawable.draw(canvas);
-    }
-
-    protected abstract void drawIndicator(Canvas canvas);
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {

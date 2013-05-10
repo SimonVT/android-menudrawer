@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
 public abstract class MenuDrawer extends ViewGroup {
@@ -161,6 +164,11 @@ public abstract class MenuDrawer extends ViewGroup {
     protected static final Interpolator SMOOTH_INTERPOLATOR = new SmoothInterpolator();
 
     /**
+     * Interpolator used for stretching/retracting the active indicator.
+     */
+    protected static final Interpolator INDICATOR_INTERPOLATOR = new AccelerateInterpolator();
+
+    /**
      * Drawable used as menu overlay.
      */
     protected Drawable mMenuOverlay;
@@ -169,6 +177,8 @@ public abstract class MenuDrawer extends ViewGroup {
      * Defines whether the drop shadow is enabled.
      */
     protected boolean mDropShadowEnabled;
+
+    protected int mDropShadowColor;
 
     /**
      * Drawable used as content drop shadow onto the menu.
@@ -350,6 +360,22 @@ public abstract class MenuDrawer extends ViewGroup {
     private int mDrawerClosedContentDesc;
 
     /**
+     * The position of the drawer.
+     */
+    protected Position mPosition;
+
+    private final Rect mIndicatorRect = new Rect();
+
+    protected boolean mIsStatic;
+
+    private final Rect mDropShadowRect = new Rect();
+
+    /**
+     * Current offset of the content.
+     */
+    protected float mOffsetPixels;
+
+    /**
      * Attaches the MenuDrawer to the Activity.
      *
      * @param activity The activity that the MenuDrawer will be attached to.
@@ -430,35 +456,36 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, Position position,
             boolean attachStatic) {
+        MenuDrawer drawer;
+
         if (attachStatic) {
+            drawer = new StaticDrawer(activity);
+
+        } else {
+
             switch (position) {
                 case LEFT:
-                    return new LeftStaticDrawer(activity, dragMode);
+                    drawer = new LeftDrawer(activity, dragMode);
+                    drawer.setupUpIndicator(activity);
+                    break;
                 case RIGHT:
-                    return new RightStaticDrawer(activity, dragMode);
+                    drawer = new RightDrawer(activity, dragMode);
+                    break;
                 case TOP:
-                    return new TopStaticDrawer(activity, dragMode);
+                    drawer = new TopDrawer(activity, dragMode);
+                    break;
                 case BOTTOM:
-                    return new BottomStaticDrawer(activity, dragMode);
+                    drawer = new BottomDrawer(activity, dragMode);
+                    break;
                 default:
                     throw new IllegalArgumentException("position must be one of LEFT, TOP, RIGHT or BOTTOM");
             }
         }
 
-        switch (position) {
-            case LEFT:
-                MenuDrawer drawer = new LeftDrawer(activity, dragMode);
-                drawer.setupUpIndicator(activity);
-                return drawer;
-            case RIGHT:
-                return new RightDrawer(activity, dragMode);
-            case TOP:
-                return new TopDrawer(activity, dragMode);
-            case BOTTOM:
-                return new BottomDrawer(activity, dragMode);
-            default:
-                throw new IllegalArgumentException("position must be one of LEFT, TOP, RIGHT or BOTTOM");
-        }
+        drawer.mDragMode = dragMode;
+        drawer.mPosition = position;
+
+        return drawer;
     }
 
     /**
@@ -531,8 +558,7 @@ public abstract class MenuDrawer extends ViewGroup {
         mDropShadowDrawable = a.getDrawable(R.styleable.MenuDrawer_mdDropShadow);
 
         if (mDropShadowDrawable == null) {
-            final int dropShadowColor = a.getColor(R.styleable.MenuDrawer_mdDropShadowColor, 0xFF000000);
-            setDropShadowColor(dropShadowColor);
+            mDropShadowColor = a.getColor(R.styleable.MenuDrawer_mdDropShadowColor, 0xFF000000);
         }
 
         mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowSize,
@@ -551,8 +577,10 @@ public abstract class MenuDrawer extends ViewGroup {
         }
 
         mDrawerOpenContentDesc = a.getResourceId(R.styleable.MenuDrawer_mdDrawerOpenUpContentDescription, 0);
-
         mDrawerClosedContentDesc = a.getResourceId(R.styleable.MenuDrawer_mdDrawerClosedUpContentDescription, 0);
+
+        final int position = a.getInt(R.styleable.MenuDrawer_mdPosition, 0);
+        mPosition = Position.fromValue(position);
 
         a.recycle();
 
@@ -615,6 +643,151 @@ public abstract class MenuDrawer extends ViewGroup {
     protected void onDetachedFromWindow() {
         getViewTreeObserver().removeOnScrollChangedListener(mScrollListener);
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+        if (mDropShadowEnabled) drawDropShadow(canvas);
+        if (mActiveView != null && mActiveIndicator != null && isViewDescendant(mActiveView)) {
+            drawIndicator(canvas);
+        }
+    }
+
+    private void drawDropShadow(Canvas canvas) {
+        // Can't pass the position to the constructor, so wait with loading the drawable until the drop shadow is
+        // actually drawn.
+        if (mDropShadowDrawable == null) {
+            setDropShadowColor(mDropShadowColor);
+        }
+
+        updateDropShadowRect();
+        mDropShadowDrawable.setBounds(mDropShadowRect);
+        mDropShadowDrawable.draw(canvas);
+    }
+
+    private void updateDropShadowRect() {
+        switch (mPosition) {
+            case LEFT:
+                mDropShadowRect.top = 0;
+                mDropShadowRect.bottom = getWidth();
+                mDropShadowRect.left = ViewHelper.getRight(mContentContainer);
+                mDropShadowRect.right = mDropShadowRect.left + mDropShadowSize;
+                break;
+
+            case TOP:
+                mDropShadowRect.left = 0;
+                mDropShadowRect.right = getWidth();
+                mDropShadowRect.bottom = ViewHelper.getTop(mContentContainer);
+                mDropShadowRect.top = mDropShadowRect.bottom - mDropShadowSize;
+                break;
+
+            case RIGHT:
+                mDropShadowRect.top = 0;
+                mDropShadowRect.bottom = getWidth();
+                mDropShadowRect.right = ViewHelper.getLeft(mContentContainer);
+                mDropShadowRect.left = mDropShadowRect.right - mDropShadowSize;
+                break;
+
+            case BOTTOM:
+                mDropShadowRect.left = 0;
+                mDropShadowRect.right = getWidth();
+                mDropShadowRect.top = ViewHelper.getBottom(mContentContainer);
+                mDropShadowRect.bottom = mDropShadowRect.top + mDropShadowSize;
+                break;
+        }
+    }
+
+    private void drawIndicator(Canvas canvas) {
+        Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
+        final int pos = position == null ? 0 : position;
+        if (pos == mActivePosition) {
+            updateIndicatorRect();
+            canvas.save();
+            canvas.clipRect(mIndicatorRect);
+            canvas.drawBitmap(mActiveIndicator, mIndicatorRect.left, mIndicatorRect.top, null);
+            canvas.restore();
+        }
+    }
+
+    /**
+     * Update the {@link Rect} where the indicator is drawn.
+     */
+    protected void updateIndicatorRect() {
+        mActiveView.getDrawingRect(mActiveRect);
+        offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
+
+        final float openRatio = mIsStatic ? 1.0f : Math.abs(mOffsetPixels) / mMenuSize;
+
+        final float interpolatedRatio = 1.f - INDICATOR_INTERPOLATOR.getInterpolation((1.f - openRatio));
+
+        final int indicatorWidth = mActiveIndicator.getWidth();
+        final int indicatorHeight = mActiveIndicator.getHeight();
+
+        final int interpolatedWidth = (int) (indicatorWidth * interpolatedRatio);
+        final int interpolatedHeight = (int) (indicatorHeight * interpolatedRatio);
+
+        final int startPos = mIndicatorStartPos;
+
+        int left = 0;
+        int top = 0;
+        int right = 0;
+        int bottom = 0;
+
+        switch (mPosition) {
+            case LEFT:
+            case RIGHT:
+                final int finalTop = mActiveRect.top + ((mActiveRect.height() - indicatorHeight) / 2);
+                if (mIndicatorAnimating) {
+                    top = (int) (startPos + ((finalTop - startPos) * mIndicatorOffset));
+                } else {
+                    top = finalTop;
+                }
+                bottom = top + indicatorHeight;
+                break;
+
+            case TOP:
+            case BOTTOM:
+                final int finalLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
+                if (mIndicatorAnimating) {
+                    left = (int) (startPos + ((finalLeft - startPos) * mIndicatorOffset));
+                } else {
+                    left = finalLeft;
+                }
+                right = left + indicatorWidth;
+                break;
+        }
+
+        switch (mPosition) {
+            case LEFT: {
+                right = ViewHelper.getLeft(mContentContainer);
+                left = right - interpolatedWidth;
+                break;
+            }
+
+            case TOP: {
+                bottom = ViewHelper.getTop(mContentContainer);
+                top = bottom - interpolatedHeight;
+                break;
+            }
+
+            case RIGHT: {
+                left = ViewHelper.getRight(mContentContainer);
+                right = left + interpolatedWidth;
+                break;
+            }
+
+            case BOTTOM: {
+                top = ViewHelper.getBottom(mContentContainer);
+                bottom = top + interpolatedHeight;
+                break;
+            }
+        }
+
+        mIndicatorRect.left = left;
+        mIndicatorRect.top = top;
+        mIndicatorRect.right = right;
+        mIndicatorRect.bottom = bottom;
     }
 
     /**
@@ -766,7 +939,18 @@ public abstract class MenuDrawer extends ViewGroup {
      *
      * @return The start position of the indicator.
      */
-    protected abstract int getIndicatorStartPos();
+    private int getIndicatorStartPos() {
+        switch (mPosition) {
+            case TOP:
+                return mIndicatorRect.left;
+            case RIGHT:
+                return mIndicatorRect.top;
+            case BOTTOM:
+                return mIndicatorRect.left;
+            default:
+                return mIndicatorRect.top;
+        }
+    }
 
     /**
      * Callback when each frame in the indicator animation should be drawn.
@@ -845,7 +1029,34 @@ public abstract class MenuDrawer extends ViewGroup {
      *
      * @param color The color of the drop shadow.
      */
-    public abstract void setDropShadowColor(int color);
+    public void setDropShadowColor(int color) {
+        GradientDrawable.Orientation orientation;
+        switch (mPosition) {
+            case TOP:
+                orientation = GradientDrawable.Orientation.BOTTOM_TOP;
+                break;
+
+            case RIGHT:
+                orientation = GradientDrawable.Orientation.LEFT_RIGHT;
+                break;
+
+            case BOTTOM:
+                orientation = GradientDrawable.Orientation.TOP_BOTTOM;
+                break;
+
+            default:
+                orientation = GradientDrawable.Orientation.RIGHT_LEFT;
+                break;
+        }
+
+        final int endColor = color & 0x00FFFFFF;
+        mDropShadowDrawable = new GradientDrawable(orientation,
+                new int[] {
+                        color,
+                        endColor,
+                });
+        invalidate();
+    }
 
     /**
      * Sets the drawable of the drop shadow.

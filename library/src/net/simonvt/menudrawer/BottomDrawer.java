@@ -9,8 +9,6 @@ import android.view.MotionEvent;
 
 public class BottomDrawer extends VerticalDrawer {
 
-    private int mIndicatorLeft;
-
     BottomDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
     }
@@ -95,15 +93,6 @@ public class BottomDrawer extends VerticalDrawer {
     }
 
     @Override
-    protected void drawDropShadow(Canvas canvas, int offsetPixels) {
-        final int width = getWidth();
-        final int height = getHeight();
-
-        mDropShadowDrawable.setBounds(0, height + offsetPixels, width, height + offsetPixels + mDropShadowSize);
-        mDropShadowDrawable.draw(canvas);
-    }
-
-    @Override
     protected void drawMenuOverlay(Canvas canvas, int offsetPixels) {
         final int width = getWidth();
         final int height = getHeight();
@@ -112,52 +101,6 @@ public class BottomDrawer extends VerticalDrawer {
         mMenuOverlay.setBounds(0, height + offsetPixels, width, height);
         mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * (1.f - openRatio)));
         mMenuOverlay.draw(canvas);
-    }
-
-    @Override
-    protected void drawIndicator(Canvas canvas, int offsetPixels) {
-        if (mActiveView != null && isViewDescendant(mActiveView)) {
-            Integer position = (Integer) mActiveView.getTag(R.id.mdActiveViewPosition);
-            final int pos = position == null ? 0 : position;
-
-            if (pos == mActivePosition) {
-                final int height = getHeight();
-                final int menuHeight = mMenuSize;
-                final int indicatorHeight = mActiveIndicator.getHeight();
-
-                final float openRatio = ((float) Math.abs(offsetPixels)) / menuHeight;
-
-                mActiveView.getDrawingRect(mActiveRect);
-                offsetDescendantRectToMyCoords(mActiveView, mActiveRect);
-                final int indicatorWidth = mActiveIndicator.getWidth();
-
-                final float interpolatedRatio = 1.f - INDICATOR_INTERPOLATOR.getInterpolation((1.f - openRatio));
-                final int interpolatedHeight = (int) (indicatorHeight * interpolatedRatio);
-
-                final int indicatorBottom = height + offsetPixels + interpolatedHeight;
-                final int indicatorTop = indicatorBottom - indicatorHeight;
-                if (mIndicatorAnimating) {
-                    final int finalLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
-                    final int startLeft = mIndicatorStartPos;
-                    final int diff = finalLeft - startLeft;
-                    final int startOffset = (int) (diff * mIndicatorOffset);
-                    mIndicatorLeft = startLeft + startOffset;
-                } else {
-                    mIndicatorLeft = mActiveRect.left + ((mActiveRect.width() - indicatorWidth) / 2);
-                }
-
-                canvas.save();
-                canvas.clipRect(mIndicatorLeft, height + offsetPixels, mIndicatorLeft + indicatorWidth,
-                        indicatorBottom);
-                canvas.drawBitmap(mActiveIndicator, mIndicatorLeft, indicatorTop, null);
-                canvas.restore();
-            }
-        }
-    }
-
-    @Override
-    protected int getIndicatorStartPos() {
-        return mIndicatorLeft;
     }
 
     @Override

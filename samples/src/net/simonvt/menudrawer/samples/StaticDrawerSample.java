@@ -38,6 +38,7 @@ public class StaticDrawerSample extends Activity implements MenuAdapter.MenuList
 
         mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.LEFT, true);
         mMenuDrawer.setContentView(R.layout.activity_contentsample);
+        mMenuDrawer.setAllowIndicatorAnimation(true);
 
         List<Object> items = new ArrayList<Object>();
         items.add(new Item("Item 1", R.drawable.ic_action_refresh_dark));
