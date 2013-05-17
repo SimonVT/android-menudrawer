@@ -296,6 +296,12 @@ public abstract class DraggableDrawer extends MenuDrawer {
 
         mOffsetPixels = offsetPixels;
 
+        if (mSlideDrawable != null) {
+            final float offset = Math.abs(mOffsetPixels) / mMenuSize;
+            mSlideDrawable.setOffset(offset);
+            updateUpContentDescription();
+        }
+
         if (newOffset != oldOffset) {
             onOffsetPixelsChanged(newOffset);
             mMenuVisible = newOffset != 0;

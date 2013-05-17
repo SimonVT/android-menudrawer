@@ -52,6 +52,8 @@
         <android.version>4.1.1.4</android.version>
         <android.platform>16</android.platform>
 
+        <abs.version>4.3.1</abs.version>
+
         <android-support.version>r7</android-support.version>
     </properties>
 
@@ -61,6 +63,13 @@
                 <groupId>com.google.android</groupId>
                 <artifactId>android</artifactId>
                 <version>${android.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.actionbarsherlock</groupId>
+                <artifactId>actionbarsherlock</artifactId>
+                <type>apklib</type>
+                <version>${abs.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

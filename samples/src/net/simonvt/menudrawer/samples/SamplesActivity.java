@@ -35,6 +35,9 @@ public class SamplesActivity extends ListActivity {
         mAdapter.addSample("Layout xml", "The drawer and its menu and content is defined in XML", LayoutSample.class);
         mAdapter.addSample("Static drawer", "The drawer is always visible", StaticDrawerSample.class);
         mAdapter.addSample("Fragments", "Sample that uses fragments as the content", FragmentSample.class);
+        mAdapter.addSample("ActionBarSherlock sample",
+                "Showcases the drawer used with ActionBarSherlock. This also features the drawer indicator icon.",
+                ActionBarSherlockSample.class);
 
         setListAdapter(mAdapter);
     }

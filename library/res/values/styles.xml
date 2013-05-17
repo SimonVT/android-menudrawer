@@ -6,6 +6,8 @@
     <style name="Widget.MenuDrawer">
         <item name="mdMenuBackground">@color/md__defaultBackground</item>
         <item name="mdContentBackground">?android:attr/windowBackground</item>
+        <item name="mdDrawerOpenUpContentDescription">@string/md__drawerOpenIndicatorDesc</item>
+        <item name="mdDrawerClosedUpContentDescription">@string/md__drawerClosedIndicatorDesc</item>
     </style>
 
 </resources>

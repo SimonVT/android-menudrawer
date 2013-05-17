@@ -14,7 +14,7 @@
         <activity
             android:name="SamplesActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,6 +44,9 @@
             android:theme="@style/SampleTheme.TopDrawer" />
         <activity android:name="net.simonvt.menudrawer.samples.StaticDrawerSample" />
         <activity android:name="net.simonvt.menudrawer.samples.FragmentSample" />
+        <activity
+            android:name="net.simonvt.menudrawer.samples.ActionBarSherlockSample"
+            android:theme="@style/SampleTheme.Sherlock" />
     </application>
 
 </manifest>

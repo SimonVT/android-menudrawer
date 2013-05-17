@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="md__drawerOpenIndicatorDesc">Close drawer</string>
+
+    <string name="md__drawerClosedIndicatorDesc">Open drawer</string>
+
+</resources>
