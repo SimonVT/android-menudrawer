@@ -43,6 +43,11 @@ public class FragmentSample extends BaseListSample {
                     commitTransactions();
                 }
             }
+
+            @Override
+            public void onDrawerSlide(float openRatio, float offsetPixels) {
+                // Do nothing
+            }
         });
     }
 

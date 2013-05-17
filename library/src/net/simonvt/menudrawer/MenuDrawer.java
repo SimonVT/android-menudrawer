@@ -36,6 +36,13 @@ public abstract class MenuDrawer extends ViewGroup {
          * @param newState The new drawer state.
          */
         void onDrawerStateChange(int oldState, int newState);
+
+        /**
+         * Called when the drawer slides.
+         * @param openRatio ratio for how open the menu is.
+         * @param offsetPixels current left position of the menu.
+         */
+        void onDrawerSlide(float openRatio, float offsetPixels);
     }
 
     /**
@@ -1167,6 +1174,12 @@ public abstract class MenuDrawer extends ViewGroup {
             mMenuContainer.setPadding(0, insets.top, 0, 0);
         }
         return super.fitSystemWindows(insets);
+    }
+
+    protected void dispatchOnDrawerSlide(float openRatio, float offsetPixels) {
+        if (mOnDrawerStateChangeListener != null) {
+            mOnDrawerStateChangeListener.onDrawerSlide(openRatio, offsetPixels);
+        }
     }
 
     /**
