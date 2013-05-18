@@ -921,10 +921,20 @@ public abstract class MenuDrawer extends ViewGroup {
         }
     }
 
+    /**
+     * Sets the drawable used as the drawer indicator.
+     *
+     * @param drawable The drawable used as the drawer indicator.
+     */
     public void setSlideDrawable(int drawableRes) {
         setSlideDrawable(getResources().getDrawable(drawableRes));
     }
 
+    /**
+     * Sets the drawable used as the drawer indicator.
+     *
+     * @param drawable The drawable used as the drawer indicator.
+     */
     public void setSlideDrawable(Drawable drawable) {
         mSlideDrawable = new SlideDrawable(drawable);
 
@@ -934,6 +944,11 @@ public abstract class MenuDrawer extends ViewGroup {
         }
     }
 
+    /**
+     * Sets up the drawer indicator. It cna then be shown with {@link #setDrawerIndicatorEnabled(boolean)}.
+     *
+     * @param activity The activity the drawer is attached to.
+     */
     public void setupUpIndicator(Activity activity) {
         if (mActionBarHelper == null) {
             mActionBarHelper = new ActionBarHelper(activity);
@@ -947,6 +962,12 @@ public abstract class MenuDrawer extends ViewGroup {
         }
     }
 
+    /**
+     * Sets whether the drawer indicator should be enabled. {@link #setupUpIndicator(android.app.Activity)} must be
+     * called first.
+     *
+     * @param enabled Whether the drawer indicator should enabled.
+     */
     public void setDrawerIndicatorEnabled(boolean enabled) {
         if (mActionBarHelper == null) {
             throw new IllegalStateException("setupUpIndicator(Activity) has not been called");
