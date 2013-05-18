@@ -49,7 +49,7 @@ final class ActionBarHelperNative {
                 final ActionBar actionBar = activity.getActionBar();
                 sii.setHomeActionContentDescription.invoke(actionBar, contentDescRes);
             } catch (Throwable t) {
-                Log.e(TAG, "Couldn't set content description via JB-MR2 API", t);
+                if (BuildConfig.DEBUG) Log.e(TAG, "Couldn't set content description via JB-MR2 API", t);
             }
         }
     }

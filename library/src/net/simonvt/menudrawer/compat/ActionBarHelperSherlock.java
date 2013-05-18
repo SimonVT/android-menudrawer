@@ -19,17 +19,10 @@ final class ActionBarHelperSherlock {
     }
 
     public static void setActionBarUpIndicator(Object info, Activity activity, Drawable drawable, int contentDescRes) {
-        Log.d(TAG, "[setActionBarUpIndicator]");
         final SetIndicatorInfo sii = (SetIndicatorInfo) info;
         if (sii.mUpIndicatorView != null) {
-            Log.d(TAG, "[setActionBarUpIndicator] Setting it!");
             sii.mUpIndicatorView.setImageDrawable(drawable);
             Drawable d = sii.mUpIndicatorView.getDrawable();
-            if (d == drawable) {
-                Log.d(TAG, "They match");
-            } else {
-                Log.d(TAG, "They don't match");
-            }
             sii.mUpIndicatorView.setContentDescription(activity.getString(contentDescRes));
         }
     }
@@ -54,7 +47,6 @@ final class ActionBarHelperSherlock {
     }
 
     public static void setDisplayHomeAsUpEnabled(Object info, boolean enabled) {
-        Log.d(TAG, "[setDisplayHomeAsUpEnabled]");
         final SetIndicatorInfo sii = (SetIndicatorInfo) info;
         if (sii.mHomeAsUpEnabled != null) {
             try {
@@ -79,9 +71,6 @@ final class ActionBarHelperSherlock {
                 ViewGroup parent = (ViewGroup) v.getParent();
                 final int upId = activity.getResources().getIdentifier("abs__up", "id", appPackage);
                 mUpIndicatorView = (ImageView) parent.findViewById(upId);
-                if (mUpIndicatorView == null) {
-                    Log.i(TAG, "up indicator view is null");
-                }
                 Log.d(TAG, "Id: " + upId);
 
                 Class sherlockActivity = activity.getClass();
