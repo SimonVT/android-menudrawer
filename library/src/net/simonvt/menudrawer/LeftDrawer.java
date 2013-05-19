@@ -166,6 +166,10 @@ public class LeftDrawer extends HorizontalDrawer {
             offsetMenu(offsetPixels);
             invalidate();
         }
+
+        // Notify any attached listeners of the current open ratio
+        final float openRatio = ((float) offsetPixels) / mMenuSize;
+        dispatchOnDrawerSlide(openRatio, offsetPixels);
     }
 
     //////////////////////////////////////////////////////////////////////

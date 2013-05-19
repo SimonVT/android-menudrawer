@@ -73,6 +73,11 @@ public class ListActivitySample extends ListActivity {
                         mMenuDrawer.setOnDrawerStateChangeListener(null);
                     }
                 }
+
+                @Override
+                public void onDrawerSlide(float openRatio, float offsetPixels) {
+                    // Do nothing
+                }
             });
         }
     }

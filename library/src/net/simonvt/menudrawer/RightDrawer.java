@@ -180,6 +180,10 @@ public class RightDrawer extends HorizontalDrawer {
             offsetMenu(offsetPixels);
             invalidate();
         }
+
+        // Notify any attached listeners of the current open ratio
+        final float openRatio = ((float) Math.abs(offsetPixels)) / mMenuSize;
+        dispatchOnDrawerSlide(openRatio, offsetPixels);
     }
 
     //////////////////////////////////////////////////////////////////////
