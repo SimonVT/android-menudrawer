@@ -305,6 +305,10 @@ public abstract class DraggableDrawer extends MenuDrawer {
         if (newOffset != oldOffset) {
             onOffsetPixelsChanged(newOffset);
             mMenuVisible = newOffset != 0;
+
+            // Notify any attached listeners of the current open ratio
+            final float openRatio = ((float) Math.abs(newOffset)) / mMenuSize;
+            dispatchOnDrawerSlide(openRatio, newOffset);
         }
     }
 

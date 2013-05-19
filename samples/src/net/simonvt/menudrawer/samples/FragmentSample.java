@@ -45,7 +45,7 @@ public class FragmentSample extends BaseListSample {
             }
 
             @Override
-            public void onDrawerSlide(float openRatio, float offsetPixels) {
+            public void onDrawerSlide(float openRatio, int offsetPixels) {
                 // Do nothing
             }
         });
