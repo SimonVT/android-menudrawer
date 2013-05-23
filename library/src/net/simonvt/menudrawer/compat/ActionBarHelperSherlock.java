@@ -22,15 +22,16 @@ final class ActionBarHelperSherlock {
         final SetIndicatorInfo sii = (SetIndicatorInfo) info;
         if (sii.mUpIndicatorView != null) {
             sii.mUpIndicatorView.setImageDrawable(drawable);
-            Drawable d = sii.mUpIndicatorView.getDrawable();
-            sii.mUpIndicatorView.setContentDescription(activity.getString(contentDescRes));
+            final String contentDescription = contentDescRes == 0 ? null : activity.getString(contentDescRes);
+            sii.mUpIndicatorView.setContentDescription(contentDescription);
         }
     }
 
     public static void setActionBarDescription(Object info, Activity activity, int contentDescRes) {
         final SetIndicatorInfo sii = (SetIndicatorInfo) info;
         if (sii.mUpIndicatorView != null) {
-            sii.mUpIndicatorView.setContentDescription(activity.getString(contentDescRes));
+            final String contentDescription = contentDescRes == 0 ? null : activity.getString(contentDescRes);
+            sii.mUpIndicatorView.setContentDescription(contentDescription);
         }
     }
 
