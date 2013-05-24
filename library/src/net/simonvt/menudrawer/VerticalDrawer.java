@@ -79,13 +79,19 @@ public abstract class VerticalDrawer extends DraggableDrawer {
         }
 
         switch (action) {
-            case MotionEvent.ACTION_DOWN: {
-                mLastMotionX = mInitialMotionX = ev.getX();
-                mLastMotionY = mInitialMotionY = ev.getY();
-                final boolean allowDrag = onDownAllowDrag(ev);
-
+            case MotionEvent.ACTION_POINTER_DOWN: {
                 final int index = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
                         >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                mActivePointerId = ev.getPointerId(index);
+            }
+
+            case MotionEvent.ACTION_DOWN: {
+                final int index = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+
+                mLastMotionX = mInitialMotionX = ev.getX(index);
+                mLastMotionY = mInitialMotionY = ev.getY(index);
+                final boolean allowDrag = onDownAllowDrag(ev);
                 mActivePointerId = ev.getPointerId(index);
 
                 if (allowDrag) {
@@ -147,6 +153,12 @@ public abstract class VerticalDrawer extends DraggableDrawer {
                 }
                 break;
             }
+
+            case MotionEvent.ACTION_POINTER_UP:
+                onPointerUp(ev);
+                mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId));
+                mLastMotionY = ev.getY(ev.findPointerIndex(mActivePointerId));
+                break;
         }
 
         if (mVelocityTracker == null) {
