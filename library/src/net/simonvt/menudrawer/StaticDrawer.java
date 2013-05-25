@@ -3,6 +3,7 @@ package net.simonvt.menudrawer;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 public abstract class StaticDrawer extends MenuDrawer {
@@ -140,14 +141,17 @@ public abstract class StaticDrawer extends MenuDrawer {
 
     @Override
     public void toggleMenu(boolean animate) {
+        // NO-OP
     }
 
     @Override
     public void openMenu(boolean animate) {
+        // NO-OP
     }
 
     @Override
     public void closeMenu(boolean animate) {
+        // NO-OP
     }
 
     @Override
@@ -165,6 +169,7 @@ public abstract class StaticDrawer extends MenuDrawer {
 
     @Override
     public void setOffsetMenuEnabled(boolean offsetMenu) {
+        // NO-OP
     }
 
     @Override
@@ -174,18 +179,22 @@ public abstract class StaticDrawer extends MenuDrawer {
 
     @Override
     public void peekDrawer() {
+        // NO-OP
     }
 
     @Override
     public void peekDrawer(long delay) {
+        // NO-OP
     }
 
     @Override
     public void peekDrawer(long startDelay, long delay) {
+        // NO-OP
     }
 
     @Override
     public void setHardwareLayerEnabled(boolean enabled) {
+        // NO-OP
     }
 
     @Override
@@ -195,14 +204,41 @@ public abstract class StaticDrawer extends MenuDrawer {
 
     @Override
     public void setTouchMode(int mode) {
+        // NO-OP
     }
 
     @Override
     public void setTouchBezelSize(int size) {
+        // NO-OP
     }
 
     @Override
     public int getTouchBezelSize() {
         return 0;
+    }
+
+    @Override
+    public void setSlideDrawable(int drawableRes) {
+        // NO-OP
+    }
+
+    @Override
+    public void setSlideDrawable(Drawable drawable) {
+        // NO-OP
+    }
+
+    @Override
+    public void setupUpIndicator(Activity activity) {
+        // NO-OP
+    }
+
+    @Override
+    public void setDrawerIndicatorEnabled(boolean enabled) {
+        // NO-OP
+    }
+
+    @Override
+    public boolean isDrawerIndicatorEnabled() {
+        return false;
     }
 }

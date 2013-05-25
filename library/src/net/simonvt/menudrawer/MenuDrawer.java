@@ -991,6 +991,15 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Indicates whether the drawer indicator is currently enabled.
+     *
+     * @return Whether the drawer indicator is enabled.
+     */
+    public boolean isDrawerIndicatorEnabled() {
+        return mDrawerIndicatorEnabled;
+    }
+
+    /**
      * Returns the ViewGroup used as a parent for the menu view.
      *
      * @return The menu view's parent.
