@@ -245,12 +245,14 @@ public abstract class VerticalDrawer extends DraggableDrawer {
             case MotionEvent.ACTION_POINTER_DOWN:
                 final int index = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
                         >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                mLastMotionX = ev.getX(index);
                 mLastMotionY = ev.getY(index);
                 mActivePointerId = ev.getPointerId(index);
                 break;
 
             case MotionEvent.ACTION_POINTER_UP:
                 onPointerUp(ev);
+                mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId));
                 mLastMotionY = ev.getY(ev.findPointerIndex(mActivePointerId));
                 break;
         }

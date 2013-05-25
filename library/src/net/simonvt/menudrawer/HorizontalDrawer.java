@@ -177,8 +177,11 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
-                mLastMotionX = mInitialMotionX = ev.getX();
-                mLastMotionY = mInitialMotionY = ev.getY();
+                final int index = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+
+                mLastMotionX = mInitialMotionX = ev.getX(index);
+                mLastMotionY = mInitialMotionY = ev.getY(index);
                 final boolean allowDrag = onDownAllowDrag(ev);
 
                 mActivePointerId = ev.getPointerId(0);
@@ -239,12 +242,14 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
                 final int index = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
                         >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                 mLastMotionX = ev.getX(index);
+                mLastMotionY = ev.getY(index);
                 mActivePointerId = ev.getPointerId(index);
                 break;
 
             case MotionEvent.ACTION_POINTER_UP:
                 onPointerUp(ev);
                 mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId));
+                mLastMotionY = ev.getY(ev.findPointerIndex(mActivePointerId));
                 break;
         }
 
