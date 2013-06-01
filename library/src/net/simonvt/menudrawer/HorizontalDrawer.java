@@ -58,6 +58,23 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            mActivePointerId = INVALID_POINTER;
+            mIsDragging = false;
+            if (mVelocityTracker != null) {
+                mVelocityTracker.recycle();
+                mVelocityTracker = null;
+            }
+
+            if (Math.abs(mOffsetPixels) > mMenuSize / 2) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+
+            return false;
+        }
+
         if (action == MotionEvent.ACTION_DOWN && mMenuVisible && isCloseEnough()) {
             setOffsetPixels(0);
             stopAnimation();
@@ -72,8 +89,8 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
             return false;
         }
 
-        if (action != MotionEvent.ACTION_DOWN) {
-            if (mIsDragging) return true;
+        if (action != MotionEvent.ACTION_DOWN && mIsDragging) {
+            return true;
         }
 
         switch (action) {
@@ -123,22 +140,6 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
                         mLastMotionX = x;
                         mLastMotionY = y;
                     }
-                }
-                break;
-            }
-
-            /**
-             * If you click really fast, an up or cancel event is delivered here.
-             * Just snap content to whatever is closest.
-             * */
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP: {
-                mActivePointerId = INVALID_POINTER;
-
-                if (Math.abs(mOffsetPixels) > mMenuSize / 2) {
-                    openMenu();
-                } else {
-                    closeMenu();
                 }
                 break;
             }
@@ -223,6 +224,7 @@ public abstract class HorizontalDrawer extends DraggableDrawer {
             case MotionEvent.ACTION_UP: {
                 onUpEvent(ev);
                 mActivePointerId = INVALID_POINTER;
+                mIsDragging = false;
                 break;
             }
 
