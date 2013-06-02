@@ -48,6 +48,10 @@
         <!-- String to use as the up indicators content description when the drawer is closed -->
         <attr name="mdDrawerClosedUpContentDescription" format="string" />
 
+        <!-- Whether an overlay should be drawn as the drawer is opened and closed -->
+        <attr name="mdDrawOverlay" format="boolean" />
+
+        <!-- The position of the drawer -->
         <attr name="mdPosition" format="enum">
             <enum name="left" value="0" />
             <enum name="top" value="1" />

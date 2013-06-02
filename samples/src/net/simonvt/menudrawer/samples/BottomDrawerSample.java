@@ -12,7 +12,7 @@ import android.widget.TextView;
 /**
  * Sample class illustrating how to add a menu drawer above the content area.
  */
-public class BottomMenuSample extends Activity implements OnClickListener {
+public class BottomDrawerSample extends Activity implements OnClickListener {
 
     private MenuDrawer mMenuDrawer;
     private TextView mContentTextView;

@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="SampleBase" parent="@android:style/Theme.Holo.Light">
+    <style name="SampleBase" parent="@android:style/Theme.Holo.Light.DarkActionBar">
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 

@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-public class ContentSample extends BaseListSample {
+public class LeftDrawerSample extends BaseListSample {
 
-    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.ContentSample.contentText";
+    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.LeftDrawerSample.contentText";
 
     private String mContentText;
     private TextView mContentTextView;
@@ -27,6 +27,8 @@ public class ContentSample extends BaseListSample {
 
         mMenuDrawer.setContentView(R.layout.activity_contentsample);
         mMenuDrawer.setTouchMode(MenuDrawer.TOUCH_MODE_FULLSCREEN);
+        mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
+        mMenuDrawer.setDrawerIndicatorEnabled(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             getActionBar().setDisplayHomeAsUpEnabled(true);

@@ -14,7 +14,8 @@ import java.util.List;
 
 public abstract class BaseListSample extends FragmentActivity implements MenuAdapter.MenuListener {
 
-    private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
+    private static final String STATE_ACTIVE_POSITION =
+            "net.simonvt.menudrawer.samples.LeftDrawerSample.activePosition";
 
     protected MenuDrawer mMenuDrawer;
 

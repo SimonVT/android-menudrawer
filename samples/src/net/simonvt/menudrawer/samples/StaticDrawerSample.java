@@ -15,8 +15,9 @@ import java.util.List;
 
 public class StaticDrawerSample extends Activity implements MenuAdapter.MenuListener {
 
-    private static final String STATE_ACTIVE_POSITION = "net.simonvt.menudrawer.samples.ContentSample.activePosition";
-    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.ContentSample.contentText";
+    private static final String STATE_ACTIVE_POSITION =
+            "net.simonvt.menudrawer.samples.LeftDrawerSample.activePosition";
+    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.LeftDrawerSample.contentText";
 
     private MenuDrawer mMenuDrawer;
 

@@ -2,6 +2,7 @@ package net.simonvt.menudrawer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
@@ -26,6 +27,11 @@ public class StaticDrawer extends MenuDrawer {
         super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mIsStatic = true;
+    }
+
+    @Override
+    protected void drawOverlay(Canvas canvas) {
+        // NO-OP
     }
 
     @Override

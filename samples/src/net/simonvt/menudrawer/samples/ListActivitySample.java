@@ -3,9 +3,7 @@ package net.simonvt.menudrawer.samples;
 import net.simonvt.menudrawer.MenuDrawer;
 
 import android.app.ListActivity;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +21,6 @@ public class ListActivitySample extends ListActivity {
 
     private MenuDrawer mMenuDrawer;
 
-    private Handler mHandler;
-    private Runnable mToggleUpRunnable;
     private boolean mDisplayUp = true;
 
     @Override
@@ -32,6 +28,8 @@ public class ListActivitySample extends ListActivity {
         super.onCreate(inState);
 
         mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT);
+        mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
+        mMenuDrawer.setDrawerIndicatorEnabled(true);
 
         TextView menuView = new TextView(this);
         menuView.setGravity(Gravity.CENTER);
@@ -48,38 +46,6 @@ public class ListActivitySample extends ListActivity {
         }
 
         setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
-
-        // When running on ICS or higher, the "up" button blinks until it is clicked.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            mHandler = new Handler();
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            mToggleUpRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    mDisplayUp = !mDisplayUp;
-                    getActionBar().setDisplayHomeAsUpEnabled(mDisplayUp);
-                    mHandler.postDelayed(mToggleUpRunnable, 500);
-                }
-            };
-
-            mHandler.postDelayed(mToggleUpRunnable, 500);
-
-            mMenuDrawer.setOnDrawerStateChangeListener(new MenuDrawer.OnDrawerStateChangeListener() {
-                @Override
-                public void onDrawerStateChange(int oldState, int newState) {
-                    if (newState == MenuDrawer.STATE_OPEN) {
-                        mHandler.removeCallbacks(mToggleUpRunnable);
-                        if (!mDisplayUp) getActionBar().setDisplayHomeAsUpEnabled(true);
-                        mMenuDrawer.setOnDrawerStateChangeListener(null);
-                    }
-                }
-
-                @Override
-                public void onDrawerSlide(float openRatio, int offsetPixels) {
-                    // Do nothing
-                }
-            });
-        }
     }
 
     private int dpToPx(int dp) {

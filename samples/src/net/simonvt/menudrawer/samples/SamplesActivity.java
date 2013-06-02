@@ -21,23 +21,25 @@ public class SamplesActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         mAdapter = new SamplesAdapter();
 
-        mAdapter.addSample("Content sample", "Only the content area is dragged.", ContentSample.class);
+        mAdapter.addHeader("Sliding drawer");
+        mAdapter.addSample("Left drawer", "Only the content area is dragged.", LeftDrawerSample.class);
+        mAdapter.addSample("Right drawer", "The menu is positioned to the right of the content",
+                RightDrawerSample.class);
+        mAdapter.addSample("Top drawer", "The menu is positioned above the content", TopDrawerSample.class);
+        mAdapter.addSample("Bottom drawer", "The menu is positioned below the content", BottomDrawerSample.class);
         mAdapter.addSample("ListActivity sample", "Shows how to use the drawer with a ListActivity.",
                 ListActivitySample.class);
         mAdapter.addSample("Window sample", "The entire window is dragged.", WindowSample.class);
-        mAdapter.addSample("ActionBar overlay sample", "A window sample, where the ActionBar is an overlay",
-                ActionBarOverlaySample.class);
-        mAdapter.addSample("Right menu", "The menu is positioned to the right of the content", RightMenuSample.class);
-        mAdapter.addSample("Top menu", "The menu is positioned above the content", TopMenuSample.class);
-        mAdapter.addSample("Bottom menu", "The menu is positioned below the content", BottomMenuSample.class);
-        mAdapter.addSample("ViewPager", "The menu can only be dragged open when the ViewPager is on the first page",
+        mAdapter.addSample("ViewPager",
+                "A left drawer that can only be dragged open when the ViewPager is on the first page",
                 ViewPagerSample.class);
         mAdapter.addSample("Layout xml", "The drawer and its menu and content is defined in XML", LayoutSample.class);
-        mAdapter.addSample("Static drawer", "The drawer is always visible", StaticDrawerSample.class);
         mAdapter.addSample("Fragments", "Sample that uses fragments as the content", FragmentSample.class);
-        mAdapter.addSample("ActionBarSherlock sample",
-                "Showcases the drawer used with ActionBarSherlock. This also features the drawer indicator icon.",
+        mAdapter.addSample("ActionBarSherlock sample", "Showcases the drawer used with ActionBarSherlock.",
                 ActionBarSherlockSample.class);
+
+        mAdapter.addHeader("Static drawer");
+        mAdapter.addSample("Static drawer", "The drawer is always visible", StaticDrawerSample.class);
 
         mAdapter.addHeader("Overlay drawer");
         mAdapter.addSample("Left overlay", "The drawer can be dragged in from the left.",

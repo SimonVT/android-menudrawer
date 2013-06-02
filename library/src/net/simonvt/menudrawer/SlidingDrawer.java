@@ -3,65 +3,35 @@ package net.simonvt.menudrawer;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 
-public class OverlayDrawer extends DraggableDrawer {
+public class SlidingDrawer extends DraggableDrawer {
 
     private static final String TAG = "OverlayDrawer";
 
-    OverlayDrawer(Activity activity, int dragMode) {
+    SlidingDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
     }
 
-    public OverlayDrawer(Context context) {
+    public SlidingDrawer(Context context) {
         super(context);
     }
 
-    public OverlayDrawer(Context context, AttributeSet attrs) {
+    public SlidingDrawer(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public OverlayDrawer(Context context, AttributeSet attrs, int defStyle) {
+    public SlidingDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @Override
     protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
         super.initDrawer(context, attrs, defStyle);
-        super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         super.addView(mMenuContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-    }
-
-    @Override
-    protected void drawOverlay(Canvas canvas) {
-        final int width = getWidth();
-        final int height = getHeight();
-        final int offsetPixels = (int) mOffsetPixels;
-        final float openRatio = Math.abs(mOffsetPixels) / mMenuSize;
-
-        switch (mPosition) {
-            case LEFT:
-                mMenuOverlay.setBounds(offsetPixels, 0, width, height);
-                break;
-
-            case RIGHT:
-                mMenuOverlay.setBounds(0, 0, width - offsetPixels, height);
-                break;
-
-            case TOP:
-                mMenuOverlay.setBounds(0, offsetPixels, width, height);
-                break;
-
-            case BOTTOM:
-                mMenuOverlay.setBounds(0, 0, width, height - offsetPixels);
-                break;
-        }
-
-        mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * openRatio));
-        mMenuOverlay.draw(canvas);
+        super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
     @Override
@@ -91,35 +61,29 @@ public class OverlayDrawer extends DraggableDrawer {
     protected void onOffsetPixelsChanged(int offsetPixels) {
         if (USE_TRANSLATIONS) {
             switch (mPosition) {
-                case LEFT:
-                    mMenuContainer.setTranslationX(offsetPixels - mMenuSize);
-                    break;
-
                 case TOP:
-                    mMenuContainer.setTranslationY(offsetPixels - mMenuSize);
-                    break;
-
-                case RIGHT:
-                    mMenuContainer.setTranslationX(offsetPixels + mMenuSize);
-                    break;
-
                 case BOTTOM:
-                    mMenuContainer.setTranslationY(offsetPixels + mMenuSize);
+                    mContentContainer.setTranslationY(offsetPixels);
+                    break;
+
+                default:
+                    mContentContainer.setTranslationX(offsetPixels);
                     break;
             }
         } else {
             switch (mPosition) {
                 case TOP:
                 case BOTTOM:
-                    mMenuContainer.offsetTopAndBottom(offsetPixels - mMenuContainer.getTop());
+                    mContentContainer.offsetTopAndBottom(offsetPixels - mContentContainer.getTop());
                     break;
 
                 default:
-                    mMenuContainer.offsetLeftAndRight(offsetPixels - mMenuContainer.getLeft());
+                    mContentContainer.offsetLeftAndRight(offsetPixels - mContentContainer.getLeft());
                     break;
             }
         }
 
+        offsetMenu(offsetPixels);
         invalidate();
     }
 
@@ -148,56 +112,32 @@ public class OverlayDrawer extends DraggableDrawer {
     }
 
     @Override
-    protected GradientDrawable.Orientation getDropShadowOrientation() {
-        switch (mPosition) {
-            case TOP:
-                return GradientDrawable.Orientation.TOP_BOTTOM;
-
-            case RIGHT:
-                return GradientDrawable.Orientation.RIGHT_LEFT;
-
-            case BOTTOM:
-                return GradientDrawable.Orientation.BOTTOM_TOP;
-
-            default:
-                return GradientDrawable.Orientation.LEFT_RIGHT;
-        }
-    }
-
-    @Override
-    protected void updateDropShadowRect() {
+    protected void drawOverlay(Canvas canvas) {
+        final int width = getWidth();
+        final int height = getHeight();
+        final int offsetPixels = (int) mOffsetPixels;
         final float openRatio = Math.abs(mOffsetPixels) / mMenuSize;
-        final int dropShadowSize = (int) (mDropShadowSize * openRatio);
 
         switch (mPosition) {
             case LEFT:
-                mDropShadowRect.top = 0;
-                mDropShadowRect.bottom = getHeight();
-                mDropShadowRect.left = ViewHelper.getRight(mMenuContainer);
-                mDropShadowRect.right = mDropShadowRect.left + dropShadowSize;
-                break;
-
-            case TOP:
-                mDropShadowRect.left = 0;
-                mDropShadowRect.right = getWidth();
-                mDropShadowRect.top = ViewHelper.getBottom(mMenuContainer);
-                mDropShadowRect.bottom = mDropShadowRect.top + dropShadowSize;
+                mMenuOverlay.setBounds(0, 0, offsetPixels, height);
                 break;
 
             case RIGHT:
-                mDropShadowRect.top = 0;
-                mDropShadowRect.bottom = getHeight();
-                mDropShadowRect.right = ViewHelper.getLeft(mMenuContainer);
-                mDropShadowRect.left = mDropShadowRect.right - dropShadowSize;
+                mMenuOverlay.setBounds(width + offsetPixels, 0, width, height);
+                break;
+
+            case TOP:
+                mMenuOverlay.setBounds(0, 0, width, offsetPixels);
                 break;
 
             case BOTTOM:
-                mDropShadowRect.left = 0;
-                mDropShadowRect.right = getWidth();
-                mDropShadowRect.bottom = ViewHelper.getTop(mMenuContainer);
-                mDropShadowRect.top = mDropShadowRect.bottom - dropShadowSize;
+                mMenuOverlay.setBounds(0, height + offsetPixels, width, height);
                 break;
         }
+
+        mMenuOverlay.setAlpha((int) (MAX_MENU_OVERLAY_ALPHA * (1.f - openRatio)));
+        mMenuOverlay.draw(canvas);
     }
 
     @Override
@@ -205,7 +145,16 @@ public class OverlayDrawer extends DraggableDrawer {
         final int width = r - l;
         final int height = b - t;
 
-        mContentContainer.layout(0, 0, width, height);
+        if (USE_TRANSLATIONS) {
+            mContentContainer.layout(0, 0, width, height);
+        } else {
+            final int offsetPixels = (int) mOffsetPixels;
+            if (mPosition == Position.LEFT || mPosition == Position.RIGHT) {
+                mContentContainer.layout(offsetPixels, 0, width + offsetPixels, height);
+            } else {
+                mContentContainer.layout(0, offsetPixels, width, height + offsetPixels);
+            }
+        }
 
         switch (mPosition) {
             case LEFT:
@@ -224,6 +173,92 @@ public class OverlayDrawer extends DraggableDrawer {
                 mMenuContainer.layout(0, height - mMenuSize, width, height);
                 break;
         }
+    }
+
+    /**
+     * Offsets the menu relative to its original position based on the position of the content.
+     *
+     * @param offsetPixels The number of pixels the content if offset.
+     */
+    private void offsetMenu(int offsetPixels) {
+        if (!mOffsetMenu || mMenuSize == 0) {
+            return;
+        }
+
+        final int width = getWidth();
+        final int height = getHeight();
+
+        final int menuSize = mMenuSize;
+        final int sign = (int) (mOffsetPixels / Math.abs(mOffsetPixels));
+        final float openRatio = Math.abs(mOffsetPixels) / menuSize;
+        final int offset = (int) (-0.25f * ((1.0f - openRatio) * menuSize) * sign);
+
+        switch (mPosition) {
+            case LEFT: {
+                if (USE_TRANSLATIONS) {
+                    if (offsetPixels > 0) {
+                        mMenuContainer.setTranslationX(offset);
+                    } else {
+                        mMenuContainer.setTranslationX(-menuSize);
+                    }
+
+                } else {
+                    mMenuContainer.offsetLeftAndRight(offset - mMenuContainer.getLeft());
+                    mMenuContainer.setVisibility(offsetPixels == 0 ? INVISIBLE : VISIBLE);
+                }
+                break;
+            }
+
+            case RIGHT: {
+                if (USE_TRANSLATIONS) {
+                    if (offsetPixels != 0) {
+                        mMenuContainer.setTranslationX(offset);
+                    } else {
+                        mMenuContainer.setTranslationX(menuSize);
+                    }
+
+                } else {
+                    final int oldOffset = mMenuContainer.getRight() - width;
+                    final int offsetBy = offset - oldOffset;
+                    mMenuContainer.offsetLeftAndRight(offsetBy);
+                    mMenuContainer.setVisibility(offsetPixels == 0 ? INVISIBLE : VISIBLE);
+                }
+                break;
+            }
+
+            case TOP: {
+                if (USE_TRANSLATIONS) {
+                    if (offsetPixels > 0) {
+                        mMenuContainer.setTranslationY(offset);
+                    } else {
+                        mMenuContainer.setTranslationY(-menuSize);
+                    }
+
+                } else {
+                    mMenuContainer.offsetTopAndBottom(offset - mMenuContainer.getTop());
+                    mMenuContainer.setVisibility(offsetPixels == 0 ? INVISIBLE : VISIBLE);
+                }
+                break;
+            }
+
+            case BOTTOM: {
+                if (USE_TRANSLATIONS) {
+                    if (offsetPixels != 0) {
+                        mMenuContainer.setTranslationY(offset);
+                    } else {
+                        mMenuContainer.setTranslationY(menuSize);
+                    }
+
+                } else {
+                    final int oldOffset = mMenuContainer.getBottom() - height;
+                    final int offsetBy = offset - oldOffset;
+                    mMenuContainer.offsetTopAndBottom(offsetBy);
+                    mMenuContainer.setVisibility(offsetPixels == 0 ? INVISIBLE : VISIBLE);
+                }
+                break;
+            }
+        }
+
     }
 
     @Override
@@ -270,19 +305,19 @@ public class OverlayDrawer extends DraggableDrawer {
 
         switch (mPosition) {
             case LEFT:
-                contentTouch = ViewHelper.getRight(mMenuContainer) < x;
+                contentTouch = ViewHelper.getLeft(mContentContainer) < x;
                 break;
 
             case RIGHT:
-                contentTouch = ViewHelper.getLeft(mMenuContainer) > x;
+                contentTouch = ViewHelper.getRight(mContentContainer) > x;
                 break;
 
             case TOP:
-                contentTouch = ViewHelper.getBottom(mMenuContainer) < y;
+                contentTouch = ViewHelper.getTop(mContentContainer) < y;
                 break;
 
             case BOTTOM:
-                contentTouch = ViewHelper.getTop(mMenuContainer) > y;
+                contentTouch = ViewHelper.getBottom(mContentContainer) > y;
                 break;
         }
 
@@ -293,51 +328,47 @@ public class OverlayDrawer extends DraggableDrawer {
         switch (mPosition) {
             case LEFT:
                 return (!mMenuVisible && mInitialMotionX <= mTouchSize)
-                        || (mMenuVisible && mInitialMotionX <= mOffsetPixels);
+                        || (mMenuVisible && mInitialMotionX >= mOffsetPixels);
 
             case RIGHT:
                 final int width = getWidth();
                 final int initialMotionX = (int) mInitialMotionX;
 
                 return (!mMenuVisible && initialMotionX >= width - mTouchSize)
-                        || (mMenuVisible && initialMotionX >= width + mOffsetPixels);
+                        || (mMenuVisible && initialMotionX <= width + mOffsetPixels);
 
             case TOP:
                 return (!mMenuVisible && mInitialMotionY <= mTouchSize)
-                        || (mMenuVisible && mInitialMotionY <= mOffsetPixels);
+                        || (mMenuVisible && mInitialMotionY >= mOffsetPixels);
 
             case BOTTOM:
                 final int height = getHeight();
                 return (!mMenuVisible && mInitialMotionY >= height - mTouchSize)
-                        || (mMenuVisible && mInitialMotionY >= height + mOffsetPixels);
+                        || (mMenuVisible && mInitialMotionY <= height + mOffsetPixels);
         }
 
         return false;
     }
 
     protected boolean onMoveAllowDrag(int x, int y, float dx, float dy) {
-        if (mMenuVisible && mTouchMode == TOUCH_MODE_FULLSCREEN) {
-            return true;
-        }
-
         switch (mPosition) {
             case LEFT:
                 return (!mMenuVisible && mInitialMotionX <= mTouchSize && (dx > 0))
-                        || (mMenuVisible && x <= mOffsetPixels);
+                        || (mMenuVisible && x >= mOffsetPixels);
 
             case RIGHT:
                 final int width = getWidth();
                 return (!mMenuVisible && mInitialMotionX >= width - mTouchSize && (dx < 0))
-                        || (mMenuVisible && x >= width + mOffsetPixels);
+                        || (mMenuVisible && x <= width + mOffsetPixels);
 
             case TOP:
                 return (!mMenuVisible && mInitialMotionY <= mTouchSize && (dy > 0))
-                        || (mMenuVisible && y <= mOffsetPixels);
+                        || (mMenuVisible && y >= mOffsetPixels);
 
             case BOTTOM:
                 final int height = getHeight();
                 return (!mMenuVisible && mInitialMotionY >= height - mTouchSize && (dy < 0))
-                        || (mMenuVisible && y >= height + mOffsetPixels);
+                        || (mMenuVisible && y <= height + mOffsetPixels);
         }
 
         return false;

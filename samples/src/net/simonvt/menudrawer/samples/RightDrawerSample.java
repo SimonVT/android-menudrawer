@@ -9,9 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class RightMenuSample extends BaseListSample {
+public class RightDrawerSample extends BaseListSample {
 
-    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.RightMenuSample.contentText";
+    private static final String STATE_CONTENT_TEXT = "net.simonvt.menudrawer.samples.RightDrawerSample.contentText";
 
     private static final int MENU_OVERFLOW = 1;
 

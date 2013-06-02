@@ -24,22 +24,21 @@
             </intent-filter>
         </activity>
         <activity android:name="net.simonvt.menudrawer.samples.WindowSample" />
-        <activity android:name="net.simonvt.menudrawer.samples.ContentSample" />
+        <activity android:name=".LeftDrawerSample" />
         <activity android:name="net.simonvt.menudrawer.samples.ListActivitySample" />
-        <activity android:name="net.simonvt.menudrawer.samples.ActionBarOverlaySample" />
         <activity android:name="net.simonvt.menudrawer.samples.ViewPagerSample" />
         <activity
-            android:name="net.simonvt.menudrawer.samples.RightMenuSample"
+            android:name=".RightDrawerSample"
             android:theme="@style/SampleTheme.RightDrawer" />
         <activity
-            android:name="net.simonvt.menudrawer.samples.TopMenuSample"
+            android:name=".TopDrawerSample"
             android:theme="@style/SampleTheme.TopDrawer">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.simonvt.menudrawer.samples.SamplesActivity" />
         </activity>
         <activity
-            android:name="net.simonvt.menudrawer.samples.BottomMenuSample"
+            android:name=".BottomDrawerSample"
             android:theme="@style/SampleTheme.BottomDrawer" />
         <activity
             android:name="net.simonvt.menudrawer.samples.LayoutSample"

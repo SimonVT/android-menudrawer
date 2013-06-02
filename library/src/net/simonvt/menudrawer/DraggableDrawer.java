@@ -2,7 +2,6 @@ package net.simonvt.menudrawer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -570,23 +569,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
         }
 
         return 0;
-    }
-
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
-        final int offsetPixels = (int) mOffsetPixels;
-
-        if (offsetPixels != 0) drawMenuOverlay(canvas, offsetPixels);
-    }
-
-    /**
-     * Called when the menu overlay should be drawn.
-     *
-     * @param canvas       The canvas on which to draw.
-     * @param offsetPixels Value in pixels indicating the offset.
-     */
-    protected void drawMenuOverlay(Canvas canvas, int offsetPixels) {
     }
 
     void saveState(Bundle state) {
