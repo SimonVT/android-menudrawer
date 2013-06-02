@@ -6,6 +6,7 @@ import net.simonvt.menudrawer.Position;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -40,11 +41,8 @@ public class LeftOverlaySample extends Activity {
         items.add(new Item("Item 10", R.drawable.ic_action_select_all_dark));
 
         mList = new ListView(this);
-
         mAdapter = new MenuAdapter(this, items);
-
         mList.setAdapter(mAdapter);
-
         mDrawer.setMenuView(mList);
 
         TextView content = new TextView(this);
@@ -53,5 +51,16 @@ public class LeftOverlaySample extends Activity {
         mDrawer.setContentView(content);
         mDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mDrawer.setDrawerIndicatorEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawer.toggleMenu();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
