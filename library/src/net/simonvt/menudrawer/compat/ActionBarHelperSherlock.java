@@ -72,7 +72,6 @@ final class ActionBarHelperSherlock {
                 ViewGroup parent = (ViewGroup) v.getParent();
                 final int upId = activity.getResources().getIdentifier("abs__up", "id", appPackage);
                 mUpIndicatorView = (ImageView) parent.findViewById(upId);
-                Log.d(TAG, "Id: " + upId);
 
                 Class sherlockActivity = activity.getClass();
                 Method getActionBar = sherlockActivity.getMethod("getSupportActionBar");
