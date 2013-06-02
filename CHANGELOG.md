@@ -1,6 +1,25 @@
 Change Log
 ==========
 
+Version 3.0.0 *(2013-??-??)*
+----------------------------
+ * Added drawer that overlays the content
+ * Removed most MenuDrawer subclasses.
+   Only three exist now:
+     * SlidingDrawer - A drawer that's behind the content
+     * OverlayDrawer - A drawer that overlays the content
+     * StaticDrawer  - The menu is always visible
+
+   The drawers are selected by passing a Type to the `MenuDrawer#attach` method.
+   When adding drawers in xml, put one of these subclasses and add the
+   `mdPosition` attribute.
+ * Added method to disable the overlay that's drawn when the drawer is dragged
+
+ Version 2.0.3 *(2013-05-19)*
+ ----------------------------
+  * Add drawer indicator, as per the design guidelines
+  * Add new method to drawer listener that notifies about offset changes
+
 Version 2.0.2 *(2013-03-31)*
 ----------------------------
  * Added listener that makes it possible to disabllow intercepting touch events over
