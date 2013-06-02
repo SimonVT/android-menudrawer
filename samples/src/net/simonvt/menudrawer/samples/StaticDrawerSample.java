@@ -36,7 +36,7 @@ public class StaticDrawerSample extends Activity implements MenuAdapter.MenuList
             mContentText = inState.getString(STATE_CONTENT_TEXT);
         }
 
-        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.LEFT, true);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.LEFT, MenuDrawer.Type.STATIC);
         mMenuDrawer.setContentView(R.layout.activity_contentsample);
         mMenuDrawer.setAllowIndicatorAnimation(true);
 

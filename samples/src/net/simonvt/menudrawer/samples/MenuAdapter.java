@@ -22,7 +22,7 @@ public class MenuAdapter extends BaseAdapter {
 
     private MenuListener mListener;
 
-    private int mActivePosition;
+    private int mActivePosition = -1;
 
     public MenuAdapter(Context context, List<Object> items) {
         mContext = context;

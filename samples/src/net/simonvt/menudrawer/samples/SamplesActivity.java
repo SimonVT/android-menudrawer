@@ -39,6 +39,16 @@ public class SamplesActivity extends ListActivity {
                 "Showcases the drawer used with ActionBarSherlock. This also features the drawer indicator icon.",
                 ActionBarSherlockSample.class);
 
+        mAdapter.addHeader("Overlay drawer");
+        mAdapter.addSample("Left overlay", "The drawer can be dragged in from the left.",
+                LeftOverlaySample.class);
+        mAdapter.addSample("Top overlay", "The drawer can be dragged in from the top.",
+                TopOverlaySample.class);
+        mAdapter.addSample("Right overlay", "The drawer can be dragged in from the right.",
+                RightOverlaySample.class);
+        mAdapter.addSample("Bottom overlay", "The drawer can be dragged in from the bottom.",
+                BottomOverlaySample.class);
+
         setListAdapter(mAdapter);
     }
 
@@ -47,6 +57,15 @@ public class SamplesActivity extends ListActivity {
         SampleItem sample = (SampleItem) mAdapter.getItem(position);
         Intent i = new Intent(this, sample.mClazz);
         startActivity(i);
+    }
+
+    private static class Header {
+
+        String mTitle;
+
+        public Header(String title) {
+            mTitle = title;
+        }
     }
 
     private static class SampleItem {
@@ -64,20 +83,24 @@ public class SamplesActivity extends ListActivity {
 
     public class SamplesAdapter extends BaseAdapter {
 
-        private List<SampleItem> mSamples = new ArrayList<SampleItem>();
+        private List<Object> mItems = new ArrayList<Object>();
+
+        public void addHeader(String title) {
+            mItems.add(new Header(title));
+        }
 
         public void addSample(String title, String summary, Class clazz) {
-            mSamples.add(new SampleItem(title, summary, clazz));
+            mItems.add(new SampleItem(title, summary, clazz));
         }
 
         @Override
         public int getCount() {
-            return mSamples.size();
+            return mItems.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mSamples.get(position);
+            return mItems.get(position);
         }
 
         @Override
@@ -86,18 +109,40 @@ public class SamplesActivity extends ListActivity {
         }
 
         @Override
+        public int getItemViewType(int position) {
+            return getItem(position) instanceof Header ? 0 : 1;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            SampleItem sample = (SampleItem) getItem(position);
+            if (getItemViewType(position) == 0) {
+                TextView v = (TextView) convertView;
+                if (v == null) {
+                    v = (TextView) getLayoutInflater().inflate(R.layout.list_row_sample_header, parent, false);
+                }
 
-            View v = convertView;
-            if (v == null) {
-                v = getLayoutInflater().inflate(R.layout.list_row_sample, parent, false);
+                v.setText(((Header) getItem(position)).mTitle);
+
+                return v;
+
+            } else {
+                SampleItem sample = (SampleItem) getItem(position);
+
+                View v = convertView;
+                if (v == null) {
+                    v = getLayoutInflater().inflate(R.layout.list_row_sample, parent, false);
+                }
+
+                ((TextView) v.findViewById(R.id.title)).setText(sample.mTitle);
+                ((TextView) v.findViewById(R.id.summary)).setText(sample.mSummary);
+
+                return v;
             }
-
-            ((TextView) v.findViewById(R.id.title)).setText(sample.mTitle);
-            ((TextView) v.findViewById(R.id.summary)).setText(sample.mSummary);
-
-            return v;
         }
     }
 }

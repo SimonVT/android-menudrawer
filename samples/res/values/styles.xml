@@ -1,5 +1,20 @@
 <resources>
 
+    <style name="Samples" />
+
+    <style name="Samples.Category">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:background">@drawable/md__category_background</item>
+
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
     <style name="MenuDrawer" />
 
     <style name="MenuDrawer.Widget" />

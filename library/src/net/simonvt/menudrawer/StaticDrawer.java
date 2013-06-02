@@ -22,6 +22,9 @@ public class StaticDrawer extends MenuDrawer {
     @Override
     protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
         super.initDrawer(context, attrs, defStyle);
+        super.addView(mMenuContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
         mIsStatic = true;
     }
 

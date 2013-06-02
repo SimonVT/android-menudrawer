@@ -68,6 +68,12 @@ public abstract class MenuDrawer extends ViewGroup {
         boolean isViewDraggable(View v, int dx, int x, int y);
     }
 
+    public enum Type {
+        BEHIND,
+        STATIC,
+        OVERLAY,
+    }
+
     /**
      * Tag used when logging.
      */
@@ -371,7 +377,7 @@ public abstract class MenuDrawer extends ViewGroup {
     private final Rect mDropShadowRect = new Rect();
 
     /**
-     * Current offset of the content.
+     * Current offset.
      */
     protected float mOffsetPixels;
 
@@ -418,21 +424,21 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity, int dragMode, Position position) {
-        return attach(activity, dragMode, position, false);
+        return attach(activity, dragMode, position, Type.BEHIND);
     }
 
     /**
      * Attaches the MenuDrawer to the Activity.
      *
-     * @param activity     The activity the menu drawer will be attached to.
-     * @param dragMode     The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
-     *                     or {@link MenuDrawer#MENU_DRAG_WINDOW}.
-     * @param position     Where to position the menu.
-     * @param attachStatic Whether a static (non-draggable, always visible) drawer should be used.
+     * @param activity The activity the menu drawer will be attached to.
+     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
+     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
+     * @param position Where to position the menu.
+     * @param type     The {@link Type} of the drawer.
      * @return The created MenuDrawer instance.
      */
-    public static MenuDrawer attach(Activity activity, int dragMode, Position position, boolean attachStatic) {
-        MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, position, attachStatic);
+    public static MenuDrawer attach(Activity activity, int dragMode, Position position, Type type) {
+        MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, position, type);
         menuDrawer.setId(R.id.md__drawer);
 
         switch (dragMode) {
@@ -454,12 +460,17 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * Constructs the appropriate MenuDrawer based on the position.
      */
-    private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, Position position,
-            boolean attachStatic) {
+    private static MenuDrawer createMenuDrawer(Activity activity, int dragMode, Position position, Type type) {
         MenuDrawer drawer;
 
-        if (attachStatic) {
+        if (type == Type.STATIC) {
             drawer = new StaticDrawer(activity);
+
+        } else if (type == Type.OVERLAY) {
+            drawer = new OverlayDrawer(activity, dragMode);
+            if (position == Position.LEFT) {
+                drawer.setupUpIndicator(activity);
+            }
 
         } else {
 
@@ -587,34 +598,32 @@ public abstract class MenuDrawer extends ViewGroup {
         mMenuContainer = new BuildLayerFrameLayout(context);
         mMenuContainer.setId(R.id.md__menu);
         mMenuContainer.setBackgroundDrawable(menuBackground);
-        super.addView(mMenuContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mContentContainer = new NoClickThroughFrameLayout(context);
         mContentContainer.setId(R.id.md__content);
         mContentContainer.setBackgroundDrawable(contentBackground);
-        super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mMenuOverlay = new ColorDrawable(0xFF000000);
 
         mIndicatorScroller = new FloatScroller(SMOOTH_INTERPOLATOR);
     }
 
-    @Override
-    public void addView(View child, int index, LayoutParams params) {
-        int childCount = mMenuContainer.getChildCount();
-        if (childCount == 0) {
-            mMenuContainer.addView(child, index, params);
-            return;
-        }
-
-        childCount = mContentContainer.getChildCount();
-        if (childCount == 0) {
-            mContentContainer.addView(child, index, params);
-            return;
-        }
-
-        throw new IllegalStateException("MenuDrawer can only hold two child views");
-    }
+    //    @Override
+    //    public void addView(View child, int index, LayoutParams params) {
+    //        int childCount = mMenuContainer.getChildCount();
+    //        if (childCount == 0) {
+    //            mMenuContainer.addView(child, index, params);
+    //            return;
+    //        }
+    //
+    //        childCount = mContentContainer.getChildCount();
+    //        if (childCount == 0) {
+    //            mContentContainer.addView(child, index, params);
+    //            return;
+    //        }
+    //
+    //        throw new IllegalStateException("MenuDrawer can only hold two child views");
+    //    }
 
     protected int dpToPx(int dp) {
         return (int) (getResources().getDisplayMetrics().density * dp + 0.5f);
@@ -953,6 +962,19 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     /**
+     * Compute the touch area based on the touch mode.
+     */
+    protected void updateTouchAreaSize() {
+        if (mTouchMode == TOUCH_MODE_BEZEL) {
+            mTouchSize = mTouchBezelSize;
+        } else if (mTouchMode == TOUCH_MODE_FULLSCREEN) {
+            mTouchSize = getMeasuredWidth();
+        } else {
+            mTouchSize = 0;
+        }
+    }
+
+    /**
      * Callback when each frame in the indicator animation should be drawn.
      */
     private void animateIndicatorInvalidate() {
@@ -1157,9 +1179,13 @@ public abstract class MenuDrawer extends ViewGroup {
     public void setSlideDrawable(Drawable drawable) {
         mSlideDrawable = new SlideDrawable(drawable);
 
-        if (mActionBarHelper != null && mDrawerIndicatorEnabled) {
-            mActionBarHelper.setActionBarUpIndicator(mSlideDrawable,
-                    isMenuVisible() ? mDrawerOpenContentDesc : mDrawerClosedContentDesc);
+        if (mActionBarHelper != null) {
+            mActionBarHelper.setDisplayShowHomeAsUpEnabled(true);
+
+            if (mDrawerIndicatorEnabled) {
+                mActionBarHelper.setActionBarUpIndicator(mSlideDrawable,
+                        isMenuVisible() ? mDrawerOpenContentDesc : mDrawerClosedContentDesc);
+            }
         }
     }
 
@@ -1172,7 +1198,6 @@ public abstract class MenuDrawer extends ViewGroup {
         if (mActionBarHelper == null) {
             mActionBarHelper = new ActionBarHelper(activity);
             mThemeUpIndicator = mActionBarHelper.getThemeUpIndicator();
-            mActionBarHelper.setDisplayShowHomeAsUpEnabled(true);
 
             if (mDrawerIndicatorEnabled) {
                 mActionBarHelper.setActionBarUpIndicator(mSlideDrawable,

@@ -25,6 +25,13 @@ public abstract class VerticalDrawer extends DraggableDrawer {
     }
 
     @Override
+    protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
+        super.initDrawer(context, attrs, defStyle);
+        super.addView(mMenuContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
@@ -36,7 +43,6 @@ public abstract class VerticalDrawer extends DraggableDrawer {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (!mMenuSizeSet) mMenuSize = (int) (height * 0.25f);
         if (mOffsetPixels == -1) openMenu(false);
 
         final int menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, width);
@@ -51,6 +57,16 @@ public abstract class VerticalDrawer extends DraggableDrawer {
 
         updateTouchAreaSize();
     }
+
+    protected abstract boolean isContentTouch(MotionEvent ev);
+
+    protected abstract boolean onDownAllowDrag(MotionEvent ev);
+
+    protected abstract boolean onMoveAllowDrag(MotionEvent ev, float diff);
+
+    protected abstract void onMoveEvent(float dx);
+
+    protected abstract void onUpEvent(MotionEvent ev);
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {

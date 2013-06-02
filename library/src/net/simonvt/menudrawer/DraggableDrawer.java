@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -332,19 +331,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
     }
 
     /**
-     * Compute the touch area based on the touch mode.
-     */
-    protected void updateTouchAreaSize() {
-        if (mTouchMode == TOUCH_MODE_BEZEL) {
-            mTouchSize = mTouchBezelSize;
-        } else if (mTouchMode == TOUCH_MODE_FULLSCREEN) {
-            mTouchSize = getMeasuredWidth();
-        } else {
-            mTouchSize = 0;
-        }
-    }
-
-    /**
      * Called when a drag has been ended.
      */
     protected void endDrag() {
@@ -503,22 +489,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
     }
 
     /**
-     * Returns true if the touch event occurs over the content.
-     *
-     * @param ev The motion event.
-     * @return True if the touch event occurred over the content, false otherwise.
-     */
-    protected abstract boolean isContentTouch(MotionEvent ev);
-
-    /**
-     * Returns true if dragging the content should be allowed.
-     *
-     * @param ev The motion event.
-     * @return True if dragging the content should be allowed, false otherwise.
-     */
-    protected abstract boolean onDownAllowDrag(MotionEvent ev);
-
-    /**
      * Tests scrollability within child views of v given a delta of dx.
      *
      * @param v      View to test for horizontal scrollability
@@ -602,29 +572,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
         return 0;
     }
 
-    /**
-     * Returns true if dragging the content should be allowed.
-     *
-     * @param ev The motion event.
-     * @return True if dragging the content should be allowed, false otherwise.
-     */
-    protected abstract boolean onMoveAllowDrag(MotionEvent ev, float dx);
-
-    /**
-     * Called when a move event has happened while dragging the content is in progress.
-     *
-     * @param dx The X difference between the last motion event and the current motion event.
-     */
-    protected abstract void onMoveEvent(float dx);
-
-    /**
-     * Called when {@link android.view.MotionEvent#ACTION_UP} of {@link android.view.MotionEvent#ACTION_CANCEL} is
-     * delivered to {@link net.simonvt.menudrawer.MenuDrawer#onTouchEvent(android.view.MotionEvent)}.
-     *
-     * @param ev The motion event.
-     */
-    protected abstract void onUpEvent(MotionEvent ev);
-
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
@@ -639,7 +586,8 @@ public abstract class DraggableDrawer extends MenuDrawer {
      * @param canvas       The canvas on which to draw.
      * @param offsetPixels Value in pixels indicating the offset.
      */
-    protected abstract void drawMenuOverlay(Canvas canvas, int offsetPixels);
+    protected void drawMenuOverlay(Canvas canvas, int offsetPixels) {
+    }
 
     void saveState(Bundle state) {
         final boolean menuVisible = mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING;
