@@ -51,6 +51,7 @@ public class LeftOverlaySample extends Activity {
         mDrawer.setContentView(content);
         mDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mDrawer.setDrawerIndicatorEnabled(true);
+        mDrawer.peekDrawer(1000, 0);
     }
 
     @Override
