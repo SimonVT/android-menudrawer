@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 3.0.0 *(2013-??-??)*
+Version 3.0.0 *(2013-06-09)*
 ----------------------------
  * Added drawer that overlays the content
  * Removed most MenuDrawer subclasses.
