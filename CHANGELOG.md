@@ -14,6 +14,7 @@ Version 3.0.0 *(2013-??-??)*
    When adding drawers in xml, put one of these subclasses and add the
    `mdPosition` attribute.
  * Added method to disable the overlay that's drawn when the drawer is dragged
+ * Relocated the library to `net.simonvt.menudrawer:menudrawer` in maven central
 
  Version 2.0.3 *(2013-05-19)*
  ----------------------------

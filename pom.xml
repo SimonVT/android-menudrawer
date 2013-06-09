@@ -9,8 +9,8 @@
         <version>7</version>
     </parent>
 
-    <groupId>net.simonvt</groupId>
-    <artifactId>android-menudrawer-parent</artifactId>
+    <groupId>net.simonvt.menudrawer</groupId>
+    <artifactId>menudrawer-parent</artifactId>
     <packaging>pom</packaging>
     <version>2.0.4-SNAPSHOT</version>
 
