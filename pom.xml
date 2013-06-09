@@ -28,8 +28,21 @@
         <url>http://github.com/SimonVT/android-menudrawer/</url>
         <connection>scm:git:git://github.com/SimonVT/android-menudrawer.git</connection>
         <developerConnection>scm:git:git@github.com:SimonVT/android-menudrawer.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Simon Vig Therkildsen</name>
+            <email>simonvt@gmail.com</email>
+            <id>simonvt</id>
+            <url>http://simonvt.net</url>
+            <timezone>1</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <licenses>
         <license>
