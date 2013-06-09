@@ -69,8 +69,19 @@ public abstract class MenuDrawer extends ViewGroup {
     }
 
     public enum Type {
+        /**
+         * Positions the drawer behind the content.
+         */
         BEHIND,
+
+        /**
+         * A static drawer that can not be dragged.
+         */
         STATIC,
+
+        /**
+         * Positions the drawer on top of the content.
+         */
         OVERLAY,
     }
 
@@ -184,6 +195,9 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     protected boolean mDropShadowEnabled;
 
+    /**
+     * The color of the drop shadow.
+     */
     protected int mDropShadowColor;
 
     /**
@@ -1039,6 +1053,11 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public abstract boolean getOffsetMenuEnabled();
 
+    /**
+     * Get the current state of the drawer.
+     *
+     * @return The state of the drawer.
+     */
     public int getDrawerState() {
         return mDrawerState;
     }
