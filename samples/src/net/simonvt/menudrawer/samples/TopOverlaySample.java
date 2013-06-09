@@ -15,7 +15,7 @@ public class TopOverlaySample extends Activity {
     @Override
     protected void onCreate(Bundle inState) {
         super.onCreate(inState);
-        mDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.TOP, MenuDrawer.Type.OVERLAY);
+        mDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY, Position.TOP);
         mDrawer.setTouchMode(MenuDrawer.TOUCH_MODE_FULLSCREEN);
         mDrawer.setMenuView(R.layout.menu_top);
 

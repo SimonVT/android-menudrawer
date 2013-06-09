@@ -1,7 +1,6 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.menudrawer.MenuDrawer;
-import net.simonvt.menudrawer.Position;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -22,7 +21,7 @@ public class LeftOverlaySample extends Activity {
     @Override
     protected void onCreate(Bundle inState) {
         super.onCreate(inState);
-        mDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.LEFT, MenuDrawer.Type.OVERLAY);
+        mDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY);
 
         List<Object> items = new ArrayList<Object>();
         items.add(new Item("Item 1", R.drawable.ic_action_refresh_dark));

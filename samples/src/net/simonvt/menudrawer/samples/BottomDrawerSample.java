@@ -21,7 +21,7 @@ public class BottomDrawerSample extends Activity implements OnClickListener {
     protected void onCreate(Bundle inState) {
         super.onCreate(inState);
 
-        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT, Position.BOTTOM);
+        mMenuDrawer = MenuDrawer.attach(this, Position.BOTTOM);
         mMenuDrawer.setTouchMode(MenuDrawer.TOUCH_MODE_FULLSCREEN);
         mMenuDrawer.setContentView(R.layout.activity_bottommenu);
         mMenuDrawer.setMenuView(R.layout.menu_bottom);

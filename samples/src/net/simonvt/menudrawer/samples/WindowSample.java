@@ -1,6 +1,7 @@
 package net.simonvt.menudrawer.samples;
 
 import net.simonvt.menudrawer.MenuDrawer;
+import net.simonvt.menudrawer.Position;
 
 import android.app.Activity;
 import android.os.Build;
@@ -26,7 +27,7 @@ public class WindowSample extends Activity implements View.OnClickListener {
             mActiveViewId = inState.getInt(STATE_ACTIVE_VIEW_ID);
         }
 
-        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_WINDOW);
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.Type.BEHIND, Position.LEFT, MenuDrawer.MENU_DRAG_WINDOW);
         mMenuDrawer.setContentView(R.layout.activity_windowsample);
         mMenuDrawer.setMenuView(R.layout.menu_scrollview);
 

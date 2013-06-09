@@ -32,7 +32,7 @@ public abstract class BaseListSample extends FragmentActivity implements MenuAda
             mActivePosition = inState.getInt(STATE_ACTIVE_POSITION);
         }
 
-        mMenuDrawer = MenuDrawer.attach(this, getDragMode(), getDrawerPosition());
+        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.Type.BEHIND, getDrawerPosition(), getDragMode());
 
         List<Object> items = new ArrayList<Object>();
         items.add(new Item("Item 1", R.drawable.ic_action_refresh_dark));

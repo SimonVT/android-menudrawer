@@ -27,7 +27,7 @@ public class ListActivitySample extends ListActivity {
     public void onCreate(Bundle inState) {
         super.onCreate(inState);
 
-        mMenuDrawer = MenuDrawer.attach(this, MenuDrawer.MENU_DRAG_CONTENT);
+        mMenuDrawer = MenuDrawer.attach(this);
         mMenuDrawer.setSlideDrawable(R.drawable.ic_drawer);
         mMenuDrawer.setDrawerIndicatorEnabled(true);
 

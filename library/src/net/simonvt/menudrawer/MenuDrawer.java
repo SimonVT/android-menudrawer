@@ -393,19 +393,18 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity) {
-        return attach(activity, MENU_DRAG_CONTENT);
+        return attach(activity, Type.BEHIND);
     }
 
     /**
      * Attaches the MenuDrawer to the Activity.
      *
      * @param activity The activity the menu drawer will be attached to.
-     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
-     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
+     * @param type     The {@link Type} of the drawer.
      * @return The created MenuDrawer instance.
      */
-    public static MenuDrawer attach(Activity activity, int dragMode) {
-        return attach(activity, dragMode, Position.LEFT);
+    public static MenuDrawer attach(Activity activity, Type type) {
+        return attach(activity, type, Position.LEFT);
     }
 
     /**
@@ -416,33 +415,32 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity, Position position) {
-        return attach(activity, MENU_DRAG_CONTENT, position);
+        return attach(activity, Type.BEHIND, position);
     }
 
     /**
      * Attaches the MenuDrawer to the Activity.
      *
      * @param activity The activity the menu drawer will be attached to.
-     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
-     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
-     * @param position Where to position the menu.
-     * @return The created MenuDrawer instance.
-     */
-    public static MenuDrawer attach(Activity activity, int dragMode, Position position) {
-        return attach(activity, dragMode, position, Type.BEHIND);
-    }
-
-    /**
-     * Attaches the MenuDrawer to the Activity.
-     *
-     * @param activity The activity the menu drawer will be attached to.
-     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
-     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
-     * @param position Where to position the menu.
      * @param type     The {@link Type} of the drawer.
+     * @param position Where to position the menu.
      * @return The created MenuDrawer instance.
      */
-    public static MenuDrawer attach(Activity activity, int dragMode, Position position, Type type) {
+    public static MenuDrawer attach(Activity activity, Type type, Position position) {
+        return attach(activity, type, position, MENU_DRAG_CONTENT);
+    }
+
+    /**
+     * Attaches the MenuDrawer to the Activity.
+     *
+     * @param activity The activity the menu drawer will be attached to.
+     * @param type     The {@link Type} of the drawer.
+     * @param position Where to position the menu.
+     * @param dragMode The drag mode of the drawer. Can be either {@link MenuDrawer#MENU_DRAG_CONTENT}
+     *                 or {@link MenuDrawer#MENU_DRAG_WINDOW}.
+     * @return The created MenuDrawer instance.
+     */
+    public static MenuDrawer attach(Activity activity, Type type, Position position, int dragMode) {
         MenuDrawer menuDrawer = createMenuDrawer(activity, dragMode, position, type);
         menuDrawer.setId(R.id.md__drawer);
 
