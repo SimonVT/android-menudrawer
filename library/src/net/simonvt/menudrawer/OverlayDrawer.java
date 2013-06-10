@@ -48,7 +48,7 @@ public class OverlayDrawer extends DraggableDrawer {
                 break;
 
             case RIGHT:
-                mMenuOverlay.setBounds(0, 0, width - offsetPixels, height);
+                mMenuOverlay.setBounds(0, 0, width + offsetPixels, height);
                 break;
 
             case TOP:
@@ -56,7 +56,7 @@ public class OverlayDrawer extends DraggableDrawer {
                 break;
 
             case BOTTOM:
-                mMenuOverlay.setBounds(0, 0, width, height - offsetPixels);
+                mMenuOverlay.setBounds(0, 0, width, height + offsetPixels);
                 break;
         }
 
