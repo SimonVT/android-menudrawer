@@ -110,12 +110,19 @@ public class OverlayDrawer extends DraggableDrawer {
         } else {
             switch (mPosition) {
                 case TOP:
-                case BOTTOM:
-                    mMenuContainer.offsetTopAndBottom(offsetPixels - mMenuContainer.getTop());
+                    mMenuContainer.offsetTopAndBottom(offsetPixels - mMenuContainer.getBottom());
                     break;
 
-                default:
-                    mMenuContainer.offsetLeftAndRight(offsetPixels - mMenuContainer.getLeft());
+                case BOTTOM:
+                    mMenuContainer.offsetTopAndBottom(offsetPixels - (mMenuContainer.getTop() - getHeight()));
+                    break;
+
+                case LEFT:
+                    mMenuContainer.offsetLeftAndRight(offsetPixels - mMenuContainer.getRight());
+                    break;
+
+                case RIGHT:
+                    mMenuContainer.offsetLeftAndRight(offsetPixels - (mMenuContainer.getLeft() - getWidth()));
                     break;
             }
         }
@@ -207,22 +214,46 @@ public class OverlayDrawer extends DraggableDrawer {
 
         mContentContainer.layout(0, 0, width, height);
 
-        switch (mPosition) {
-            case LEFT:
-                mMenuContainer.layout(0, 0, mMenuSize, height);
-                break;
+        if (USE_TRANSLATIONS) {
+            switch (mPosition) {
+                case LEFT:
+                    mMenuContainer.layout(0, 0, mMenuSize, height);
+                    break;
 
-            case RIGHT:
-                mMenuContainer.layout(width - mMenuSize, 0, width, height);
-                break;
+                case RIGHT:
+                    mMenuContainer.layout(width - mMenuSize, 0, width, height);
+                    break;
 
-            case TOP:
-                mMenuContainer.layout(0, 0, width, mMenuSize);
-                break;
+                case TOP:
+                    mMenuContainer.layout(0, 0, width, mMenuSize);
+                    break;
 
-            case BOTTOM:
-                mMenuContainer.layout(0, height - mMenuSize, width, height);
-                break;
+                case BOTTOM:
+                    mMenuContainer.layout(0, height - mMenuSize, width, height);
+                    break;
+            }
+
+        } else {
+            final int offsetPixels = (int) mOffsetPixels;
+            final int menuSize = mMenuSize;
+
+            switch (mPosition) {
+                case LEFT:
+                    mMenuContainer.layout(-menuSize + offsetPixels, 0, offsetPixels, height);
+                    break;
+
+                case RIGHT:
+                    mMenuContainer.layout(width + offsetPixels, 0, width + menuSize + offsetPixels, height);
+                    break;
+
+                case TOP:
+                    mMenuContainer.layout(0, -menuSize + offsetPixels, width, offsetPixels);
+                    break;
+
+                case BOTTOM:
+                    mMenuContainer.layout(0, height + offsetPixels, width, height + menuSize + offsetPixels);
+                    break;
+            }
         }
     }
 
