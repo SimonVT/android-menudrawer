@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+Version 3.0.1 *(2013-06-10)*
+----------------------------
+ * Fix: Overlay drawer was broken on pre-ICS devices
+
 Version 3.0.0 *(2013-06-09)*
 ----------------------------
  * Added drawer that overlays the content
@@ -16,10 +20,10 @@ Version 3.0.0 *(2013-06-09)*
  * Added method to disable the overlay that's drawn when the drawer is dragged
  * Relocated the library to `net.simonvt.menudrawer:menudrawer` in maven central
 
- Version 2.0.3 *(2013-05-19)*
- ----------------------------
-  * Add drawer indicator, as per the design guidelines
-  * Add new method to drawer listener that notifies about offset changes
+Version 2.0.3 *(2013-05-19)*
+----------------------------
+ * Add drawer indicator, as per the design guidelines
+ * Add new method to drawer listener that notifies about offset changes
 
 Version 2.0.2 *(2013-03-31)*
 ----------------------------
