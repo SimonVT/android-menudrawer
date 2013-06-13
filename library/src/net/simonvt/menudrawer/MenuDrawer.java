@@ -262,12 +262,6 @@ public abstract class MenuDrawer extends ViewGroup {
     protected int mMenuSize;
 
     /**
-     * Indicates whether the menu size has been set explicity either via the theme or by calling
-     * {@link #setMenuSize(int)}.
-     */
-    protected boolean mMenuSizeSet;
-
-    /**
      * Indicates whether the menu is currently visible.
      */
     protected boolean mMenuVisible;
@@ -559,8 +553,7 @@ public abstract class MenuDrawer extends ViewGroup {
         final Drawable contentBackground = a.getDrawable(R.styleable.MenuDrawer_mdContentBackground);
         final Drawable menuBackground = a.getDrawable(R.styleable.MenuDrawer_mdMenuBackground);
 
-        mMenuSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuSize, -1);
-        mMenuSizeSet = mMenuSize != -1;
+        mMenuSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdMenuSize, dpToPx(240));
 
         final int indicatorResId = a.getResourceId(R.styleable.MenuDrawer_mdActiveIndicator, 0);
         if (indicatorResId != 0) {

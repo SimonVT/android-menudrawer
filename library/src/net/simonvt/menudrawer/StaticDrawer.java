@@ -74,8 +74,6 @@ public class StaticDrawer extends MenuDrawer {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (!mMenuSizeSet) mMenuSize = (int) (height * 0.25f);
-
         switch (mPosition) {
             case LEFT:
             case RIGHT: {
@@ -134,7 +132,6 @@ public class StaticDrawer extends MenuDrawer {
     @Override
     public void setMenuSize(int size) {
         mMenuSize = size;
-        mMenuSizeSet = true;
         requestLayout();
         invalidate();
     }

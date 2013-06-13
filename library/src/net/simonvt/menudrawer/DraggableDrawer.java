@@ -195,7 +195,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
 
     public void setMenuSize(final int size) {
         mMenuSize = size;
-        mMenuSizeSet = true;
         if (mDrawerState == STATE_OPEN || mDrawerState == STATE_OPENING) {
             setOffsetPixels(mMenuSize);
         }
