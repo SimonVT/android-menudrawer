@@ -149,7 +149,7 @@ public abstract class DraggableDrawer extends MenuDrawer {
     /**
      * Indicates whether the current layer type is {@link android.view.View#LAYER_TYPE_HARDWARE}.
      */
-    private boolean mLayerTypeHardware;
+    protected boolean mLayerTypeHardware;
 
     DraggableDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
@@ -320,7 +320,7 @@ public abstract class DraggableDrawer extends MenuDrawer {
      * If the current layer type is {@link android.view.View#LAYER_TYPE_HARDWARE}, this will set it to
      * {@link View#LAYER_TYPE_NONE}.
      */
-    private void stopLayerTranslation() {
+    protected void stopLayerTranslation() {
         if (mLayerTypeHardware) {
             mLayerTypeHardware = false;
             mContentContainer.setLayerType(View.LAYER_TYPE_NONE, null);

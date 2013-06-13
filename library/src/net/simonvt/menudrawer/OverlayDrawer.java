@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
 
 public class OverlayDrawer extends DraggableDrawer {
 
@@ -204,6 +205,22 @@ public class OverlayDrawer extends DraggableDrawer {
                 mDropShadowRect.bottom = ViewHelper.getTop(mMenuContainer);
                 mDropShadowRect.top = mDropShadowRect.bottom - dropShadowSize;
                 break;
+        }
+    }
+
+    @Override
+    protected void startLayerTranslation() {
+        if (USE_TRANSLATIONS && mHardwareLayersEnabled && !mLayerTypeHardware) {
+            mLayerTypeHardware = true;
+            mMenuContainer.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
+    }
+
+    @Override
+    protected void stopLayerTranslation() {
+        if (mLayerTypeHardware) {
+            mLayerTypeHardware = false;
+            mMenuContainer.setLayerType(View.LAYER_TYPE_NONE, null);
         }
     }
 
