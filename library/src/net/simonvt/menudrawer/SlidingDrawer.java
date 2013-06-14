@@ -401,7 +401,7 @@ public class SlidingDrawer extends DraggableDrawer {
             case LEFT: {
                 if (mIsDragging) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-                    final int initialVelocity = (int) mVelocityTracker.getXVelocity(mActivePointerId);
+                    final int initialVelocity = (int) getXVelocity(mVelocityTracker);
                     mLastMotionX = x;
                     animateOffsetTo(initialVelocity > 0 ? mMenuSize : 0, initialVelocity, true);
 
@@ -415,7 +415,7 @@ public class SlidingDrawer extends DraggableDrawer {
             case TOP: {
                 if (mIsDragging) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-                    final int initialVelocity = (int) mVelocityTracker.getYVelocity(mActivePointerId);
+                    final int initialVelocity = (int) getYVelocity(mVelocityTracker);
                     mLastMotionY = y;
                     animateOffsetTo(initialVelocity > 0 ? mMenuSize : 0, initialVelocity, true);
 
@@ -431,7 +431,7 @@ public class SlidingDrawer extends DraggableDrawer {
 
                 if (mIsDragging) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-                    final int initialVelocity = (int) mVelocityTracker.getXVelocity(mActivePointerId);
+                    final int initialVelocity = (int) getXVelocity(mVelocityTracker);
                     mLastMotionX = x;
                     animateOffsetTo(initialVelocity > 0 ? 0 : -mMenuSize, initialVelocity, true);
 
@@ -445,7 +445,7 @@ public class SlidingDrawer extends DraggableDrawer {
             case BOTTOM: {
                 if (mIsDragging) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
-                    final int initialVelocity = (int) mVelocityTracker.getYVelocity(mActivePointerId);
+                    final int initialVelocity = (int) getYVelocity(mVelocityTracker);
                     mLastMotionY = y;
                     animateOffsetTo(initialVelocity < 0 ? -mMenuSize : 0, initialVelocity, true);
 

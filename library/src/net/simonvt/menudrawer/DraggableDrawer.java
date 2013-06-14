@@ -554,6 +554,22 @@ public abstract class DraggableDrawer extends MenuDrawer {
         return checkV && mOnInterceptMoveEventListener.isViewDraggable(v, dx, x, y);
     }
 
+    protected float getXVelocity(VelocityTracker velocityTracker) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            return velocityTracker.getXVelocity(mActivePointerId);
+        }
+
+        return velocityTracker.getXVelocity();
+    }
+
+    protected float getYVelocity(VelocityTracker velocityTracker) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            return velocityTracker.getYVelocity(mActivePointerId);
+        }
+
+        return velocityTracker.getYVelocity();
+    }
+
     private int supportGetTranslationY(View v) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             return (int) v.getTranslationY();
