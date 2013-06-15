@@ -59,13 +59,13 @@ public abstract class MenuDrawer extends ViewGroup {
         /**
          * Called for each child the pointer i on when the drawer is deciding whether to intercept the touch event.
          *
-         * @param v  View to test for draggability
-         * @param dx Delta drag in pixels
-         * @param x  X coordinate of the active touch point
-         * @param y  Y coordinate of the active touch point
+         * @param v     View to test for draggability
+         * @param delta Delta drag in pixels
+         * @param x     X coordinate of the active touch point
+         * @param y     Y coordinate of the active touch point
          * @return true if view is draggable by delta dx.
          */
-        boolean isViewDraggable(View v, int dx, int x, int y);
+        boolean isViewDraggable(View v, int delta, int x, int y);
     }
 
     public enum Type {
@@ -593,7 +593,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
         a.recycle();
 
-        mMenuContainer = new BuildLayerFrameLayout(context);
+        mMenuContainer = new NoClickThroughFrameLayout(context);
         mMenuContainer.setId(R.id.md__menu);
         mMenuContainer.setBackgroundDrawable(menuBackground);
 

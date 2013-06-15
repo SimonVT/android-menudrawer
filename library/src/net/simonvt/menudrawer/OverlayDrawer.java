@@ -529,7 +529,7 @@ public class OverlayDrawer extends DraggableDrawer {
             }
         }
 
-        if (mTouchMode == TOUCH_MODE_NONE) {
+        if (!mMenuVisible && !mIsDragging && mTouchMode == TOUCH_MODE_NONE) {
             return false;
         }
 
@@ -568,9 +568,10 @@ public class OverlayDrawer extends DraggableDrawer {
                 final float dy = y - mLastMotionY;
 
                 if (checkTouchSlop(dx, dy)) {
-                    if (mOnInterceptMoveEventListener != null && mTouchMode == TOUCH_MODE_FULLSCREEN
-                            && canChildScrollHorizontally(mContentContainer, false, (int) dx, (int) x, (int) y)) {
+                    if (mOnInterceptMoveEventListener != null && (mTouchMode == TOUCH_MODE_FULLSCREEN || mMenuVisible)
+                            && canChildrenScroll((int) dx, (int) dy, (int) x, (int) y)) {
                         endDrag(); // Release the velocity tracker
+                        requestDisallowInterceptTouchEvent(true);
                         return false;
                     }
 
@@ -601,7 +602,7 @@ public class OverlayDrawer extends DraggableDrawer {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (!mMenuVisible && !mIsDragging && (mTouchMode == TOUCH_MODE_NONE)) {
+        if (!mMenuVisible && !mIsDragging && mTouchMode == TOUCH_MODE_NONE) {
             return false;
         }
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;

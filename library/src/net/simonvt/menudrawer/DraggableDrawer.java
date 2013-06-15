@@ -486,6 +486,35 @@ public abstract class DraggableDrawer extends MenuDrawer {
         return Math.abs(mOffsetPixels) <= mCloseEnough;
     }
 
+    protected boolean canChildrenScroll(int dx, int dy, int x, int y) {
+        boolean canScroll = false;
+
+        switch (mPosition) {
+            case LEFT:
+            case RIGHT:
+                if (!mMenuVisible) {
+                    canScroll = canChildScrollHorizontally(mContentContainer, false, dx,
+                            x - ViewHelper.getLeft(mContentContainer), y - ViewHelper.getTop(mContentContainer));
+                } else {
+                    canScroll = canChildScrollHorizontally(mMenuContainer, false, dx,
+                            x - ViewHelper.getLeft(mMenuContainer), y - ViewHelper.getTop(mContentContainer));
+                }
+                break;
+
+            case TOP:
+            case BOTTOM:
+                if (!mMenuVisible) {
+                    canScroll = canChildScrollVertically(mContentContainer, false, dy,
+                            x - ViewHelper.getLeft(mContentContainer), y - ViewHelper.getTop(mContentContainer));
+                } else {
+                    canScroll = canChildScrollVertically(mMenuContainer, false, dy,
+                            x - ViewHelper.getLeft(mMenuContainer), y - ViewHelper.getTop(mContentContainer));
+                }
+        }
+
+        return canScroll;
+    }
+
     /**
      * Tests scrollability within child views of v given a delta of dx.
      *
