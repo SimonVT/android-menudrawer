@@ -544,6 +544,13 @@ public class SlidingDrawer extends DraggableDrawer {
                 }
 
                 final int pointerIndex = ev.findPointerIndex(activePointerId);
+                if (pointerIndex == -1) {
+                    mIsDragging = false;
+                    mActivePointerId = INVALID_POINTER;
+                    endDrag();
+                    closeMenu(true);
+                    return false;
+                }
 
                 final float x = ev.getX(pointerIndex);
                 final float dx = x - mLastMotionX;
@@ -610,9 +617,16 @@ public class SlidingDrawer extends DraggableDrawer {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                if (!mIsDragging) {
-                    final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+                final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+                if (pointerIndex == -1) {
+                    mIsDragging = false;
+                    mActivePointerId = INVALID_POINTER;
+                    endDrag();
+                    closeMenu(true);
+                    return false;
+                }
 
+                if (!mIsDragging) {
                     final float x = ev.getX(pointerIndex);
                     final float dx = x - mLastMotionX;
                     final float y = ev.getY(pointerIndex);
@@ -636,8 +650,6 @@ public class SlidingDrawer extends DraggableDrawer {
                 if (mIsDragging) {
                     startLayerTranslation();
 
-                    final int pointerIndex = ev.findPointerIndex(mActivePointerId);
-
                     final float x = ev.getX(pointerIndex);
                     final float dx = x - mLastMotionX;
                     final float y = ev.getY(pointerIndex);
@@ -652,7 +664,8 @@ public class SlidingDrawer extends DraggableDrawer {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                final int index = ev.findPointerIndex(mActivePointerId);
+                int index = ev.findPointerIndex(mActivePointerId);
+                index = index == -1 ? 0 : index;
                 final int x = (int) ev.getX(index);
                 final int y = (int) ev.getY(index);
                 onUpEvent(x, y);
