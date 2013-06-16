@@ -606,22 +606,26 @@ public abstract class MenuDrawer extends ViewGroup {
         mIndicatorScroller = new FloatScroller(SMOOTH_INTERPOLATOR);
     }
 
-    //    @Override
-    //    public void addView(View child, int index, LayoutParams params) {
-    //        int childCount = mMenuContainer.getChildCount();
-    //        if (childCount == 0) {
-    //            mMenuContainer.addView(child, index, params);
-    //            return;
-    //        }
-    //
-    //        childCount = mContentContainer.getChildCount();
-    //        if (childCount == 0) {
-    //            mContentContainer.addView(child, index, params);
-    //            return;
-    //        }
-    //
-    //        throw new IllegalStateException("MenuDrawer can only hold two child views");
-    //    }
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        View menu = findViewById(R.id.mdMenu);
+        if (menu != null) {
+            removeView(menu);
+            setMenuView(menu);
+        }
+
+        View content = findViewById(R.id.mdContent);
+        if (content != null) {
+            removeView(content);
+            setContentView(content);
+        }
+
+        if (getChildCount() > 2) {
+            throw new IllegalStateException(
+                    "Menu and content view added in xml must have id's @id/mdMenu and @id/mdContent");
+        }
+    }
 
     protected int dpToPx(int dp) {
         return (int) (getResources().getDisplayMetrics().density * dp + 0.5f);

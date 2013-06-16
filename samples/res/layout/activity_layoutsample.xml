@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.simonvt.menudrawer.TopDrawer xmlns:android="http://schemas.android.com/apk/res/android"
+<net.simonvt.menudrawer.SlidingDrawer xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:mdPosition="top"
     app:mdMenuSize="64dp">
 
     <LinearLayout
@@ -60,4 +61,4 @@
 
     </LinearLayout>
 
-</net.simonvt.menudrawer.TopDrawer>
+</net.simonvt.menudrawer.SlidingDrawer>
