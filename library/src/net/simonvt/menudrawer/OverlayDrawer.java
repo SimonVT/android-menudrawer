@@ -13,6 +13,26 @@ public class OverlayDrawer extends DraggableDrawer {
 
     private static final String TAG = "OverlayDrawer";
 
+    private int mPeekSize;
+
+    private Runnable mRevealRunnable = new Runnable() {
+        @Override
+        public void run() {
+            int animateTo = 0;
+            switch (mPosition) {
+                case RIGHT:
+                case BOTTOM:
+                    animateTo = -mPeekSize;
+                    break;
+
+                default:
+                    animateTo = mPeekSize;
+                    break;
+            }
+            animateOffsetTo(animateTo, 250);
+        }
+    };
+
     OverlayDrawer(Activity activity, int dragMode) {
         super(activity, dragMode);
     }
@@ -36,6 +56,7 @@ public class OverlayDrawer extends DraggableDrawer {
         mContentContainer.setLayerType(View.LAYER_TYPE_NONE, null);
         mContentContainer.setHardwareLayersEnabled(false);
         super.addView(mMenuContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mPeekSize = dpToPx(20);
     }
 
     @Override
@@ -138,13 +159,13 @@ public class OverlayDrawer extends DraggableDrawer {
         switch (mPosition) {
             case RIGHT:
             case BOTTOM: {
-                final int dx = -mMenuSize / 3;
+                final int dx = -mPeekSize;
                 mPeekScroller.startScroll(0, 0, dx, 0, PEEK_DURATION);
                 break;
             }
 
             default: {
-                final int dx = mMenuSize / 3;
+                final int dx = mPeekSize;
                 mPeekScroller.startScroll(0, 0, dx, 0, PEEK_DURATION);
                 break;
             }
@@ -372,22 +393,18 @@ public class OverlayDrawer extends DraggableDrawer {
 
         switch (mPosition) {
             case LEFT:
-                return (!mMenuVisible && mInitialMotionX <= mTouchSize && (dx > 0))
-                        || (mMenuVisible && x <= mOffsetPixels);
+                return (!mMenuVisible && mInitialMotionX <= mTouchSize && (dx > 0)) || mMenuVisible;
 
             case RIGHT:
                 final int width = getWidth();
-                return (!mMenuVisible && mInitialMotionX >= width - mTouchSize && (dx < 0))
-                        || (mMenuVisible && x >= width + mOffsetPixels);
+                return (!mMenuVisible && mInitialMotionX >= width - mTouchSize && (dx < 0)) || mMenuVisible;
 
             case TOP:
-                return (!mMenuVisible && mInitialMotionY <= mTouchSize && (dy > 0))
-                        || (mMenuVisible && y <= mOffsetPixels);
+                return (!mMenuVisible && mInitialMotionY <= mTouchSize && (dy > 0)) || mMenuVisible;
 
             case BOTTOM:
                 final int height = getHeight();
-                return (!mMenuVisible && mInitialMotionY >= height - mTouchSize && (dy < 0))
-                        || (mMenuVisible && y >= height + mOffsetPixels);
+                return (!mMenuVisible && mInitialMotionY >= height - mTouchSize && (dy < 0)) || mMenuVisible;
         }
 
         return false;
@@ -425,7 +442,7 @@ public class OverlayDrawer extends DraggableDrawer {
                     animateOffsetTo(initialVelocity > 0 ? mMenuSize : 0, initialVelocity, true);
 
                     // Close the menu when content is clicked while the menu is visible.
-                } else if (mMenuVisible && x > offsetPixels) {
+                } else if (mMenuVisible) {
                     closeMenu();
                 }
                 break;
@@ -439,7 +456,7 @@ public class OverlayDrawer extends DraggableDrawer {
                     animateOffsetTo(initialVelocity > 0 ? mMenuSize : 0, initialVelocity, true);
 
                     // Close the menu when content is clicked while the menu is visible.
-                } else if (mMenuVisible && y > offsetPixels) {
+                } else if (mMenuVisible) {
                     closeMenu();
                 }
                 break;
@@ -455,7 +472,7 @@ public class OverlayDrawer extends DraggableDrawer {
                     animateOffsetTo(initialVelocity > 0 ? 0 : -mMenuSize, initialVelocity, true);
 
                     // Close the menu when content is clicked while the menu is visible.
-                } else if (mMenuVisible && x < width + offsetPixels) {
+                } else if (mMenuVisible) {
                     closeMenu();
                 }
                 break;
@@ -469,7 +486,7 @@ public class OverlayDrawer extends DraggableDrawer {
                     animateOffsetTo(initialVelocity < 0 ? -mMenuSize : 0, initialVelocity, true);
 
                     // Close the menu when content is clicked while the menu is visible.
-                } else if (mMenuVisible && y < getHeight() + offsetPixels) {
+                } else if (mMenuVisible) {
                     closeMenu();
                 }
                 break;
@@ -486,6 +503,12 @@ public class OverlayDrawer extends DraggableDrawer {
             default:
                 return Math.abs(dx) > mTouchSlop && Math.abs(dx) > Math.abs(dy);
         }
+    }
+
+    @Override
+    protected void stopAnimation() {
+        super.stopAnimation();
+        removeCallbacks(mRevealRunnable);
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -550,6 +573,11 @@ public class OverlayDrawer extends DraggableDrawer {
                     setDrawerState(mMenuVisible ? STATE_OPEN : STATE_CLOSED);
                     stopAnimation();
                     endPeek();
+
+                    if (!mMenuVisible) {
+                        postDelayed(mRevealRunnable, 160);
+                    }
+
                     mIsDragging = false;
                 }
                 break;
@@ -587,6 +615,8 @@ public class OverlayDrawer extends DraggableDrawer {
                     final boolean allowDrag = onMoveAllowDrag((int) x, (int) y, dx, dy);
 
                     if (allowDrag) {
+                        endPeek();
+                        stopAnimation();
                         setDrawerState(STATE_DRAGGING);
                         mIsDragging = true;
                         mLastMotionX = x;
@@ -630,6 +660,11 @@ public class OverlayDrawer extends DraggableDrawer {
                 if (allowDrag) {
                     stopAnimation();
                     endPeek();
+
+                    if (!mMenuVisible) {
+                        peekDrawer(160, 0);
+                    }
+
                     startLayerTranslation();
                 }
                 break;
@@ -655,6 +690,8 @@ public class OverlayDrawer extends DraggableDrawer {
                         final boolean allowDrag = onMoveAllowDrag((int) x, (int) y, dx, dy);
 
                         if (allowDrag) {
+                            endPeek();
+                            stopAnimation();
                             setDrawerState(STATE_DRAGGING);
                             mIsDragging = true;
                             mLastMotionX = x;

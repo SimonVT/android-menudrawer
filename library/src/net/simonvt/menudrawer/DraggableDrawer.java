@@ -390,6 +390,12 @@ public abstract class DraggableDrawer extends MenuDrawer {
         }
 
         duration = Math.min(duration, mMaxAnimationDuration);
+        animateOffsetTo(position, duration);
+    }
+
+    protected void animateOffsetTo(int position, int duration) {
+        final int startX = (int) mOffsetPixels;
+        final int dx = position - startX;
 
         if (dx > 0) {
             setDrawerState(STATE_OPENING);
