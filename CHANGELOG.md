@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 3.0.2 *(2013-06-17)*
+----------------------------
+ * Menu size now to defaults to 240dp
+ * Overlay drawer is revealed when the edge is touched
+ * Fix: MethodNotFoundException on api7
+ * Fix: Adding a drawer in xml was broken
+
 Version 3.0.1 *(2013-06-10)*
 ----------------------------
  * Fix: Overlay drawer was broken on pre-ICS devices
