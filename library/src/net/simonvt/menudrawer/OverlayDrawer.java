@@ -395,18 +395,26 @@ public class OverlayDrawer extends DraggableDrawer {
 
         switch (mPosition) {
             case LEFT:
-                return (!mMenuVisible && mInitialMotionX <= mTouchSize && (dx > 0)) || mMenuVisible;
+                return (!mMenuVisible && mInitialMotionX <= mTouchSize && (dx > 0)) // Drawer closed
+                        || (mMenuVisible && x <= mOffsetPixels) // Drawer open
+                        || (Math.abs(mOffsetPixels) <= mPeekSize && mMenuVisible); // Drawer revealed
 
             case RIGHT:
                 final int width = getWidth();
-                return (!mMenuVisible && mInitialMotionX >= width - mTouchSize && (dx < 0)) || mMenuVisible;
+                return (!mMenuVisible && mInitialMotionX >= width - mTouchSize && (dx < 0))
+                        || (mMenuVisible && x >= width - mOffsetPixels)
+                        || (Math.abs(mOffsetPixels) <= mPeekSize && mMenuVisible);
 
             case TOP:
-                return (!mMenuVisible && mInitialMotionY <= mTouchSize && (dy > 0)) || mMenuVisible;
+                return (!mMenuVisible && mInitialMotionY <= mTouchSize && (dy > 0))
+                        || (mMenuVisible && x <= mOffsetPixels)
+                        || (Math.abs(mOffsetPixels) <= mPeekSize && mMenuVisible);
 
             case BOTTOM:
                 final int height = getHeight();
-                return (!mMenuVisible && mInitialMotionY >= height - mTouchSize && (dy < 0)) || mMenuVisible;
+                return (!mMenuVisible && mInitialMotionY >= height - mTouchSize && (dy < 0))
+                        || (mMenuVisible && x >= height - mOffsetPixels)
+                        || (Math.abs(mOffsetPixels) <= mPeekSize && mMenuVisible);
         }
 
         return false;
