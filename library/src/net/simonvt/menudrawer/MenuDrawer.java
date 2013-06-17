@@ -163,7 +163,7 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * Indicates whether to use {@link View#setTranslationX(float)} when positioning views.
      */
-    static final boolean USE_TRANSLATIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
+    static final boolean USE_TRANSLATIONS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
     /**
      * Time to animate the indicator to the new active view.

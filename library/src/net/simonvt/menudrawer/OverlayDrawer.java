@@ -53,7 +53,9 @@ public class OverlayDrawer extends DraggableDrawer {
     protected void initDrawer(Context context, AttributeSet attrs, int defStyle) {
         super.initDrawer(context, attrs, defStyle);
         super.addView(mContentContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        mContentContainer.setLayerType(View.LAYER_TYPE_NONE, null);
+        if (USE_TRANSLATIONS) {
+            mContentContainer.setLayerType(View.LAYER_TYPE_NONE, null);
+        }
         mContentContainer.setHardwareLayersEnabled(false);
         super.addView(mMenuContainer, -1, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mPeekSize = dpToPx(20);
