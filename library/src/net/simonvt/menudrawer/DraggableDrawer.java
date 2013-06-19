@@ -5,7 +5,9 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -358,6 +360,17 @@ public abstract class DraggableDrawer extends MenuDrawer {
         setOffsetPixels(finalX);
         setDrawerState(finalX == 0 ? STATE_CLOSED : STATE_OPEN);
         stopLayerTranslation();
+    }
+
+    protected void cancelContentTouch() {
+        final long now = SystemClock.uptimeMillis();
+        final MotionEvent cancelEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0.0f, 0.0f, 0);
+        final int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            getChildAt(i).dispatchTouchEvent(cancelEvent);
+        }
+        mContentContainer.dispatchTouchEvent(cancelEvent);
+        cancelEvent.recycle();
     }
 
     /**

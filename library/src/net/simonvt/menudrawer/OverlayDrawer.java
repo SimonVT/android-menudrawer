@@ -18,6 +18,7 @@ public class OverlayDrawer extends DraggableDrawer {
     private Runnable mRevealRunnable = new Runnable() {
         @Override
         public void run() {
+            cancelContentTouch();
             int animateTo = 0;
             switch (mPosition) {
                 case RIGHT:
@@ -525,6 +526,7 @@ public class OverlayDrawer extends DraggableDrawer {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            removeCallbacks(mRevealRunnable);
             mActivePointerId = INVALID_POINTER;
             mIsDragging = false;
             if (mVelocityTracker != null) {
@@ -672,7 +674,7 @@ public class OverlayDrawer extends DraggableDrawer {
                     endPeek();
 
                     if (!mMenuVisible) {
-                        peekDrawer(160, 0);
+                        postDelayed(mRevealRunnable, 160);
                     }
 
                     startLayerTranslation();
@@ -730,6 +732,7 @@ public class OverlayDrawer extends DraggableDrawer {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
+                removeCallbacks(mRevealRunnable);
                 int index = ev.findPointerIndex(mActivePointerId);
                 index = index == -1 ? 0 : index;
                 final int x = (int) ev.getX(index);
