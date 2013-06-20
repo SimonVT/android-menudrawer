@@ -616,6 +616,11 @@ public class OverlayDrawer extends DraggableDrawer {
                 final float y = ev.getY(pointerIndex);
                 final float dy = y - mLastMotionY;
 
+                if (Math.abs(dx) >= mTouchSlop || Math.abs(dy) >= mTouchSlop) {
+                    removeCallbacks(mRevealRunnable);
+                    endPeek();
+                }
+
                 if (checkTouchSlop(dx, dy)) {
                     if (mOnInterceptMoveEventListener != null && (mTouchMode == TOUCH_MODE_FULLSCREEN || mMenuVisible)
                             && canChildrenScroll((int) dx, (int) dy, (int) x, (int) y)) {
