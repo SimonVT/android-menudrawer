@@ -12,7 +12,7 @@
     <groupId>net.simonvt.menudrawer</groupId>
     <artifactId>menudrawer-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.3</version>
+    <version>3.0.4-SNAPSHOT</version>
 
     <name>Android MenuDrawer (Parent)</name>
     <description>A menu drawer implementation which allows dragging of both the content, and the entire window.</description>
@@ -28,7 +28,7 @@
         <url>http://github.com/SimonVT/android-menudrawer/</url>
         <connection>scm:git:git://github.com/SimonVT/android-menudrawer.git</connection>
         <developerConnection>scm:git:git@github.com:SimonVT/android-menudrawer.git</developerConnection>
-        <tag>3.0.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
