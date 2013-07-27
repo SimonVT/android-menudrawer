@@ -668,7 +668,7 @@ public abstract class MenuDrawer extends ViewGroup {
         if (mDrawOverlay && offsetPixels != 0) {
             drawOverlay(canvas);
         }
-        if (mDropShadowEnabled && offsetPixels != 0) {
+        if (mDropShadowEnabled && (offsetPixels != 0 || mIsStatic)) {
             drawDropShadow(canvas);
         }
         if (shouldDrawIndicator() && offsetPixels != 0) {
