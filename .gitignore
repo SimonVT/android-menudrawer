@@ -10,17 +10,17 @@
 
 !art/
 
-!library/
-library/*
-!library/src/
-!library/res/
-!library/AndroidManifest.xml
-!library/pom.xml
+!menudrawer/
+menudrawer/*
+!menudrawer/src/
+!menudrawer/res/
+!menudrawer/AndroidManifest.xml
+!menudrawer/pom.xml
 
-!samples/
-samples/*
-!samples/src/
-!samples/res/
-!samples/libs/
-!samples/AndroidManifest.xml
-!samples/pom.xml
+!menudrawer-samples/
+menudrawer-samples/*
+!menudrawer-samples/src/
+!menudrawer-samples/res/
+!menudrawer-samples/libs/
+!menudrawer-samples/AndroidManifest.xml
+!menudrawer-samples/pom.xml
