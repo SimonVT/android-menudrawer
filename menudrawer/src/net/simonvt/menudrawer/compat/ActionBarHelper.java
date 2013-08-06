@@ -1,7 +1,5 @@
 package net.simonvt.menudrawer.compat;
 
-import net.simonvt.menudrawer.BuildConfig;
-
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
