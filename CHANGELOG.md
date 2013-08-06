@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 3.0.4 *(2013-08-06)*
+----------------------------
+ * Push aar to maven central
+ * Support AppCompat up button
+ * Fix: Dropshadow on static drawer was broken
+
 Version 3.0.2 *(2013-06-17)*
 ----------------------------
  * Menu size now to defaults to 240dp
