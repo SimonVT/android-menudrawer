@@ -1,0 +1,25 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.5.+'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(Compile) {
+        options.encoding = "UTF-8"
+    }
+
+    if (project.hasProperty('libVersion')) {
+        project.version = project.libVersion
+    } else {
+        project.version = 'snapshot'
+    }
+}
