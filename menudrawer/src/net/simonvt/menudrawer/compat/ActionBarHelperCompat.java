@@ -1,7 +1,5 @@
 package net.simonvt.menudrawer.compat;
 
-import net.simonvt.menudrawer.BuildConfig;
-
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -11,11 +9,11 @@ import android.widget.ImageView;
 
 import java.lang.reflect.Method;
 
-final class ActionBarHelperSherlock {
+final class ActionBarHelperCompat {
 
-    private static final String TAG = "ActionBarHelperSherlock";
+    private static final String TAG = "ActionBarHelperCompat";
 
-    private ActionBarHelperSherlock() {
+    private ActionBarHelperCompat() {
     }
 
     public static void setActionBarUpIndicator(Object info, Activity activity, Drawable drawable, int contentDescRes) {
@@ -53,7 +51,9 @@ final class ActionBarHelperSherlock {
             try {
                 sii.mHomeAsUpEnabled.invoke(sii.mActionBar, enabled);
             } catch (Throwable t) {
-                if (BuildConfig.DEBUG) Log.e(TAG, "Unable to call setHomeAsUpEnabled", t);
+                if (ActionBarHelper.DEBUG) {
+                    Log.e(TAG, "Unable to call setHomeAsUpEnabled", t);
+                }
             }
         }
     }
@@ -67,21 +67,40 @@ final class ActionBarHelperSherlock {
         SetIndicatorInfo(Activity activity) {
             try {
                 String appPackage = activity.getPackageName();
-                final int homeId = activity.getResources().getIdentifier("abs__home", "id", appPackage);
-                View v = activity.findViewById(homeId);
-                ViewGroup parent = (ViewGroup) v.getParent();
-                final int upId = activity.getResources().getIdentifier("abs__up", "id", appPackage);
-                mUpIndicatorView = (ImageView) parent.findViewById(upId);
 
-                Class sherlockActivity = activity.getClass();
-                Method getActionBar = sherlockActivity.getMethod("getSupportActionBar");
+                try {
+                    // Attempt to find ActionBarSherlock up indicator
+                    final int homeId = activity.getResources().getIdentifier("abs__home", "id", appPackage);
+                    View v = activity.findViewById(homeId);
+                    ViewGroup parent = (ViewGroup) v.getParent();
+                    final int upId = activity.getResources().getIdentifier("abs__up", "id", appPackage);
+                    mUpIndicatorView = (ImageView) parent.findViewById(upId);
+                } catch (Throwable t) {
+                    if (ActionBarHelper.DEBUG) {
+                        Log.e(TAG, "ABS action bar not found", t);
+                    }
+                }
+
+                if (mUpIndicatorView == null) {
+                    // Attempt to find AppCompat up indicator
+                    final int homeId = activity.getResources().getIdentifier("home", "id", appPackage);
+                    View v = activity.findViewById(homeId);
+                    ViewGroup parent = (ViewGroup) v.getParent();
+                    final int upId = activity.getResources().getIdentifier("up", "id", appPackage);
+                    mUpIndicatorView = (ImageView) parent.findViewById(upId);
+                }
+
+                Class supportActivity = activity.getClass();
+                Method getActionBar = supportActivity.getMethod("getSupportActionBar");
 
                 mActionBar = getActionBar.invoke(activity, null);
                 Class supportActionBar = mActionBar.getClass();
                 mHomeAsUpEnabled = supportActionBar.getMethod("setDisplayHomeAsUpEnabled", Boolean.TYPE);
 
             } catch (Throwable t) {
-                if (BuildConfig.DEBUG) Log.e(TAG, "Unable to init SetIndicatorInfo for ABS", t);
+                if (ActionBarHelper.DEBUG) {
+                    Log.e(TAG, "Unable to init SetIndicatorInfo for ABS", t);
+                }
             }
         }
     }
