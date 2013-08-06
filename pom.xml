@@ -65,8 +65,6 @@
         <android.version>4.1.1.4</android.version>
         <android.platform>16</android.platform>
 
-        <gradle.version>3.0.4-SNAPSHOT</gradle.version>
-
         <abs.version>4.3.1</abs.version>
 
         <android-support.version>r7</android-support.version>
