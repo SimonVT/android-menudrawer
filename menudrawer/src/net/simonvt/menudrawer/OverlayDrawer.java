@@ -586,7 +586,7 @@ public class OverlayDrawer extends DraggableDrawer {
                     stopAnimation();
                     endPeek();
 
-                    if (!mMenuVisible) {
+                    if (!mMenuVisible && mInitialMotionX <= mPeekSize) {
                         postDelayed(mRevealRunnable, 160);
                     }
 
@@ -678,7 +678,7 @@ public class OverlayDrawer extends DraggableDrawer {
                     stopAnimation();
                     endPeek();
 
-                    if (!mMenuVisible) {
+                    if (!mMenuVisible && mLastMotionX <= mPeekSize) {
                         postDelayed(mRevealRunnable, 160);
                     }
 
