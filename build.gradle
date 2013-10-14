@@ -4,9 +4,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
+        classpath 'com.android.tools.build:gradle:0.6.+'
     }
 }
+
+ext.groupId = 'net.simonvt.messagebar'
+ext.compileSdkVersion = 18
+ext.buildToolsVersion = "18.1.0"
+ext.minSdkVersion = 7;
+ext.targetSdkVersion = 18;
 
 allprojects {
     repositories {
@@ -17,9 +23,5 @@ allprojects {
         options.encoding = "UTF-8"
     }
 
-    if (project.hasProperty('libVersion')) {
-        project.version = project.libVersion
-    } else {
-        project.version = 'snapshot'
-    }
+    version = '3.0.4-SNAPSHOT'
 }
