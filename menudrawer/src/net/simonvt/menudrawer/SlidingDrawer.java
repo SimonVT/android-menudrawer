@@ -37,7 +37,7 @@ public class SlidingDrawer extends DraggableDrawer {
     @Override
     public void openMenu(boolean animate) {
         int animateTo = 0;
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
             case TOP:
                 animateTo = mMenuSize;
@@ -60,7 +60,7 @@ public class SlidingDrawer extends DraggableDrawer {
     @Override
     protected void onOffsetPixelsChanged(int offsetPixels) {
         if (USE_TRANSLATIONS) {
-            switch (mPosition) {
+            switch (getPosition()) {
                 case TOP:
                 case BOTTOM:
                     mContentContainer.setTranslationY(offsetPixels);
@@ -71,7 +71,7 @@ public class SlidingDrawer extends DraggableDrawer {
                     break;
             }
         } else {
-            switch (mPosition) {
+            switch (getPosition()) {
                 case TOP:
                 case BOTTOM:
                     mContentContainer.offsetTopAndBottom(offsetPixels - mContentContainer.getTop());
@@ -89,7 +89,7 @@ public class SlidingDrawer extends DraggableDrawer {
 
     @Override
     protected void initPeekScroller() {
-        switch (mPosition) {
+        switch (getPosition()) {
             case RIGHT:
             case BOTTOM: {
                 final int dx = -mMenuSize / 3;
@@ -118,7 +118,7 @@ public class SlidingDrawer extends DraggableDrawer {
         final int offsetPixels = (int) mOffsetPixels;
         final float openRatio = Math.abs(mOffsetPixels) / mMenuSize;
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 mMenuOverlay.setBounds(0, 0, offsetPixels, height);
                 break;
@@ -149,14 +149,14 @@ public class SlidingDrawer extends DraggableDrawer {
             mContentContainer.layout(0, 0, width, height);
         } else {
             final int offsetPixels = (int) mOffsetPixels;
-            if (mPosition == Position.LEFT || mPosition == Position.RIGHT) {
+            if (getPosition() == Position.LEFT || getPosition() == Position.RIGHT) {
                 mContentContainer.layout(offsetPixels, 0, width + offsetPixels, height);
             } else {
                 mContentContainer.layout(0, offsetPixels, width, height + offsetPixels);
             }
         }
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 mMenuContainer.layout(0, 0, mMenuSize, height);
                 break;
@@ -193,7 +193,7 @@ public class SlidingDrawer extends DraggableDrawer {
         final float openRatio = Math.abs(mOffsetPixels) / menuSize;
         final int offset = (int) (-0.25f * ((1.0f - openRatio) * menuSize) * sign);
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT: {
                 if (USE_TRANSLATIONS) {
                     if (offsetPixels > 0) {
@@ -277,7 +277,7 @@ public class SlidingDrawer extends DraggableDrawer {
 
         int menuWidthMeasureSpec;
         int menuHeightMeasureSpec;
-        switch (mPosition) {
+        switch (getPosition()) {
             case TOP:
             case BOTTOM:
                 menuWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, 0, width);
@@ -303,7 +303,7 @@ public class SlidingDrawer extends DraggableDrawer {
     private boolean isContentTouch(int x, int y) {
         boolean contentTouch = false;
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 contentTouch = ViewHelper.getLeft(mContentContainer) < x;
                 break;
@@ -325,7 +325,7 @@ public class SlidingDrawer extends DraggableDrawer {
     }
 
     protected boolean onDownAllowDrag(int x, int y) {
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 return (!mMenuVisible && mInitialMotionX <= mTouchSize)
                         || (mMenuVisible && mInitialMotionX >= mOffsetPixels);
@@ -351,7 +351,7 @@ public class SlidingDrawer extends DraggableDrawer {
     }
 
     protected boolean onMoveAllowDrag(int x, int y, float dx, float dy) {
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 return (!mMenuVisible && mInitialMotionX <= mTouchSize && (dx > 0))
                         || (mMenuVisible && x >= mOffsetPixels);
@@ -375,7 +375,7 @@ public class SlidingDrawer extends DraggableDrawer {
     }
 
     protected void onMoveEvent(float dx, float dy) {
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 setOffsetPixels(Math.min(Math.max(mOffsetPixels + dx, 0), mMenuSize));
                 break;
@@ -397,7 +397,7 @@ public class SlidingDrawer extends DraggableDrawer {
     protected void onUpEvent(int x, int y) {
         final int offsetPixels = (int) mOffsetPixels;
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT: {
                 if (mIsDragging) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
@@ -459,7 +459,7 @@ public class SlidingDrawer extends DraggableDrawer {
     }
 
     protected boolean checkTouchSlop(float dx, float dy) {
-        switch (mPosition) {
+        switch (getPosition()) {
             case TOP:
             case BOTTOM:
                 return Math.abs(dy) > mTouchSlop && Math.abs(dy) > Math.abs(dx);

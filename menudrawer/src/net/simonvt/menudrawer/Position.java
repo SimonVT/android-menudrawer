@@ -16,7 +16,19 @@ public enum Position {
     RIGHT(2),
 
     // Positions the drawer below the content.
-    BOTTOM(3);
+    BOTTOM(3),
+
+    /**
+     * Position the drawer at the start edge. This will position the drawer to the {@link #LEFT} with LTR languages and
+     * {@link #RIGHT} with RTL languages.
+     */
+    START(4),
+
+    /**
+     * Position the drawer at the end edge. This will position the drawer to the {@link #RIGHT} with LTR languages and
+     * {@link #LEFT} with RTL languages.
+     */
+    END(5);
 
     final int mValue;
 

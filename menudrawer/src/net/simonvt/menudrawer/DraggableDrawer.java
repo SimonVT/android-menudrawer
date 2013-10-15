@@ -274,40 +274,6 @@ public abstract class DraggableDrawer extends MenuDrawer {
     }
 
     /**
-     * Sets the number of pixels the content should be offset.
-     *
-     * @param offsetPixels The number of pixels to offset the content by.
-     */
-    protected void setOffsetPixels(float offsetPixels) {
-        final int oldOffset = (int) mOffsetPixels;
-        final int newOffset = (int) offsetPixels;
-
-        mOffsetPixels = offsetPixels;
-
-        if (mSlideDrawable != null) {
-            final float offset = Math.abs(mOffsetPixels) / mMenuSize;
-            mSlideDrawable.setOffset(offset);
-            updateUpContentDescription();
-        }
-
-        if (newOffset != oldOffset) {
-            onOffsetPixelsChanged(newOffset);
-            mMenuVisible = newOffset != 0;
-
-            // Notify any attached listeners of the current open ratio
-            final float openRatio = ((float) Math.abs(newOffset)) / mMenuSize;
-            dispatchOnDrawerSlide(openRatio, newOffset);
-        }
-    }
-
-    /**
-     * Called when the number of pixels the content should be offset by has changed.
-     *
-     * @param offsetPixels The number of pixels to offset the content by.
-     */
-    protected abstract void onOffsetPixelsChanged(int offsetPixels);
-
-    /**
      * If possible, set the layer type to {@link android.view.View#LAYER_TYPE_HARDWARE}.
      */
     protected void startLayerTranslation() {
@@ -508,7 +474,7 @@ public abstract class DraggableDrawer extends MenuDrawer {
     protected boolean canChildrenScroll(int dx, int dy, int x, int y) {
         boolean canScroll = false;
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
             case RIGHT:
                 if (!mMenuVisible) {

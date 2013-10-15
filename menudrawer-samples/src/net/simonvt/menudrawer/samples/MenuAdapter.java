@@ -1,6 +1,7 @@
 package net.simonvt.menudrawer.samples;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +92,11 @@ public class MenuAdapter extends BaseAdapter {
 
             TextView tv = (TextView) v;
             tv.setText(((Item) item).mTitle);
-            tv.setCompoundDrawablesWithIntrinsicBounds(((Item) item).mIconRes, 0, 0, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(((Item) item).mIconRes, 0, 0, 0);
+            } else {
+                tv.setCompoundDrawablesWithIntrinsicBounds(((Item) item).mIconRes, 0, 0, 0);
+            }
         }
 
         v.setTag(R.id.mdActiveViewPosition, position);

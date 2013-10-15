@@ -205,6 +205,8 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     protected Drawable mDropShadowDrawable;
 
+    private boolean mCustomDropShadow;
+
     /**
      * The size of the content drop shadow.
      */
@@ -376,7 +378,9 @@ public abstract class MenuDrawer extends ViewGroup {
     /**
      * The position of the drawer.
      */
-    protected Position mPosition;
+    private Position mPosition;
+
+    private Position mResolvedPosition;
 
     private final Rect mIndicatorClipRect = new Rect();
 
@@ -412,7 +416,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The created MenuDrawer instance.
      */
     public static MenuDrawer attach(Activity activity, Type type) {
-        return attach(activity, type, Position.LEFT);
+        return attach(activity, type, Position.START);
     }
 
     /**
@@ -479,19 +483,19 @@ public abstract class MenuDrawer extends ViewGroup {
 
         } else if (type == Type.OVERLAY) {
             drawer = new OverlayDrawer(activity, dragMode);
-            if (position == Position.LEFT) {
+            if (position == Position.LEFT || position == Position.START) {
                 drawer.setupUpIndicator(activity);
             }
 
         } else {
             drawer = new SlidingDrawer(activity, dragMode);
-            if (position == Position.LEFT) {
+            if (position == Position.LEFT || position == Position.START) {
                 drawer.setupUpIndicator(activity);
             }
         }
 
         drawer.mDragMode = dragMode;
-        drawer.mPosition = position;
+        drawer.setPosition(position);
 
         return drawer;
     }
@@ -566,6 +570,8 @@ public abstract class MenuDrawer extends ViewGroup {
 
         if (mDropShadowDrawable == null) {
             mDropShadowColor = a.getColor(R.styleable.MenuDrawer_mdDropShadowColor, 0xFF000000);
+        } else {
+            mCustomDropShadow = true;
         }
 
         mDropShadowSize = a.getDimensionPixelSize(R.styleable.MenuDrawer_mdDropShadowSize,
@@ -589,7 +595,7 @@ public abstract class MenuDrawer extends ViewGroup {
         mDrawOverlay = a.getBoolean(R.styleable.MenuDrawer_mdDrawOverlay, true);
 
         final int position = a.getInt(R.styleable.MenuDrawer_mdPosition, 0);
-        mPosition = Position.fromValue(position);
+        setPosition(Position.fromValue(position));
 
         a.recycle();
 
@@ -692,7 +698,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
     protected void updateDropShadowRect() {
         // This updates the rect for the static and sliding drawer. The overlay drawer has its own implementation.
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 mDropShadowRect.top = 0;
                 mDropShadowRect.bottom = getHeight();
@@ -733,7 +739,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
             int drawLeft = 0;
             int drawTop = 0;
-            switch (mPosition) {
+            switch (getPosition()) {
                 case LEFT:
                 case TOP:
                     drawLeft = mIndicatorClipRect.left;
@@ -779,7 +785,7 @@ public abstract class MenuDrawer extends ViewGroup {
         int right = 0;
         int bottom = 0;
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
             case RIGHT:
                 final int finalTop = mActiveRect.top + ((mActiveRect.height() - indicatorHeight) / 2);
@@ -803,7 +809,7 @@ public abstract class MenuDrawer extends ViewGroup {
                 break;
         }
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT: {
                 right = ViewHelper.getLeft(mContentContainer);
                 left = right - interpolatedWidth;
@@ -834,6 +840,84 @@ public abstract class MenuDrawer extends ViewGroup {
         mIndicatorClipRect.right = right;
         mIndicatorClipRect.bottom = bottom;
     }
+
+    private void setPosition(Position position) {
+        mPosition = position;
+        mResolvedPosition = getPosition();
+    }
+
+    protected Position getPosition() {
+        final int layoutDirection = ViewHelper.getLayoutDirection(this);
+
+        switch (mPosition) {
+            case START:
+                if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+                    return Position.RIGHT;
+                } else {
+                    return Position.LEFT;
+                }
+
+            case END:
+                if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+                    return Position.LEFT;
+                } else {
+                    return Position.RIGHT;
+                }
+        }
+
+        return mPosition;
+    }
+
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        super.onRtlPropertiesChanged(layoutDirection);
+
+        if (!mCustomDropShadow) setDropShadowColor(mDropShadowColor);
+
+        if (getPosition() != mResolvedPosition) {
+            mResolvedPosition = getPosition();
+            setOffsetPixels(mOffsetPixels * -1);
+        }
+
+        if (mSlideDrawable != null) mSlideDrawable.setIsRtl(layoutDirection == LAYOUT_DIRECTION_RTL);
+
+        requestLayout();
+        invalidate();
+    }
+
+    /**
+     * Sets the number of pixels the content should be offset.
+     *
+     * @param offsetPixels The number of pixels to offset the content by.
+     */
+    protected void setOffsetPixels(float offsetPixels) {
+        final int oldOffset = (int) mOffsetPixels;
+        final int newOffset = (int) offsetPixels;
+
+        mOffsetPixels = offsetPixels;
+
+        if (mSlideDrawable != null) {
+            final float offset = Math.abs(mOffsetPixels) / mMenuSize;
+            mSlideDrawable.setOffset(offset);
+            updateUpContentDescription();
+        }
+
+        if (newOffset != oldOffset) {
+            onOffsetPixelsChanged(newOffset);
+            mMenuVisible = newOffset != 0;
+
+            // Notify any attached listeners of the current open ratio
+            final float openRatio = ((float) Math.abs(newOffset)) / mMenuSize;
+            dispatchOnDrawerSlide(openRatio, newOffset);
+        }
+    }
+
+    /**
+     * Called when the number of pixels the content should be offset by has changed.
+     *
+     * @param offsetPixels The number of pixels to offset the content by.
+     */
+    protected abstract void onOffsetPixelsChanged(int offsetPixels);
 
     /**
      * Toggles the menu open and close with animation.
@@ -985,7 +1069,7 @@ public abstract class MenuDrawer extends ViewGroup {
      * @return The start position of the indicator.
      */
     private int getIndicatorStartPos() {
-        switch (mPosition) {
+        switch (getPosition()) {
             case TOP:
                 return mIndicatorClipRect.left;
             case RIGHT:
@@ -1089,7 +1173,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
     protected GradientDrawable.Orientation getDropShadowOrientation() {
         // Gets the orientation for the static and sliding drawer. The overlay drawer provides its own implementation.
-        switch (mPosition) {
+        switch (getPosition()) {
             case TOP:
                 return GradientDrawable.Orientation.BOTTOM_TOP;
 
@@ -1128,6 +1212,7 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public void setDropShadow(Drawable drawable) {
         mDropShadowDrawable = drawable;
+        mCustomDropShadow = drawable != null;
         invalidate();
     }
 
@@ -1237,6 +1322,7 @@ public abstract class MenuDrawer extends ViewGroup {
      */
     public void setSlideDrawable(Drawable drawable) {
         mSlideDrawable = new SlideDrawable(drawable);
+        mSlideDrawable.setIsRtl(ViewHelper.getLayoutDirection(this) == LAYOUT_DIRECTION_RTL);
 
         if (mActionBarHelper != null) {
             mActionBarHelper.setDisplayShowHomeAsUpEnabled(true);

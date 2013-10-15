@@ -35,11 +35,16 @@ public class StaticDrawer extends MenuDrawer {
     }
 
     @Override
+    protected void onOffsetPixelsChanged(int offsetPixels) {
+        // NO-OP
+    }
+
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int width = r - l;
         final int height = b - t;
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
                 mMenuContainer.layout(0, 0, mMenuSize, height);
                 mContentContainer.layout(mMenuSize, 0, width, height);
@@ -74,7 +79,7 @@ public class StaticDrawer extends MenuDrawer {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
 
-        switch (mPosition) {
+        switch (getPosition()) {
             case LEFT:
             case RIGHT: {
                 final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);

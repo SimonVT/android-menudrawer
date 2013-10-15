@@ -1,5 +1,6 @@
 package net.simonvt.menudrawer;
 
+import android.os.Build;
 import android.view.View;
 
 final class ViewHelper {
@@ -37,5 +38,13 @@ final class ViewHelper {
         }
 
         return v.getBottom();
+    }
+
+    public static int getLayoutDirection(View v) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return v.getLayoutDirection();
+        }
+
+        return View.LAYOUT_DIRECTION_LTR;
     }
 }

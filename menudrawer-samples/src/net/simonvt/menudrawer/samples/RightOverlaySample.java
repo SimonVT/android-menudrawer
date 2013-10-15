@@ -21,7 +21,7 @@ public class RightOverlaySample extends Activity {
     @Override
     protected void onCreate(Bundle inState) {
         super.onCreate(inState);
-        mDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY, Position.RIGHT);
+        mDrawer = MenuDrawer.attach(this, MenuDrawer.Type.OVERLAY, Position.END);
 
         List<Object> items = new ArrayList<Object>();
         items.add(new Item("Item 1", R.drawable.ic_action_refresh_dark));

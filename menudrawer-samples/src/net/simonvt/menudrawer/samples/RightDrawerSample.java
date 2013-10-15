@@ -45,7 +45,7 @@ public class RightDrawerSample extends BaseListSample {
 
     @Override
     protected Position getDrawerPosition() {
-        return Position.RIGHT;
+        return Position.END;
     }
 
     @Override

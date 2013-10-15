@@ -57,6 +57,8 @@
             <enum name="top" value="1" />
             <enum name="right" value="2" />
             <enum name="bottom" value="3" />
+            <enum name="start" value="4" />
+            <enum name="end" value="5" />
         </attr>
     </declare-styleable>
 
