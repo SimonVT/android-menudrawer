@@ -23,5 +23,5 @@ allprojects {
         options.encoding = "UTF-8"
     }
 
-    version = '3.0.4-SNAPSHOT'
+    version = '3.0.5'
 }
