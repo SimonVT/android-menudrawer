@@ -1,6 +1,7 @@
 apply plugin: 'android-library'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'checkstyle'
 
 android {
     sourceSets {
@@ -26,12 +27,6 @@ ext {
 
 signing {
     sign configurations.archives
-}
-
-configurations {
-    archives {
-        extendsFrom configurations.default
-    }
 }
 
 task androidJavadocs(type: Javadoc) {
@@ -108,4 +103,21 @@ uploadArchives {
             }
         }
     }
+}
+
+checkstyle {
+    configFile project.file('../checkstyle.xml')
+    showViolations true
+}
+
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+
+    def checkstyle = project.tasks.create "checkstyle${name.capitalize()}", Checkstyle
+    checkstyle.dependsOn variant.javaCompile
+    checkstyle.source variant.javaCompile.source
+    checkstyle.classpath = project.fileTree(variant.javaCompile.destinationDir)
+    checkstyle.exclude('**/BuildConfig.java')
+    checkstyle.exclude('**/R.java')
+    project.tasks.getByName("check").dependsOn checkstyle
 }

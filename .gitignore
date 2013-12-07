@@ -6,18 +6,19 @@
 !README.md
 !LICENSE
 !checkstyle.xml
-!pom.xml
 !build.gradle
 !settings.gradle
+!gradlew
+!gradlew.bat
 
 !art/
+!gradle/
 
 !menudrawer/
 menudrawer/*
 !menudrawer/src/
 !menudrawer/res/
 !menudrawer/AndroidManifest.xml
-!menudrawer/pom.xml
 !menudrawer/build.gradle
 
 !menudrawer-samples/
@@ -26,7 +27,6 @@ menudrawer-samples/*
 !menudrawer-samples/res/
 !menudrawer-samples/libs/
 !menudrawer-samples/AndroidManifest.xml
-!menudrawer-samples/pom.xml
 !menudrawer-samples/build.gradle
 
 .DS_store
