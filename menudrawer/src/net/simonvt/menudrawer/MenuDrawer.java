@@ -1561,7 +1561,7 @@ public abstract class MenuDrawer extends ViewGroup {
 
     @Override
     protected boolean fitSystemWindows(Rect insets) {
-        if (mDragMode == MENU_DRAG_WINDOW) {
+        if (mDragMode == MENU_DRAG_WINDOW && mPosition != Position.BOTTOM) {
             mMenuContainer.setPadding(0, insets.top, 0, 0);
         }
         return super.fitSystemWindows(insets);
