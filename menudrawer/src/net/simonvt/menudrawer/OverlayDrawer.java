@@ -522,6 +522,16 @@ public class OverlayDrawer extends DraggableDrawer {
         removeCallbacks(mRevealRunnable);
     }
 
+    @Override
+    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        super.requestDisallowInterceptTouchEvent(disallowIntercept);
+        removeCallbacks(mRevealRunnable);
+        if (mIsPeeking) {
+            endPeek();
+            animateOffsetTo(0, PEEK_DURATION);
+        }
+    }
+
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
