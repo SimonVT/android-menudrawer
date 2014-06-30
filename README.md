@@ -68,14 +68,12 @@ public class SampleActivity extends Activity {
 Including in your project
 =========================
 
-Either include it in your project as an android library project, or grab it via maven:
+Either include it in your project as an android library project, or use gradle to grab it from
+maven central:
 
-    <dependency>
-        <groupId>net.simonvt.menudrawer</groupId>
-        <artifactId>menudrawer</artifactId>
-        <version>{latest.version}</version>
-        <type>apklib</type>
-    </dependency>
+```
+compile 'net.simonvt.menudrawer:menudrawer:{latest-version}'
+```
 
 
 Credits
