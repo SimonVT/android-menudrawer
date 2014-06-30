@@ -21,90 +21,6 @@ android {
     }
 }
 
-ext {
-    artifactId = 'menudrawer'
-}
-
-signing {
-    sign configurations.archives
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.allJava
-}
-
-task androidJavadocsJar(type: Jar) {
-    classifier = 'javadoc'
-    basename = project.artifactId
-    from androidJavadocs.destinationDir
-}
-
-task androidSourcesJar(type: Jar) {
-    classifier = 'sources'
-    basename = project.artifactId
-    from android.sourceSets.main.allSource 
-} 
-
-artifacts {
-    archives androidSourcesJar
-    archives androidJavadocsJar
-}
-
-uploadArchives {
-    configuration = configurations.archives
-
-    repositories.mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-        repository(url: sonatypeRepo) {
-            authentication(userName: sonatypeUsername, password: sonatypePassword)
-        }
-        
-        pom.groupId = parent.ext.groupId
-        pom.artifactId = project.ext.artifactId
-        pom.version = parent.version
-
-        pom.project {
-            name 'MenuDrawer'
-            packaging 'aar'
-            description 'A menu drawer implementation which allows dragging of both the content, and the entire window.'
-            url 'https://github.com/SimonVT/android-menudrawer'
-
-            scm {
-                url 'http://github.com/SimonVT/android-menudrawer/'
-                connection 'scm:git:git://github.com/SimonVT/android-menudrawer.git'
-                developerConnection 'scm:git:git@github.com:SimonVT/android-menudrawer.git'
-            }
-
-            licenses {
-                license {
-                    name 'Apache License Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-
-            issueManagement {
-                system 'GitHub Issues'
-                url 'https://github.com/SimonVT/android-menudrawer/issues'
-            }
-
-            developers {
-                developer {
-                    id 'simonvt'
-                    name 'Simon Vig Therkildsen'
-                    email 'simonvt@gmail.com'
-                    url 'http://simonvt.net'
-                    timezone '1'
-                    roles {
-                        role 'developer'
-                    }
-                }
-            }
-        }
-    }
-}
-
 checkstyle {
     configFile project.file('../checkstyle.xml')
     showViolations true
@@ -121,3 +37,5 @@ android.libraryVariants.all { variant ->
     checkstyle.exclude('**/R.java')
     project.tasks.getByName("check").dependsOn checkstyle
 }
+
+apply from: 'https://raw.github.com/SimonVT/gradle-mvn-push/0.11/gradle-mvn-push.gradle'

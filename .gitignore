@@ -8,6 +8,7 @@
 !checkstyle.xml
 !build.gradle
 !settings.gradle
+!gradle.properties
 !gradlew
 !gradlew.bat
 
@@ -20,6 +21,7 @@ menudrawer/*
 !menudrawer/res/
 !menudrawer/AndroidManifest.xml
 !menudrawer/build.gradle
+!menudrawer/gradle.properties
 
 !menudrawer-samples/
 menudrawer-samples/*
